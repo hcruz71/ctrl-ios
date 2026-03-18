@@ -13,6 +13,9 @@ final class PushManager: NSObject, ObservableObject {
     @Published var deviceToken: String?
     @Published var permissionStatus: UNAuthorizationStatus = .notDetermined
 
+    /// Whether the current `deviceToken` has been successfully sent to the backend.
+    private var tokenSentToBackend = false
+
     private override init() {
         super.init()
         Task { await refreshPermissionStatus() }
@@ -26,31 +29,31 @@ final class PushManager: NSObject, ObservableObject {
     }
 
     /// Request notification permission and register for remote notifications.
-    func requestPermissionAndRegister() {
+    func requestPermissionAndRegister() async {
         logger.info("requestPermissionAndRegister() called")
 
-        UNUserNotificationCenter.current().requestAuthorization(
-            options: [.alert, .badge, .sound]
-        ) { granted, error in
-            if let error {
-                logger.error("Permission request error: \(error.localizedDescription)")
+        // If we already have a token that wasn't sent, retry before re-registering.
+        if let existing = deviceToken, !tokenSentToBackend {
+            logger.info("Retrying backend registration with existing token")
+            await sendTokenToBackend(existing)
+            return
+        }
+
+        do {
+            let granted = try await UNUserNotificationCenter.current()
+                .requestAuthorization(options: [.alert, .badge, .sound])
+
+            await refreshPermissionStatus()
+
+            guard granted else {
+                logger.warning("User denied push permission")
                 return
             }
 
-            logger.info("Permission granted: \(granted)")
-
-            Task { @MainActor in
-                await self.refreshPermissionStatus()
-            }
-
-            if granted {
-                DispatchQueue.main.async {
-                    logger.info("Calling registerForRemoteNotifications()")
-                    UIApplication.shared.registerForRemoteNotifications()
-                }
-            } else {
-                logger.warning("User denied push permission")
-            }
+            logger.info("Calling registerForRemoteNotifications()")
+            UIApplication.shared.registerForRemoteNotifications()
+        } catch {
+            logger.error("Permission request error: \(error.localizedDescription)")
         }
     }
 
@@ -58,6 +61,7 @@ final class PushManager: NSObject, ObservableObject {
     func didRegisterForRemoteNotifications(token: Data) {
         let tokenString = token.map { String(format: "%02.2hhx", $0) }.joined()
         logger.info("APNs token received: \(tokenString.prefix(16))…")
+        tokenSentToBackend = false
         deviceToken = tokenString
         Task { await sendTokenToBackend(tokenString) }
     }
@@ -73,10 +77,18 @@ final class PushManager: NSObject, ObservableObject {
             logger.warning("No auth token — skipping backend registration")
             return
         }
+
         logger.info("Sending device token to backend…")
         let body = RegisterTokenBody(token: token, platform: "ios")
-        let _: EmptyData? = try? await APIClient.shared.request(.registerToken, body: body)
-        logger.info("Device token sent to backend")
+
+        do {
+            let _: EmptyData? = try await APIClient.shared.request(.registerToken, body: body)
+            tokenSentToBackend = true
+            logger.info("Device token sent to backend ✓")
+        } catch {
+            tokenSentToBackend = false
+            logger.error("Failed to send device token to backend: \(error.localizedDescription)")
+        }
     }
 }
 

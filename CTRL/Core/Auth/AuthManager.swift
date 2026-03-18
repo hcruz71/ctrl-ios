@@ -27,7 +27,7 @@ final class AuthManager: ObservableObject {
         await fetchProfile()
         isLoading = false
         if isAuthenticated {
-            PushManager.shared.requestPermissionAndRegister()
+            await PushManager.shared.requestPermissionAndRegister()
         }
     }
 
@@ -43,7 +43,7 @@ final class AuthManager: ObservableObject {
         KeychainHelper.saveToken(response.token)
         currentUser = response.user
         isAuthenticated = true
-        PushManager.shared.requestPermissionAndRegister()
+        await PushManager.shared.requestPermissionAndRegister()
     }
 
     func register(name: String, email: String, password: String) async throws {
@@ -56,7 +56,7 @@ final class AuthManager: ObservableObject {
         KeychainHelper.saveToken(response.token)
         currentUser = response.user
         isAuthenticated = true
-        PushManager.shared.requestPermissionAndRegister()
+        await PushManager.shared.requestPermissionAndRegister()
     }
 
     func fetchProfile() async {

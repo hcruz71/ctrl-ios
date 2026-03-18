@@ -27,7 +27,7 @@ struct ProfileView: View {
 
                     if pushManager.permissionStatus == .notDetermined {
                         Button {
-                            pushManager.requestPermissionAndRegister()
+                            Task { await pushManager.requestPermissionAndRegister() }
                         } label: {
                             Label("Activar notificaciones", systemImage: "bell.badge")
                         }
