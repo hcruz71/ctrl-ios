@@ -1,0 +1,91 @@
+import Foundation
+
+/// Manages authentication state across the app.
+/// Persists JWT in Keychain and exposes the current user.
+@MainActor
+final class AuthManager: ObservableObject {
+    static let shared = AuthManager()
+
+    @Published var currentUser: User?
+    @Published var isAuthenticated = false
+    @Published var isLoading = false
+
+    var token: String? {
+        KeychainHelper.getToken()
+    }
+
+    private init() {
+        if KeychainHelper.getToken() != nil {
+            isAuthenticated = true
+            isLoading = true
+            Task { await restoreSession() }
+        }
+    }
+
+    /// Restores the user session from the persisted JWT on app launch.
+    private func restoreSession() async {
+        await fetchProfile()
+        isLoading = false
+    }
+
+    // MARK: - Auth actions
+
+    func login(email: String, password: String) async throws {
+        isLoading = true
+        defer { isLoading = false }
+
+        let body = LoginBody(email: email, password: password)
+        let response: AuthResponse = try await APIClient.shared.request(.login, body: body)
+
+        KeychainHelper.saveToken(response.token)
+        currentUser = response.user
+        isAuthenticated = true
+    }
+
+    func register(name: String, email: String, password: String) async throws {
+        isLoading = true
+        defer { isLoading = false }
+
+        let body = RegisterBody(name: name, email: email, password: password)
+        let response: AuthResponse = try await APIClient.shared.request(.register, body: body)
+
+        KeychainHelper.saveToken(response.token)
+        currentUser = response.user
+        isAuthenticated = true
+    }
+
+    func fetchProfile() async {
+        do {
+            currentUser = try await APIClient.shared.request(.me)
+            isAuthenticated = true
+        } catch {
+            if let apiError = error as? APIError, apiError.isUnauthorized {
+                logout()
+            }
+        }
+    }
+
+    func logout() {
+        KeychainHelper.deleteToken()
+        currentUser = nil
+        isAuthenticated = false
+    }
+}
+
+// MARK: - Request / Response bodies
+
+private struct LoginBody: Encodable {
+    let email: String
+    let password: String
+}
+
+private struct RegisterBody: Encodable {
+    let name: String
+    let email: String
+    let password: String
+}
+
+struct AuthResponse: Decodable {
+    let token: String
+    let user: User
+}

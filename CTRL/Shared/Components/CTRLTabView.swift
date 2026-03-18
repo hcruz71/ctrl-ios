@@ -1,0 +1,46 @@
+import SwiftUI
+
+struct CTRLTabView: View {
+    @StateObject private var delegationsVM = DelegationsViewModel()
+
+    var body: some View {
+        TabView {
+            ObjectivesView()
+                .tabItem {
+                    Label("Objetivos", systemImage: "target")
+                }
+                .tag(0)
+
+            MeetingsView()
+                .tabItem {
+                    Label("Reuniones", systemImage: "calendar")
+                }
+                .tag(1)
+
+            TasksView()
+                .tabItem {
+                    Label("Tareas", systemImage: "checkmark.circle")
+                }
+                .tag(2)
+
+            DelegationsView()
+                .tabItem {
+                    Label("Delegaciones", systemImage: "person.2")
+                }
+                .badge(delegationsVM.pendingCount)
+                .tag(3)
+
+            ContactsView()
+                .tabItem {
+                    Label("Contactos", systemImage: "person.crop.circle")
+                }
+                .tag(4)
+        }
+        .tint(Color.ctrlPurple)
+        .task { await delegationsVM.fetchDelegations() }
+    }
+}
+
+#Preview {
+    CTRLTabView()
+}
