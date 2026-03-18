@@ -1,10 +1,11 @@
 import SwiftUI
 
 struct CTRLTabView: View {
+    @Binding var selectedTab: Int
     @StateObject private var delegationsVM = DelegationsViewModel()
 
     var body: some View {
-        TabView {
+        TabView(selection: $selectedTab) {
             ObjectivesView()
                 .tabItem {
                     Label("Objetivos", systemImage: "target")
@@ -42,5 +43,5 @@ struct CTRLTabView: View {
 }
 
 #Preview {
-    CTRLTabView()
+    CTRLTabView(selectedTab: .constant(0))
 }

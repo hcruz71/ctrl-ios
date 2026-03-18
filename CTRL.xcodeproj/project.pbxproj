@@ -18,6 +18,7 @@
 		35369D4C9AB74D97481A3588 /* TaskRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 622F7A4D76C2F5FA8DCED64E /* TaskRowView.swift */; };
 		3D800444EF79ED74CD655F1C /* MeetingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CD51DF9DC658F3AE13A3FA7 /* MeetingsViewModel.swift */; };
 		4410F3F2F5012E0C51BE7596 /* ContactsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46D2313733E4F034245B93D1 /* ContactsViewModel.swift */; };
+		4A5C8B925724E78A303F21BD /* PushManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADFDB41BC7D103108536BCB4 /* PushManager.swift */; };
 		4DAEC5D881D7E06579B90D80 /* ContactsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FBC851CDC4F1352747B1800 /* ContactsView.swift */; };
 		4F3681147A9E587AA2C14CA0 /* DelegationRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B33EFFE7580C84B7AA3D4C8 /* DelegationRowView.swift */; };
 		569690B3B54808E619D30DD9 /* MeetingRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7576480B783D9D902039666D /* MeetingRowView.swift */; };
@@ -27,11 +28,13 @@
 		74FCF73D7D3A960E3BDD5190 /* CTRLTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7920049ADD15D7CF391353FC /* CTRLTabView.swift */; };
 		7F5B03204C43214112D74C99 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E35A5A425EDD5E673AC495B /* ContentView.swift */; };
 		80168B1C2B1A02CAE06680AA /* Objective.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD42369D15A9D66A16BE4468 /* Objective.swift */; };
+		81B50579F75774F603AEF383 /* NavigationState.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF8C8DB862AB78703FF596CC /* NavigationState.swift */; };
 		839E17C32A1602BB7C5E04EF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 61BEB5DEEEEB32A38882CE10 /* Assets.xcassets */; };
 		899887BEBCF9012F73FB2B7A /* LoginViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 757CFD3291A5F2CC1C182E79 /* LoginViewModel.swift */; };
 		8C5FD08BCE5A9187F713D471 /* ContactPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA37C484E3A3F7904F1E8E73 /* ContactPickerView.swift */; };
 		982840541515DB56C9ADFC6C /* ObjectiveRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10DF027E47C9DECD467A86A0 /* ObjectiveRowView.swift */; };
 		9B1DDC4FBC57C357E0821FE0 /* Contact.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EBA67F8D2B73CBDE6A78384 /* Contact.swift */; };
+		9F3DB3A768CEE1232E41C9E0 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3617F069BB9E3B6F50B30776 /* AppDelegate.swift */; };
 		A32269CA08F74A74DA8F827B /* Delegation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 747152AAA74268420C1757F3 /* Delegation.swift */; };
 		A7C17EED98CE02D9EEC440FC /* ObjectivesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E8AA15000B0BF7981C24182 /* ObjectivesViewModel.swift */; };
 		A9564A98AEC45DD83039CC26 /* APIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8FABDF842457B4F00BD05B5 /* APIClient.swift */; };
@@ -54,6 +57,7 @@
 		0CD51DF9DC658F3AE13A3FA7 /* MeetingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeetingsViewModel.swift; sourceTree = "<group>"; };
 		10DF027E47C9DECD467A86A0 /* ObjectiveRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjectiveRowView.swift; sourceTree = "<group>"; };
 		2E8AA15000B0BF7981C24182 /* ObjectivesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjectivesViewModel.swift; sourceTree = "<group>"; };
+		3617F069BB9E3B6F50B30776 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		3FBC851CDC4F1352747B1800 /* ContactsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactsView.swift; sourceTree = "<group>"; };
 		46D2313733E4F034245B93D1 /* ContactsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactsViewModel.swift; sourceTree = "<group>"; };
 		5EBA67F8D2B73CBDE6A78384 /* Contact.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Contact.swift; sourceTree = "<group>"; };
@@ -69,13 +73,15 @@
 		80B0F44B02257D8251AAF414 /* APIEndpoints.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIEndpoints.swift; sourceTree = "<group>"; };
 		893796B7C9E94CE74C00A3AE /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
 		947B08635E4E237675826275 /* AuthManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthManager.swift; sourceTree = "<group>"; };
+		96D3BF6E73B972941299F959 /* CTRL.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = CTRL.entitlements; sourceTree = "<group>"; };
 		9B33EFFE7580C84B7AA3D4C8 /* DelegationRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DelegationRowView.swift; sourceTree = "<group>"; };
 		A00E7AE65E31C73949B99BEC /* TasksViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TasksViewModel.swift; sourceTree = "<group>"; };
 		AD42369D15A9D66A16BE4468 /* Objective.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Objective.swift; sourceTree = "<group>"; };
 		ADFCA71CA86F7F5B4ADB27B6 /* BadgeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeView.swift; sourceTree = "<group>"; };
+		ADFDB41BC7D103108536BCB4 /* PushManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushManager.swift; sourceTree = "<group>"; };
 		AFC8CD8F102E1D7A8108D211 /* MeetingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeetingsView.swift; sourceTree = "<group>"; };
 		B24F1A613ECD6D4FCA90F290 /* DelegationsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DelegationsView.swift; sourceTree = "<group>"; };
-		BCB7B72F8005F0E28D01D868 /* CTRL.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CTRL.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		BCB7B72F8005F0E28D01D868 /* CTRL.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = CTRL.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C635AE199357CAAC50E92DB1 /* KeychainHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainHelper.swift; sourceTree = "<group>"; };
 		C8AF4F6CAFCC1575F17737F0 /* ObjectivesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjectivesView.swift; sourceTree = "<group>"; };
 		C8FABDF842457B4F00BD05B5 /* APIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIClient.swift; sourceTree = "<group>"; };
@@ -84,6 +90,7 @@
 		D1EDC5357EAF1A0105D69B4B /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		DEC10A3922719C59B9D9C719 /* TasksView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TasksView.swift; sourceTree = "<group>"; };
 		DF4D22D98D857F3FD4CC2218 /* ContactRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactRowView.swift; sourceTree = "<group>"; };
+		DF8C8DB862AB78703FF596CC /* NavigationState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationState.swift; sourceTree = "<group>"; };
 		E64BC0E4BEA4290D599549BD /* CTRLTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CTRLTask.swift; sourceTree = "<group>"; };
 		F1063F17C6BC9D67D616FF26 /* DelegationsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DelegationsViewModel.swift; sourceTree = "<group>"; };
 		F73627F64906A12A6F0383B2 /* ProgressRingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressRingView.swift; sourceTree = "<group>"; };
@@ -150,6 +157,7 @@
 			isa = PBXGroup;
 			children = (
 				6E35A5A425EDD5E673AC495B /* ContentView.swift */,
+				96D3BF6E73B972941299F959 /* CTRL.entitlements */,
 				0BE52C713FC3E56E3C6A9936 /* CTRLApp.swift */,
 				9752F7D9A412A0B2668B5F98 /* Core */,
 				3066AA5A129B4A88F00E0DD0 /* Features */,
@@ -157,6 +165,16 @@
 				0B3A09CE5665B5DB5B9B4192 /* Shared */,
 			);
 			path = CTRL;
+			sourceTree = "<group>";
+		};
+		46F9B3D1A0D0D93809C04241 /* Push */ = {
+			isa = PBXGroup;
+			children = (
+				3617F069BB9E3B6F50B30776 /* AppDelegate.swift */,
+				DF8C8DB862AB78703FF596CC /* NavigationState.swift */,
+				ADFDB41BC7D103108536BCB4 /* PushManager.swift */,
+			);
+			path = Push;
 			sourceTree = "<group>";
 		};
 		4C01D7098D3B52131E34E258 /* Network */ = {
@@ -204,6 +222,7 @@
 				3DFFBB10F5783B4FBAD79F48 /* Auth */,
 				2B0B268E15D0F8EE153CB620 /* Models */,
 				4C01D7098D3B52131E34E258 /* Network */,
+				46F9B3D1A0D0D93809C04241 /* Push */,
 			);
 			path = Core;
 			sourceTree = "<group>";
@@ -305,6 +324,7 @@
 				LastUpgradeCheck = 1600;
 				TargetAttributes = {
 					449051C4D4F3A5384442DD25 = {
+						DevelopmentTeam = "";
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -347,6 +367,7 @@
 				A9564A98AEC45DD83039CC26 /* APIClient.swift in Sources */,
 				DE59C250AF0CDEA115938FB2 /* APIEndpoints.swift in Sources */,
 				0CC7C83FCE028FFC0A1E7C3E /* APIError.swift in Sources */,
+				9F3DB3A768CEE1232E41C9E0 /* AppDelegate.swift in Sources */,
 				192021404792135B6A473264 /* AuthManager.swift in Sources */,
 				B429929FD1B4F04707F6590E /* BadgeView.swift in Sources */,
 				E78750EB942D8496644FAB3A /* CTRLApp.swift in Sources */,
@@ -372,12 +393,14 @@
 				569690B3B54808E619D30DD9 /* MeetingRowView.swift in Sources */,
 				04AABF8526DBC32FAC7B1630 /* MeetingsView.swift in Sources */,
 				3D800444EF79ED74CD655F1C /* MeetingsViewModel.swift in Sources */,
+				81B50579F75774F603AEF383 /* NavigationState.swift in Sources */,
 				80168B1C2B1A02CAE06680AA /* Objective.swift in Sources */,
 				982840541515DB56C9ADFC6C /* ObjectiveRowView.swift in Sources */,
 				6DCA646E48A1B9155B28E114 /* ObjectivesView.swift in Sources */,
 				A7C17EED98CE02D9EEC440FC /* ObjectivesViewModel.swift in Sources */,
 				6565E8001B8A0717019CC40C /* ProfileView.swift in Sources */,
 				6AE6759224BEACEDF0238E7A /* ProgressRingView.swift in Sources */,
+				4A5C8B925724E78A303F21BD /* PushManager.swift in Sources */,
 				35369D4C9AB74D97481A3588 /* TaskRowView.swift in Sources */,
 				31D95A21FDB11944E06EA4E4 /* TasksView.swift in Sources */,
 				249F41BC741203A70092F09C /* TasksViewModel.swift in Sources */,
@@ -395,7 +418,6 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 679TR4ZAZB;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = CTRL;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -420,7 +442,6 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 679TR4ZAZB;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = CTRL;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;

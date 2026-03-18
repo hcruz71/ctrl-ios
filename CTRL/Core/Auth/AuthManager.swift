@@ -26,6 +26,9 @@ final class AuthManager: ObservableObject {
     private func restoreSession() async {
         await fetchProfile()
         isLoading = false
+        if isAuthenticated {
+            PushManager.shared.requestPermissionAndRegister()
+        }
     }
 
     // MARK: - Auth actions
@@ -40,6 +43,7 @@ final class AuthManager: ObservableObject {
         KeychainHelper.saveToken(response.token)
         currentUser = response.user
         isAuthenticated = true
+        PushManager.shared.requestPermissionAndRegister()
     }
 
     func register(name: String, email: String, password: String) async throws {
@@ -52,6 +56,7 @@ final class AuthManager: ObservableObject {
         KeychainHelper.saveToken(response.token)
         currentUser = response.user
         isAuthenticated = true
+        PushManager.shared.requestPermissionAndRegister()
     }
 
     func fetchProfile() async {
