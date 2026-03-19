@@ -32,6 +32,12 @@ enum APIEndpoint {
     // MARK: - Push
     case registerToken
 
+    // MARK: - MCP
+    case revokeMcpToken
+
+    // MARK: - Assistant
+    case assistantChat
+
     // MARK: - URL building
 
     var path: String {
@@ -50,6 +56,8 @@ enum APIEndpoint {
         case .contacts:           return "/contacts"
         case .contact(let id):    return "/contacts/\(id)"
         case .registerToken:      return "/push/register-token"
+        case .revokeMcpToken:     return "/auth/mcp-token"
+        case .assistantChat:      return "/assistant/chat"
         }
     }
 
@@ -65,7 +73,7 @@ enum APIEndpoint {
     /// Whether this endpoint targets a collection (no id) vs a single resource.
     var isCollection: Bool {
         switch self {
-        case .objectives, .meetings, .tasks, .delegations, .contacts, .login, .register, .registerToken:
+        case .objectives, .meetings, .tasks, .delegations, .contacts, .login, .register, .registerToken, .revokeMcpToken, .assistantChat:
             return true
         default:
             return false

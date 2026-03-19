@@ -71,6 +71,10 @@ final class AuthManager: ObservableObject {
     }
 
     func logout() {
+        // Revoke MCP tokens on the backend before clearing local state
+        Task {
+            try? await APIClient.shared.requestVoid(.revokeMcpToken)
+        }
         KeychainHelper.deleteToken()
         currentUser = nil
         isAuthenticated = false

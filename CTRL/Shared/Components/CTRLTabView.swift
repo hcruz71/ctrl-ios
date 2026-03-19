@@ -36,6 +36,12 @@ struct CTRLTabView: View {
                     Label("Contactos", systemImage: "person.crop.circle")
                 }
                 .tag(4)
+
+            AssistantView()
+                .tabItem {
+                    Label("Asistente", systemImage: "sparkles")
+                }
+                .tag(5)
         }
         .tint(Color.ctrlPurple)
         .task { await delegationsVM.fetchDelegations() }
