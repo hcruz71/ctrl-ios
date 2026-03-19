@@ -50,6 +50,18 @@ struct ProfileView: View {
                                 .foregroundStyle(.secondary)
                         }
                     }
+
+                    #if DEBUG
+                    Button {
+                        pushManager.sendLocalNotification(
+                            title: "CTRL — Test local",
+                            body: "Deep linking y UI funcionan correctamente.",
+                            data: ["type": "delegation:overdue"]
+                        )
+                    } label: {
+                        Label("Enviar notificación local", systemImage: "arrow.up.message.fill")
+                    }
+                    #endif
                 }
 
                 Section {

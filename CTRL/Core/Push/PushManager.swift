@@ -71,6 +71,40 @@ final class PushManager: NSObject, ObservableObject {
         logger.error("APNs registration failed: \(error.localizedDescription)")
     }
 
+    // MARK: - Local notifications (development testing)
+
+    /// Schedules a local notification that fires immediately.
+    /// Use this to test the full notification flow (banner, sound, deep linking)
+    /// without depending on APNs — works on simulator and Xcode builds.
+    func sendLocalNotification(
+        title: String,
+        body: String,
+        data: [String: String] = [:]
+    ) {
+        let content = UNMutableNotificationContent()
+        content.title = title
+        content.body = body
+        content.sound = .default
+        content.userInfo = data
+
+        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 1, repeats: false)
+        let request = UNNotificationRequest(
+            identifier: UUID().uuidString,
+            content: content,
+            trigger: trigger
+        )
+
+        UNUserNotificationCenter.current().add(request) { error in
+            if let error {
+                logger.error("Local notification failed: \(error.localizedDescription)")
+            } else {
+                logger.info("Local notification scheduled: \(title)")
+            }
+        }
+    }
+
+    // MARK: - Backend token registration
+
     /// Send device token to the backend via POST.
     private func sendTokenToBackend(_ token: String) async {
         guard AuthManager.shared.token != nil else {
