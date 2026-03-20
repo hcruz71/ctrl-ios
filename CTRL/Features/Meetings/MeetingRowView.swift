@@ -5,9 +5,27 @@ struct MeetingRowView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
-            Text(meeting.title)
-                .font(.headline)
-                .lineLimit(1)
+            HStack {
+                Text(meeting.title)
+                    .font(.headline)
+                    .lineLimit(1)
+                Spacer()
+                if meeting.isFromGoogle {
+                    Image(systemName: "globe")
+                        .font(.caption)
+                        .foregroundStyle(.blue)
+                }
+                if meeting.objective != nil {
+                    Image(systemName: "target")
+                        .font(.caption)
+                        .foregroundStyle(Color.ctrlTeal)
+                }
+                if meeting.minutesProcessedAt != nil {
+                    Image(systemName: "doc.text.fill")
+                        .font(.caption)
+                        .foregroundStyle(.green)
+                }
+            }
 
             HStack(spacing: 12) {
                 if let date = meeting.meetingDate {

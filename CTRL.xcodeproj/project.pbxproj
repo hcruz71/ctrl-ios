@@ -55,6 +55,9 @@
 		F146BA769BC4C599485E5061 /* ContactRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF4D22D98D857F3FD4CC2218 /* ContactRowView.swift */; };
 		F22C04EE0CBABFEE636B37D9 /* QuickCaptureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 597B38C580B62FEB4343A0AE /* QuickCaptureView.swift */; };
 		F4BE43FC0243CE9E39D64C2C /* CTRLTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = E64BC0E4BEA4290D599549BD /* CTRLTask.swift */; };
+		3C4D5E6F7A8B9C0D1E2F3A4B /* DelegationEmailSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3D4E5F6A7B8C9D0E1F2A3B4 /* DelegationEmailSheet.swift */; };
+		1A2B3C4D5E6F7A8B9C0D1E2F /* MeetingDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6A7B8C9D0E1F2 /* MeetingDetailView.swift */; };
+		2B3C4D5E6F7A8B9C0D1E2F3A /* MinutasView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2C3D4E5F6A7B8C9D0E1F2A3 /* MinutasView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -108,6 +111,9 @@
 		FA55BCCF6F7843807C220466 /* Meeting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Meeting.swift; sourceTree = "<group>"; };
 		FC1E7A0DF4D448B002898EFC /* EmptyStateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyStateView.swift; sourceTree = "<group>"; };
 		65CDE7BC17AEBC4B47518AFA /* ProfileToolbarModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileToolbarModifier.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F6A7B8C9D0E1F2 /* MeetingDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeetingDetailView.swift; sourceTree = "<group>"; };
+		B2C3D4E5F6A7B8C9D0E1F2A3 /* MinutasView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MinutasView.swift; sourceTree = "<group>"; };
+		C3D4E5F6A7B8C9D0E1F2A3B4 /* DelegationEmailSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DelegationEmailSheet.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -302,9 +308,11 @@
 		E8CA7F268C55041B0ECCD1FF /* Meetings */ = {
 			isa = PBXGroup;
 			children = (
+				A1B2C3D4E5F6A7B8C9D0E1F2 /* MeetingDetailView.swift */,
 				7576480B783D9D902039666D /* MeetingRowView.swift */,
 				AFC8CD8F102E1D7A8108D211 /* MeetingsView.swift */,
 				0CD51DF9DC658F3AE13A3FA7 /* MeetingsViewModel.swift */,
+				B2C3D4E5F6A7B8C9D0E1F2A3 /* MinutasView.swift */,
 			);
 			path = Meetings;
 			sourceTree = "<group>";
@@ -312,6 +320,7 @@
 		F0A12F3F86B65E68EAC021B9 /* Delegations */ = {
 			isa = PBXGroup;
 			children = (
+				C3D4E5F6A7B8C9D0E1F2A3B4 /* DelegationEmailSheet.swift */,
 				9B33EFFE7580C84B7AA3D4C8 /* DelegationRowView.swift */,
 				B24F1A613ECD6D4FCA90F290 /* DelegationsView.swift */,
 				F1063F17C6BC9D67D616FF26 /* DelegationsViewModel.swift */,
@@ -409,6 +418,7 @@
 				7F5B03204C43214112D74C99 /* ContentView.swift in Sources */,
 				BB95A81039825708B436A14E /* Date+Formatting.swift in Sources */,
 				A32269CA08F74A74DA8F827B /* Delegation.swift in Sources */,
+				3C4D5E6F7A8B9C0D1E2F3A4B /* DelegationEmailSheet.swift in Sources */,
 				4F3681147A9E587AA2C14CA0 /* DelegationRowView.swift in Sources */,
 				DE2A321B082C6C317DD3C2F8 /* DelegationsView.swift in Sources */,
 				B60589455F8842F4E0B5673C /* DelegationsViewModel.swift in Sources */,
@@ -417,10 +427,12 @@
 				C69A16C8D80FC73E6AFED95C /* LoginView.swift in Sources */,
 				899887BEBCF9012F73FB2B7A /* LoginViewModel.swift in Sources */,
 				0C50D5C3ACBF22F2E42291D3 /* Meeting.swift in Sources */,
+				1A2B3C4D5E6F7A8B9C0D1E2F /* MeetingDetailView.swift in Sources */,
 				569690B3B54808E619D30DD9 /* MeetingRowView.swift in Sources */,
 				04AABF8526DBC32FAC7B1630 /* MeetingsView.swift in Sources */,
 				3D800444EF79ED74CD655F1C /* MeetingsViewModel.swift in Sources */,
 				EC2D68A58C414C352AF6FB8E /* MessageBubbleView.swift in Sources */,
+				2B3C4D5E6F7A8B9C0D1E2F3A /* MinutasView.swift in Sources */,
 				1E49B393BA712496888DD41C /* MyDayView.swift in Sources */,
 				81B50579F75774F603AEF383 /* NavigationState.swift in Sources */,
 				80168B1C2B1A02CAE06680AA /* Objective.swift in Sources */,

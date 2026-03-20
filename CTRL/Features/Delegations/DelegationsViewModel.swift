@@ -50,4 +50,30 @@ final class DelegationsViewModel: ObservableObject {
             errorMessage = error.localizedDescription
         }
     }
+
+    // MARK: - Email
+
+    struct EmailDraftResult: Codable {
+        let emailDraft: String
+        let emailSentAt: Date?
+    }
+
+    func buildEmailDraft(id: UUID, send: Bool) async -> EmailDraftResult? {
+        struct Body: Encodable { let send: Bool }
+        do {
+            let result: EmailDraftResult = try await APIClient.shared.request(
+                .sendDelegationEmail(id: id), method: "POST", body: Body(send: send)
+            )
+            if send {
+                if let idx = delegations.firstIndex(where: { $0.id == id }) {
+                    delegations[idx].emailSentAt = result.emailSentAt
+                    delegations[idx].emailDraft = result.emailDraft
+                }
+            }
+            return result
+        } catch {
+            errorMessage = error.localizedDescription
+            return nil
+        }
+    }
 }

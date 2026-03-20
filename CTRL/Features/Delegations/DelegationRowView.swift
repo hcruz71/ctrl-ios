@@ -10,6 +10,11 @@ struct DelegationRowView: View {
                     .font(.headline)
                     .lineLimit(1)
                 Spacer()
+                if delegation.emailSentAt != nil {
+                    Image(systemName: "envelope.fill")
+                        .font(.caption)
+                        .foregroundStyle(.green)
+                }
                 BadgeView(text: delegation.status, color: statusColor)
             }
 

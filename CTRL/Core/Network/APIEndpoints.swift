@@ -17,6 +17,9 @@ enum APIEndpoint {
     // MARK: - Meetings
     case meetings
     case meeting(id: UUID)
+    case meetingObjective(id: UUID)
+    case processMinutes
+    case confirmTasks
 
     // MARK: - Tasks
     case tasks
@@ -28,6 +31,7 @@ enum APIEndpoint {
     // MARK: - Delegations
     case delegations
     case delegation(id: UUID)
+    case sendDelegationEmail(id: UUID)
 
     // MARK: - Contacts
     case contacts
@@ -52,15 +56,19 @@ enum APIEndpoint {
         case .updateMe:           return "/users/me"
         case .objectives:         return "/objectives"
         case .objective(let id):  return "/objectives/\(id)"
-        case .meetings:           return "/meetings"
-        case .meeting(let id):    return "/meetings/\(id)"
+        case .meetings:                  return "/meetings"
+        case .meeting(let id):           return "/meetings/\(id)"
+        case .meetingObjective(let id):  return "/meetings/\(id)/objective"
+        case .processMinutes:            return "/meetings/process-minutes"
+        case .confirmTasks:              return "/meetings/confirm-tasks"
         case .tasks:              return "/tasks"
         case .task(let id):       return "/tasks/\(id)"
         case .tasksToday:         return "/tasks/today"
         case .tasksInbox:         return "/tasks/inbox"
         case .tasksReorder:       return "/tasks/reorder"
-        case .delegations:        return "/delegations"
-        case .delegation(let id): return "/delegations/\(id)"
+        case .delegations:                   return "/delegations"
+        case .delegation(let id):            return "/delegations/\(id)"
+        case .sendDelegationEmail(let id):   return "/delegations/\(id)/send-email"
         case .contacts:           return "/contacts"
         case .contact(let id):    return "/contacts/\(id)"
         case .registerToken:      return "/push/register-token"
@@ -81,7 +89,7 @@ enum APIEndpoint {
     /// Whether this endpoint targets a collection (no id) vs a single resource.
     var isCollection: Bool {
         switch self {
-        case .objectives, .meetings, .tasks, .delegations, .contacts, .login, .register, .registerToken, .revokeMcpToken, .assistantChat, .tasksToday, .tasksInbox, .tasksReorder, .updateMe:
+        case .objectives, .meetings, .tasks, .delegations, .contacts, .login, .register, .registerToken, .revokeMcpToken, .assistantChat, .tasksToday, .tasksInbox, .tasksReorder, .updateMe, .processMinutes, .confirmTasks, .sendDelegationEmail:
             return true
         default:
             return false

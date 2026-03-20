@@ -10,6 +10,8 @@ struct Delegation: Codable, Identifiable {
     var taskId: UUID?
     var contactId: UUID?
     var contact: Contact?
+    var emailSentAt: Date?
+    var emailDraft: String?
     let createdAt: Date?
     let updatedAt: Date?
 }

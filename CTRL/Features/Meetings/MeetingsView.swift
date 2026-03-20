@@ -24,14 +24,18 @@ struct MeetingsView: View {
                 } else {
                     List {
                         ForEach(vm.meetings) { meeting in
-                            MeetingRowView(meeting: meeting)
-                                .swipeActions(edge: .trailing) {
-                                    Button(role: .destructive) {
-                                        Task { await vm.delete(id: meeting.id) }
-                                    } label: {
-                                        Label("Eliminar", systemImage: "trash")
-                                    }
+                            NavigationLink {
+                                MeetingDetailView(vm: vm, meeting: meeting)
+                            } label: {
+                                MeetingRowView(meeting: meeting)
+                            }
+                            .swipeActions(edge: .trailing) {
+                                Button(role: .destructive) {
+                                    Task { await vm.delete(id: meeting.id) }
+                                } label: {
+                                    Label("Eliminar", systemImage: "trash")
                                 }
+                            }
                         }
                     }
                     .listStyle(.plain)

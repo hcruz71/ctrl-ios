@@ -10,6 +10,7 @@ struct DelegationsView: View {
     @State private var hasDueDate = false
     @State private var selectedContactIds: Set<UUID> = []
     @State private var showingContactPicker = false
+    @State private var emailDelegation: Delegation?
 
     private let statuses = ["pendiente", "en-progreso", "revision", "completada"]
 
@@ -40,6 +41,12 @@ struct DelegationsView: View {
                                             }
                                         }
                                     }
+                                    Divider()
+                                    Button {
+                                        emailDelegation = delegation
+                                    } label: {
+                                        Label("Enviar correo", systemImage: "envelope")
+                                    }
                                 }
                                 .swipeActions(edge: .trailing) {
                                     Button(role: .destructive) {
@@ -67,6 +74,9 @@ struct DelegationsView: View {
                 addDelegationSheet
             }
             .task { await vm.fetchDelegations() }
+            .sheet(item: $emailDelegation) { delegation in
+                DelegationEmailSheet(vm: vm, delegation: delegation)
+            }
             .alert("Error", isPresented: .constant(vm.errorMessage != nil)) {
                 Button("OK") { vm.errorMessage = nil }
             } message: {
