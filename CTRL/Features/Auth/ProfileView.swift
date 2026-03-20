@@ -3,6 +3,17 @@ import UserNotifications
 import AVFoundation
 import AuthenticationServices
 
+// MARK: - OAuth Presentation Coordinator
+
+private class OAuthCoordinator: NSObject, ASWebAuthenticationPresentationContextProviding {
+    func presentationAnchor(for session: ASWebAuthenticationSession) -> ASPresentationAnchor {
+        UIApplication.shared.connectedScenes
+            .compactMap { $0 as? UIWindowScene }
+            .flatMap { $0.windows }
+            .first { $0.isKeyWindow } ?? ASPresentationAnchor()
+    }
+}
+
 struct ProfileView: View {
     @EnvironmentObject var authManager: AuthManager
     @StateObject private var pushManager = PushManager.shared
@@ -16,6 +27,7 @@ struct ProfileView: View {
     @State private var previewSynthesizer = AVSpeechSynthesizer()
     @State private var gcalConnected = false
     @State private var gcalLoading = false
+    @State private var oauthCoordinator = OAuthCoordinator()
 
     private let personalities: [(id: String, icon: String, label: String, desc: String)] = [
         ("ejecutivo", "🎯", "Ejecutivo", "Directo, conciso, orientado a resultados"),
@@ -303,14 +315,14 @@ struct ProfileView: View {
 
         let session = ASWebAuthenticationSession(
             url: url,
-            callbackURLScheme: nil
+            callbackURLScheme: "ctrl"
         ) { _, _ in
-            // Google redirects to our backend callback which shows an HTML success page.
-            // When the user closes the sheet, refresh the connection status.
+            // Backend redirects to ctrl://oauth/google/success after linking.
+            // ASWebAuthenticationSession auto-dismisses on scheme match.
             Task { await checkGoogleCalendar() }
         }
         session.prefersEphemeralWebBrowserSession = false
-        session.presentationContextProvider = nil
+        session.presentationContextProvider = oauthCoordinator
         session.start()
     }
 
