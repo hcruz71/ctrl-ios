@@ -36,6 +36,13 @@ enum VoiceState {
     case speaking
 }
 
+// MARK: - Mic Mode
+
+enum MicMode: String {
+    case pushToTalk = "pushToTalk"
+    case continuousListening = "continuousListening"
+}
+
 // MARK: - TTS Delegate
 
 private class TTSDelegate: NSObject, AVSpeechSynthesizerDelegate {
@@ -62,6 +69,9 @@ final class AssistantViewModel: ObservableObject {
     @Published var isSpeaking = false
     @Published var liveTranscript = ""
     @Published var errorMessage: String?
+    @Published var micMode: MicMode = .pushToTalk
+
+    private var hasStartedSession = false
 
     var voiceState: VoiceState {
         if isSpeaking { return .speaking }
@@ -87,6 +97,9 @@ final class AssistantViewModel: ObservableObject {
     // MARK: Init
 
     init() {
+        let savedMode = UserDefaults.standard.string(forKey: "assistantMode") ?? ""
+        micMode = MicMode(rawValue: savedMode) ?? .pushToTalk
+
         let name = UserDefaults.standard.string(forKey: "assistantName") ?? "CTRL"
         let greeting = Self.buildGreeting(name: name)
         messages.append(ChatMessage(
@@ -98,18 +111,141 @@ final class AssistantViewModel: ObservableObject {
         ttsDelegate.onFinish = { [weak self] in
             Task { @MainActor [weak self] in
                 self?.isSpeaking = false
+                // Auto-restart mic after TTS in continuous mode
+                if self?.micMode == .continuousListening {
+                    self?.startRecording()
+                }
             }
         }
+    }
+
+    // MARK: - Session Start
+
+    func startSession() {
+        guard !hasStartedSession else { return }
+        hasStartedSession = true
+
+        if let greeting = messages.first?.content {
+            speak(greeting)
+        }
+    }
+
+    // MARK: - Mic Mode Toggle
+
+    func toggleMicMode() {
+        if micMode == .pushToTalk {
+            micMode = .continuousListening
+            UserDefaults.standard.set(micMode.rawValue, forKey: "assistantMode")
+            if !isRecording && !isLoading && !isSpeaking {
+                startRecording()
+            }
+        } else {
+            micMode = .pushToTalk
+            UserDefaults.standard.set(micMode.rawValue, forKey: "assistantMode")
+            if isRecording {
+                stopRecording()
+                liveTranscript = ""
+            }
+        }
+    }
+
+    // MARK: - Response Cleaning
+
+    /// Strips emojis, markdown formatting, and excessive whitespace from assistant responses.
+    func cleanResponse(_ text: String) -> String {
+        var result = text
+
+        // Remove markdown bold/italic: ***, **, *
+        result = result.replacingOccurrences(
+            of: #"\*{1,3}([^*]+)\*{1,3}"#,
+            with: "$1",
+            options: .regularExpression
+        )
+
+        // Remove markdown headers: # ## ### etc.
+        result = result.replacingOccurrences(
+            of: #"(?m)^#{1,6}\s*"#,
+            with: "",
+            options: .regularExpression
+        )
+
+        // Remove bullet-style dashes at line start: - item
+        result = result.replacingOccurrences(
+            of: #"(?m)^[\-\•\▪\▸\►]\s*"#,
+            with: "",
+            options: .regularExpression
+        )
+
+        // Remove numbered list prefixes: 1. 2. etc.
+        result = result.replacingOccurrences(
+            of: #"(?m)^\d+\.\s+"#,
+            with: "",
+            options: .regularExpression
+        )
+
+        // Remove inline code backticks
+        result = result.replacingOccurrences(of: "`", with: "")
+
+        // Remove emojis (Unicode emoji ranges)
+        result = result.unicodeScalars.filter { scalar in
+            let v = scalar.value
+            // Basic Latin + common scripts, exclude emoji blocks
+            if v <= 0x00FF { return true }                       // Latin
+            if (0x0100...0x024F).contains(v) { return true }     // Latin Extended
+            if (0x0250...0x02AF).contains(v) { return true }     // IPA
+            if (0x0300...0x036F).contains(v) { return true }     // Combining diacriticals
+            if (0x2000...0x200F).contains(v) { return true }     // General punctuation (spaces)
+            if (0x2010...0x2027).contains(v) { return true }     // Hyphens, dashes, quotes
+            if (0x2030...0x205E).contains(v) { return true }     // Per mille, primes, etc.
+            if (0x00C0...0x00FF).contains(v) { return true }     // Latin-1 supplement (ñ, á, etc.)
+            // Block common emoji ranges
+            if (0x1F600...0x1F64F).contains(v) { return false }  // Emoticons
+            if (0x1F300...0x1F5FF).contains(v) { return false }  // Misc symbols & pictographs
+            if (0x1F680...0x1F6FF).contains(v) { return false }  // Transport & map
+            if (0x1F900...0x1F9FF).contains(v) { return false }  // Supplemental symbols
+            if (0x1FA00...0x1FA6F).contains(v) { return false }  // Chess, extended-A
+            if (0x1FA70...0x1FAFF).contains(v) { return false }  // Extended-A continued
+            if (0x2600...0x26FF).contains(v) { return false }    // Misc symbols
+            if (0x2700...0x27BF).contains(v) { return false }    // Dingbats
+            if (0xFE00...0xFE0F).contains(v) { return false }   // Variation selectors
+            if (0x200D == v) { return false }                    // Zero-width joiner
+            if (0xE0020...0xE007F).contains(v) { return false }  // Tags
+            // Allow everything else (standard text)
+            return true
+        }.map { Character($0) }.reduce("") { $0 + String($1) }
+
+        // Collapse multiple blank lines into one
+        result = result.replacingOccurrences(
+            of: #"\n{3,}"#,
+            with: "\n\n",
+            options: .regularExpression
+        )
+
+        return result.trimmingCharacters(in: .whitespacesAndNewlines)
     }
 
     // MARK: - Push-to-Talk
 
     func handleButtonPress() {
-        // Interrupt TTS → start listening
+        // Interrupt TTS → start listening (both modes)
         if isSpeaking {
             synthesizer.stopSpeaking(at: .immediate)
             isSpeaking = false
             startRecording()
+            return
+        }
+
+        // Continuous mode: tap while recording → force send
+        if micMode == .continuousListening && isRecording {
+            silenceTimer?.invalidate()
+            silenceTimer = nil
+            let text = liveTranscript.trimmingCharacters(in: .whitespacesAndNewlines)
+            stopRecording()
+            if !text.isEmpty {
+                inputText = text
+                liveTranscript = ""
+                sendMessage()
+            }
             return
         }
 
@@ -120,6 +256,10 @@ final class AssistantViewModel: ObservableObject {
     }
 
     func handleButtonRelease() {
+        // Continuous mode: mic stays on after release
+        if micMode == .continuousListening { return }
+
+        // Push-to-talk: stop and send on release
         guard isRecording else { return }
         silenceTimer?.invalidate()
         silenceTimer = nil
@@ -190,7 +330,8 @@ final class AssistantViewModel: ObservableObject {
 
             let json = try JSONSerialization.jsonObject(with: data) as? [String: Any]
             let chatData = json?["data"] as? [String: Any]
-            let responseText = chatData?["response"] as? String ?? "Sin respuesta."
+            let rawResponse = chatData?["response"] as? String ?? "Sin respuesta."
+            let responseText = cleanResponse(rawResponse)
             let actionsArray = chatData?["actions"] as? [[String: Any]] ?? []
 
             let actions = actionsArray.map { dict in

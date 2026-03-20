@@ -154,7 +154,10 @@ struct AssistantView: View {
                 .padding(.vertical, 14)
                 .frame(maxWidth: .infinity)
                 .background(.bar)
-                .onAppear { pulseAnimation = true }
+                .onAppear {
+                    pulseAnimation = true
+                    viewModel.startSession()
+                }
             }
             .navigationTitle("Asistente")
             .navigationBarTitleDisplayMode(.inline)
@@ -166,6 +169,23 @@ struct AssistantView: View {
                         Text("Asistente CTRL")
                             .font(.headline)
                     }
+                }
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        withAnimation(.easeInOut(duration: 0.3)) {
+                            viewModel.toggleMicMode()
+                        }
+                    } label: {
+                        Image(systemName: viewModel.micMode == .pushToTalk
+                              ? "hand.tap.fill"
+                              : "waveform.circle.fill")
+                            .foregroundStyle(viewModel.micMode == .continuousListening
+                                             ? .green : .secondary)
+                            .font(.system(size: 18))
+                    }
+                    .help(viewModel.micMode == .pushToTalk
+                          ? "Cambiar a escucha continua"
+                          : "Cambiar a bajo demanda")
                 }
             }
             .withProfileButton()
@@ -211,8 +231,14 @@ struct AssistantView: View {
 
     private var hintLabel: String {
         switch viewModel.voiceState {
-        case .idle:       return "Mantén presionado para hablar"
-        case .listening:  return "Suelta para enviar"
+        case .idle:
+            return viewModel.micMode == .pushToTalk
+                ? "Mantén presionado para hablar"
+                : "Escucha continua activa"
+        case .listening:
+            return viewModel.micMode == .pushToTalk
+                ? "Suelta para enviar"
+                : "Toca para enviar ahora"
         case .processing: return ""
         case .speaking:   return "Toca para interrumpir"
         }
