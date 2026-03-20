@@ -20,7 +20,9 @@ struct TaskRowView: View {
                     .foregroundStyle(task.done ? .secondary : .primary)
 
                 HStack(spacing: 6) {
-                    BadgeView(text: task.priority, color: priorityColor)
+                    if let label = task.priorityLabel {
+                        BadgeView(text: label, color: levelColor)
+                    }
                     if let project = task.project, !project.isEmpty {
                         BadgeView(text: project, color: .ctrlPurple)
                     }
@@ -38,10 +40,11 @@ struct TaskRowView: View {
         .padding(.vertical, 4)
     }
 
-    private var priorityColor: Color {
-        switch task.priority {
-        case "alta": return .red
-        case "media": return .orange
+    private var levelColor: Color {
+        switch task.priorityLevel {
+        case "A": return .red
+        case "B": return .orange
+        case "C": return .blue
         default: return .gray
         }
     }

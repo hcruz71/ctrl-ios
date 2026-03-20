@@ -73,8 +73,8 @@ actor APIClient {
     }
 
     /// Fire-and-forget requests (DELETE, etc.) where we only care about success.
-    func requestVoid(_ endpoint: APIEndpoint, body: (any Encodable)? = nil) async throws {
-        let _: EmptyData? = try? await request(endpoint, method: "DELETE", body: body)
+    func requestVoid(_ endpoint: APIEndpoint, method: String = "DELETE", body: (any Encodable)? = nil) async throws {
+        let _: EmptyData? = try? await request(endpoint, method: method, body: body)
     }
 }
 

@@ -2,7 +2,8 @@ import SwiftUI
 
 struct AssistantView: View {
     @StateObject private var viewModel = AssistantViewModel()
-    @FocusState private var isInputFocused: Bool
+    @State private var isButtonPressed = false
+    @State private var pulseAnimation = false
 
     var body: some View {
         NavigationStack {
@@ -16,10 +17,26 @@ struct AssistantView: View {
                                     .id(message.id)
                             }
 
+                            // Live transcript preview
+                            if !viewModel.liveTranscript.isEmpty {
+                                HStack {
+                                    Spacer(minLength: 60)
+                                    Text(viewModel.liveTranscript)
+                                        .font(.body)
+                                        .foregroundStyle(.white.opacity(0.7))
+                                        .padding(.horizontal, 14)
+                                        .padding(.vertical, 10)
+                                        .background(Color.ctrlPurple.opacity(0.5))
+                                        .clipShape(RoundedRectangle(cornerRadius: 16))
+                                }
+                                .padding(.horizontal)
+                                .id("transcript")
+                            }
+
                             if viewModel.isLoading {
                                 HStack {
                                     ProgressView()
-                                        .tint(.ctrlPurple)
+                                        .tint(Color.ctrlPurple)
                                     Text("Pensando…")
                                         .font(.caption)
                                         .foregroundStyle(.secondary)
@@ -33,48 +50,111 @@ struct AssistantView: View {
                     }
                     .onChange(of: viewModel.messages.count) { _ in
                         withAnimation {
-                            proxy.scrollTo(viewModel.messages.last?.id ?? "loading", anchor: .bottom)
+                            proxy.scrollTo(
+                                viewModel.messages.last?.id.uuidString ?? "loading",
+                                anchor: .bottom
+                            )
+                        }
+                    }
+                    .onChange(of: viewModel.liveTranscript) { _ in
+                        withAnimation {
+                            if viewModel.liveTranscript.isEmpty {
+                                proxy.scrollTo(
+                                    viewModel.messages.last?.id.uuidString ?? "loading",
+                                    anchor: .bottom
+                                )
+                            } else {
+                                proxy.scrollTo("transcript", anchor: .bottom)
+                            }
                         }
                     }
                 }
 
                 Divider()
 
-                // Input bar
-                HStack(spacing: 12) {
-                    // Microphone button
-                    Button {
-                        viewModel.toggleRecording()
-                    } label: {
-                        Image(systemName: viewModel.isRecording ? "mic.fill" : "mic")
-                            .font(.title3)
-                            .foregroundStyle(viewModel.isRecording ? .red : .ctrlPurple)
-                    }
+                // Push-to-talk area
+                VStack(spacing: 10) {
+                    // State label
+                    Text(stateLabel)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .frame(height: 16)
 
-                    // Text field
-                    TextField("Escribe un comando…", text: $viewModel.inputText, axis: .vertical)
-                        .lineLimit(1...4)
-                        .textFieldStyle(.plain)
-                        .focused($isInputFocused)
-                        .onSubmit { viewModel.sendMessage() }
+                    // Big circular button
+                    ZStack {
+                        // Pulse ring — listening
+                        if viewModel.voiceState == .listening {
+                            Circle()
+                                .stroke(Color.ctrlPurple.opacity(0.4), lineWidth: 3)
+                                .frame(width: 100, height: 100)
+                                .scaleEffect(pulseAnimation ? 1.4 : 1.0)
+                                .opacity(pulseAnimation ? 0.0 : 0.8)
+                                .animation(
+                                    .easeOut(duration: 1.2)
+                                        .repeatForever(autoreverses: false),
+                                    value: pulseAnimation
+                                )
+                        }
 
-                    // Send button
-                    Button {
-                        viewModel.sendMessage()
-                    } label: {
-                        Image(systemName: "arrow.up.circle.fill")
-                            .font(.title2)
-                            .foregroundStyle(
-                                viewModel.inputText.trimmingCharacters(in: .whitespaces).isEmpty
-                                    ? Color.gray.opacity(0.4)
-                                    : .ctrlPurple
-                            )
+                        // Pulse ring — speaking
+                        if viewModel.voiceState == .speaking {
+                            Circle()
+                                .fill(Color.green.opacity(0.15))
+                                .frame(width: 100, height: 100)
+                                .scaleEffect(pulseAnimation ? 1.15 : 0.95)
+                                .animation(
+                                    .easeInOut(duration: 0.7)
+                                        .repeatForever(autoreverses: true),
+                                    value: pulseAnimation
+                                )
+                        }
+
+                        // Main circle
+                        Circle()
+                            .fill(buttonColor)
+                            .frame(width: 80, height: 80)
+                            .shadow(color: buttonColor.opacity(0.4), radius: 8, y: 4)
+                            .scaleEffect(isButtonPressed ? 0.9 : 1.0)
+                            .animation(.easeInOut(duration: 0.1), value: isButtonPressed)
+
+                        // Icon / spinner
+                        Group {
+                            if viewModel.voiceState == .processing {
+                                ProgressView()
+                                    .tint(.white)
+                                    .scaleEffect(1.3)
+                            } else {
+                                Image(systemName: buttonIcon)
+                                    .font(.system(size: 30, weight: .semibold))
+                                    .foregroundStyle(.white)
+                            }
+                        }
                     }
-                    .disabled(viewModel.inputText.trimmingCharacters(in: .whitespaces).isEmpty || viewModel.isLoading)
+                    .frame(width: 110, height: 110)
+                    .contentShape(Circle())
+                    .gesture(
+                        DragGesture(minimumDistance: 0)
+                            .onChanged { _ in
+                                guard !isButtonPressed else { return }
+                                isButtonPressed = true
+                                viewModel.handleButtonPress()
+                            }
+                            .onEnded { _ in
+                                isButtonPressed = false
+                                viewModel.handleButtonRelease()
+                            }
+                    )
+
+                    // Hint
+                    Text(hintLabel)
+                        .font(.caption2)
+                        .foregroundStyle(.tertiary)
+                        .frame(height: 14)
                 }
-                .padding(.horizontal)
-                .padding(.vertical, 10)
+                .padding(.vertical, 14)
+                .frame(maxWidth: .infinity)
                 .background(.bar)
+                .onAppear { pulseAnimation = true }
             }
             .navigationTitle("Asistente")
             .navigationBarTitleDisplayMode(.inline)
@@ -82,7 +162,7 @@ struct AssistantView: View {
                 ToolbarItem(placement: .principal) {
                     HStack(spacing: 6) {
                         Image(systemName: "sparkles")
-                            .foregroundStyle(.ctrlPurple)
+                            .foregroundStyle(Color.ctrlPurple)
                         Text("Asistente CTRL")
                             .font(.headline)
                     }
@@ -96,6 +176,44 @@ struct AssistantView: View {
             } message: {
                 Text(viewModel.errorMessage ?? "")
             }
+        }
+    }
+
+    // MARK: - Button appearance
+
+    private var buttonColor: Color {
+        switch viewModel.voiceState {
+        case .idle:       return .gray
+        case .listening:  return Color.ctrlPurple
+        case .processing: return .orange
+        case .speaking:   return .green
+        }
+    }
+
+    private var buttonIcon: String {
+        switch viewModel.voiceState {
+        case .idle:       return "mic"
+        case .listening:  return "waveform"
+        case .processing: return "ellipsis"
+        case .speaking:   return "speaker.wave.2.fill"
+        }
+    }
+
+    private var stateLabel: String {
+        switch viewModel.voiceState {
+        case .idle:       return ""
+        case .listening:  return "Escuchando…"
+        case .processing: return "Enviando a Claude…"
+        case .speaking:   return "Claude está respondiendo"
+        }
+    }
+
+    private var hintLabel: String {
+        switch viewModel.voiceState {
+        case .idle:       return "Mantén presionado para hablar"
+        case .listening:  return "Suelta para enviar"
+        case .processing: return ""
+        case .speaking:   return "Toca para interrumpir"
         }
     }
 }

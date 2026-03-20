@@ -65,11 +65,11 @@ final class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCent
             Task { @MainActor in
                 switch type {
                 case "delegation:overdue":
-                    NavigationState.shared.selectedTab = 3
+                    NavigationState.shared.selectedTab = 4
                 case "meeting:upcoming":
                     NavigationState.shared.selectedTab = 1
                 case "task:overdue":
-                    NavigationState.shared.selectedTab = 2
+                    NavigationState.shared.selectedTab = 3
                 default:
                     break
                 }

@@ -20,6 +20,9 @@ enum APIEndpoint {
     // MARK: - Tasks
     case tasks
     case task(id: UUID)
+    case tasksToday
+    case tasksInbox
+    case tasksReorder
 
     // MARK: - Delegations
     case delegations
@@ -51,6 +54,9 @@ enum APIEndpoint {
         case .meeting(let id):    return "/meetings/\(id)"
         case .tasks:              return "/tasks"
         case .task(let id):       return "/tasks/\(id)"
+        case .tasksToday:         return "/tasks/today"
+        case .tasksInbox:         return "/tasks/inbox"
+        case .tasksReorder:       return "/tasks/reorder"
         case .delegations:        return "/delegations"
         case .delegation(let id): return "/delegations/\(id)"
         case .contacts:           return "/contacts"
@@ -73,7 +79,7 @@ enum APIEndpoint {
     /// Whether this endpoint targets a collection (no id) vs a single resource.
     var isCollection: Bool {
         switch self {
-        case .objectives, .meetings, .tasks, .delegations, .contacts, .login, .register, .registerToken, .revokeMcpToken, .assistantChat:
+        case .objectives, .meetings, .tasks, .delegations, .contacts, .login, .register, .registerToken, .revokeMcpToken, .assistantChat, .tasksToday, .tasksInbox, .tasksReorder:
             return true
         default:
             return false

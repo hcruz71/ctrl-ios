@@ -31,7 +31,7 @@ targets:
         CURRENT_PROJECT_VERSION: 1
         MARKETING_VERSION: "1.0.0"
         CODE_SIGN_STYLE: Automatic
-        INFOPLIST_KEY_NSMicrophoneUsageDescription: "CTRL necesita acceso al micrófono para comandos de voz al asistente IA."
-        INFOPLIST_KEY_NSSpeechRecognitionUsageDescription: "CTRL usa reconocimiento de voz para convertir tus comandos en texto."
+        INFOPLIST_KEY_NSMicrophoneUsageDescription: "CTRL usa el micrófono para que puedas organizar tus pendientes por voz"
+        INFOPLIST_KEY_NSSpeechRecognitionUsageDescription: "CTRL transcribe tu voz para crear tareas, reuniones y delegaciones"
     resources:
       - path: CTRL/Resources/Assets.xcassets
