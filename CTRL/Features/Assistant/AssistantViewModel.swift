@@ -88,9 +88,10 @@ final class AssistantViewModel: ObservableObject {
 
     init() {
         let name = UserDefaults.standard.string(forKey: "assistantName") ?? "CTRL"
+        let greeting = Self.buildGreeting(name: name)
         messages.append(ChatMessage(
             role: .assistant,
-            content: "Hola, soy \(name). ¿En qué te puedo ayudar hoy?"
+            content: greeting
         ))
 
         synthesizer.delegate = ttsDelegate
@@ -346,6 +347,32 @@ final class AssistantViewModel: ObservableObject {
         default:
             return tool.replacingOccurrences(of: "_", with: " ")
         }
+    }
+
+    // MARK: - Context-aware greeting
+
+    static func buildGreeting(name: String) -> String {
+        let hour = Calendar.current.component(.hour, from: Date())
+        let weekday = Calendar.current.component(.weekday, from: Date()) // 1=Sun, 2=Mon...
+
+        let saludo: String
+        if hour < 12 { saludo = "Buenos días" }
+        else if hour < 18 { saludo = "Buenas tardes" }
+        else { saludo = "Buenas noches" }
+
+        let contexto: String
+        switch (weekday, hour) {
+        case (2, 0..<12):
+            contexto = "Arrancamos semana. ¿Revisamos tus prioridades?"
+        case (6, 15...23):
+            contexto = "Cerrando semana. ¿Revisamos qué queda pendiente?"
+        case (_, 0..<10):
+            contexto = "¿Empezamos con tu briefing del día?"
+        default:
+            contexto = "¿En qué nos enfocamos?"
+        }
+
+        return "\(saludo), soy \(name). \(contexto)"
     }
 
     // MARK: - Priority Parsing (Franklin Covey)
