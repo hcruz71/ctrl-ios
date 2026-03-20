@@ -46,6 +46,7 @@ struct MeetingsView: View {
                     }
                 }
             }
+            .withProfileButton()
             .sheet(isPresented: $showingAdd) {
                 addMeetingSheet
             }

@@ -4,10 +4,11 @@ enum APIEndpoint {
     // MARK: - Configuration
     static let baseURL = "https://ctrl-api-b8562ac8a00a.herokuapp.com"
 
-    // MARK: - Auth
+    // MARK: - Auth / User
     case login
     case register
     case me
+    case updateMe
 
     // MARK: - Objectives
     case objectives
@@ -48,6 +49,7 @@ enum APIEndpoint {
         case .login:              return "/auth/login"
         case .register:           return "/auth/register"
         case .me:                 return "/auth/me"
+        case .updateMe:           return "/users/me"
         case .objectives:         return "/objectives"
         case .objective(let id):  return "/objectives/\(id)"
         case .meetings:           return "/meetings"
@@ -79,7 +81,7 @@ enum APIEndpoint {
     /// Whether this endpoint targets a collection (no id) vs a single resource.
     var isCollection: Bool {
         switch self {
-        case .objectives, .meetings, .tasks, .delegations, .contacts, .login, .register, .registerToken, .revokeMcpToken, .assistantChat, .tasksToday, .tasksInbox, .tasksReorder:
+        case .objectives, .meetings, .tasks, .delegations, .contacts, .login, .register, .registerToken, .revokeMcpToken, .assistantChat, .tasksToday, .tasksInbox, .tasksReorder, .updateMe:
             return true
         default:
             return false

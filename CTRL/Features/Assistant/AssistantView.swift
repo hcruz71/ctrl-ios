@@ -168,6 +168,7 @@ struct AssistantView: View {
                     }
                 }
             }
+            .withProfileButton()
             .alert("Error", isPresented: .init(
                 get: { viewModel.errorMessage != nil },
                 set: { if !$0 { viewModel.errorMessage = nil } }

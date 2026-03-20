@@ -57,6 +57,7 @@ struct ContactsView: View {
                     }
                 }
             }
+            .withProfileButton()
             .sheet(isPresented: $showingAdd) {
                 addContactSheet
             }

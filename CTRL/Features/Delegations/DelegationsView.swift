@@ -62,6 +62,7 @@ struct DelegationsView: View {
                     }
                 }
             }
+            .withProfileButton()
             .sheet(isPresented: $showingAdd) {
                 addDelegationSheet
             }

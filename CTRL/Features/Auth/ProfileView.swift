@@ -7,6 +7,17 @@ struct ProfileView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var showingPermissionAlert = false
 
+    @State private var assistantName: String = ""
+    @State private var assistantPersonality: String = "ejecutivo"
+    @State private var isSaving = false
+
+    private let personalities: [(id: String, icon: String, label: String, desc: String)] = [
+        ("ejecutivo", "🎯", "Ejecutivo", "Directo, conciso, orientado a resultados"),
+        ("coach", "🤝", "Coach", "Motivador, empático, da contexto adicional"),
+        ("analitico", "🧠", "Analítico", "Detallado, incluye métricas y datos"),
+        ("amigable", "😊", "Amigable", "Casual, usa emojis, tono conversacional"),
+    ]
+
     var body: some View {
         NavigationStack {
             List {
@@ -15,6 +26,57 @@ struct ProfileView: View {
                         Label(user.name, systemImage: "person.fill")
                         Label(user.email, systemImage: "envelope.fill")
                     }
+                }
+
+                Section("Mi Asistente") {
+                    HStack {
+                        Label("Nombre", systemImage: "sparkles")
+                        Spacer()
+                        TextField("CTRL", text: $assistantName)
+                            .multilineTextAlignment(.trailing)
+                            .frame(maxWidth: 160)
+                    }
+
+                    ForEach(personalities, id: \.id) { p in
+                        Button {
+                            withAnimation { assistantPersonality = p.id }
+                        } label: {
+                            HStack(spacing: 12) {
+                                Text(p.icon)
+                                    .font(.title3)
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text(p.label)
+                                        .font(.subheadline)
+                                        .fontWeight(.medium)
+                                        .foregroundStyle(.primary)
+                                    Text(p.desc)
+                                        .font(.caption)
+                                        .foregroundStyle(.secondary)
+                                }
+                                Spacer()
+                                if assistantPersonality == p.id {
+                                    Image(systemName: "checkmark.circle.fill")
+                                        .foregroundStyle(Color.ctrlPurple)
+                                }
+                            }
+                        }
+                    }
+
+                    Button {
+                        Task { await saveAssistantSettings() }
+                    } label: {
+                        HStack {
+                            Spacer()
+                            if isSaving {
+                                ProgressView()
+                            } else {
+                                Text("Guardar cambios")
+                                    .fontWeight(.medium)
+                            }
+                            Spacer()
+                        }
+                    }
+                    .disabled(isSaving)
                 }
 
                 Section("Notificaciones") {
@@ -81,8 +143,41 @@ struct ProfileView: View {
             }
             .task {
                 await pushManager.refreshPermissionStatus()
+                loadAssistantSettings()
             }
         }
+    }
+
+    // MARK: - Helpers
+
+    private func loadAssistantSettings() {
+        assistantName = UserDefaults.standard.string(forKey: "assistantName")
+            ?? authManager.currentUser?.assistantName
+            ?? "CTRL"
+        assistantPersonality = UserDefaults.standard.string(forKey: "assistantPersonality")
+            ?? authManager.currentUser?.assistantPersonality
+            ?? "ejecutivo"
+    }
+
+    private func saveAssistantSettings() async {
+        isSaving = true
+        let name = assistantName.trimmingCharacters(in: .whitespacesAndNewlines)
+        let finalName = name.isEmpty ? "CTRL" : name
+
+        UserDefaults.standard.set(finalName, forKey: "assistantName")
+        UserDefaults.standard.set(assistantPersonality, forKey: "assistantPersonality")
+
+        let body = UpdateUserBody(
+            assistantName: finalName,
+            assistantPersonality: assistantPersonality
+        )
+        do {
+            let _: User = try await APIClient.shared.request(.updateMe, method: "PATCH", body: body)
+            await authManager.fetchProfile()
+        } catch {
+            // Saved locally regardless
+        }
+        isSaving = false
     }
 
     private var permissionLabel: String {

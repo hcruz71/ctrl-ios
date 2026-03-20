@@ -87,9 +87,10 @@ final class AssistantViewModel: ObservableObject {
     // MARK: Init
 
     init() {
+        let name = UserDefaults.standard.string(forKey: "assistantName") ?? "CTRL"
         messages.append(ChatMessage(
             role: .assistant,
-            content: "Hola, soy tu asistente CTRL. Puedo ayudarte a crear tareas, reuniones, ver tu resumen del día y más. ¿En qué te ayudo?"
+            content: "Hola, soy \(name). ¿En qué te puedo ayudar hoy?"
         ))
 
         synthesizer.delegate = ttsDelegate

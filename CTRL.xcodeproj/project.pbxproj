@@ -43,6 +43,7 @@
 		B429929FD1B4F04707F6590E /* BadgeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADFCA71CA86F7F5B4ADB27B6 /* BadgeView.swift */; };
 		B60589455F8842F4E0B5673C /* DelegationsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1063F17C6BC9D67D616FF26 /* DelegationsViewModel.swift */; };
 		BB1BE756C32ECB01497ADBED /* EmptyStateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC1E7A0DF4D448B002898EFC /* EmptyStateView.swift */; };
+		38AEF4EA11148B8615E94DE8 /* ProfileToolbarModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65CDE7BC17AEBC4B47518AFA /* ProfileToolbarModifier.swift */; };
 		BB95A81039825708B436A14E /* Date+Formatting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B7A8F927A1269926D196750 /* Date+Formatting.swift */; };
 		C69A16C8D80FC73E6AFED95C /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 893796B7C9E94CE74C00A3AE /* LoginView.swift */; };
 		D5DD6A7BEB126C9BC25ADC56 /* AssistantView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54AFD9AA8053E5283F3F50C3 /* AssistantView.swift */; };
@@ -106,6 +107,7 @@
 		F73627F64906A12A6F0383B2 /* ProgressRingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressRingView.swift; sourceTree = "<group>"; };
 		FA55BCCF6F7843807C220466 /* Meeting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Meeting.swift; sourceTree = "<group>"; };
 		FC1E7A0DF4D448B002898EFC /* EmptyStateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyStateView.swift; sourceTree = "<group>"; };
+		65CDE7BC17AEBC4B47518AFA /* ProfileToolbarModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileToolbarModifier.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -224,6 +226,7 @@
 				ADFCA71CA86F7F5B4ADB27B6 /* BadgeView.swift */,
 				7920049ADD15D7CF391353FC /* CTRLTabView.swift */,
 				FC1E7A0DF4D448B002898EFC /* EmptyStateView.swift */,
+				65CDE7BC17AEBC4B47518AFA /* ProfileToolbarModifier.swift */,
 				F73627F64906A12A6F0383B2 /* ProgressRingView.swift */,
 			);
 			path = Components;
@@ -425,6 +428,7 @@
 				6DCA646E48A1B9155B28E114 /* ObjectivesView.swift in Sources */,
 				A7C17EED98CE02D9EEC440FC /* ObjectivesViewModel.swift in Sources */,
 				6565E8001B8A0717019CC40C /* ProfileView.swift in Sources */,
+				38AEF4EA11148B8615E94DE8 /* ProfileToolbarModifier.swift in Sources */,
 				6AE6759224BEACEDF0238E7A /* ProgressRingView.swift in Sources */,
 				4A5C8B925724E78A303F21BD /* PushManager.swift in Sources */,
 				F22C04EE0CBABFEE636B37D9 /* QuickCaptureView.swift in Sources */,

@@ -60,6 +60,7 @@ struct TasksView: View {
                     }
                 }
             }
+            .withProfileButton()
             .sheet(isPresented: $showingAdd) {
                 AddTaskSheet(vm: vm)
             }

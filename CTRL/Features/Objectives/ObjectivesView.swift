@@ -3,7 +3,6 @@ import SwiftUI
 struct ObjectivesView: View {
     @StateObject private var vm = ObjectivesViewModel()
     @State private var showingAdd = false
-    @State private var showingProfile = false
     @State private var newTitle = ""
     @State private var newKeyResult = ""
     @State private var newArea = "Personal"
@@ -43,20 +42,13 @@ struct ObjectivesView: View {
             }
             .navigationTitle("Objetivos")
             .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button { showingProfile = true } label: {
-                        Image(systemName: "person.circle.fill")
-                    }
-                }
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button { showingAdd = true } label: {
                         Image(systemName: "plus")
                     }
                 }
             }
-            .sheet(isPresented: $showingProfile) {
-                ProfileView()
-            }
+            .withProfileButton()
             .sheet(isPresented: $showingAdd) {
                 addObjectiveSheet
             }
