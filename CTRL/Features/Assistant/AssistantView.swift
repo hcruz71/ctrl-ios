@@ -208,6 +208,7 @@ struct AssistantView: View {
         case .listening:  return Color.ctrlPurple
         case .processing: return .orange
         case .speaking:   return .green
+        case .paused:     return .yellow
         }
     }
 
@@ -217,30 +218,42 @@ struct AssistantView: View {
         case .listening:  return "waveform"
         case .processing: return "ellipsis"
         case .speaking:   return "speaker.wave.2.fill"
+        case .paused:     return "pause.fill"
         }
     }
 
     private var stateLabel: String {
+        if viewModel.isWaitingToSend {
+            return "Enviando en un momento…"
+        }
         switch viewModel.voiceState {
         case .idle:       return ""
         case .listening:  return "Escuchando…"
         case .processing: return "Enviando a Claude…"
         case .speaking:   return "Claude está respondiendo"
+        case .paused:     return "Pausado"
         }
     }
 
     private var hintLabel: String {
+        if viewModel.isWaitingToSend {
+            return "Presiona para seguir hablando"
+        }
         switch viewModel.voiceState {
         case .idle:
-            return viewModel.micMode == .pushToTalk
+            return viewModel.micMode == MicMode.pushToTalk
                 ? "Mantén presionado para hablar"
                 : "Escucha continua activa"
         case .listening:
-            return viewModel.micMode == .pushToTalk
+            return viewModel.micMode == MicMode.pushToTalk
                 ? "Suelta para enviar"
-                : "Toca para enviar ahora"
+                : "Toca para pausar"
         case .processing: return ""
-        case .speaking:   return "Toca para interrumpir"
+        case .speaking:
+            return viewModel.micMode == MicMode.pushToTalk
+                ? "Toca para interrumpir"
+                : "Toca para pausar"
+        case .paused:     return "Toca para continuar"
         }
     }
 }

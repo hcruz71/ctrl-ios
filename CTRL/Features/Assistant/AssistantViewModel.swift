@@ -34,6 +34,7 @@ enum VoiceState {
     case listening
     case processing
     case speaking
+    case paused
 }
 
 // MARK: - Mic Mode
@@ -70,10 +71,14 @@ final class AssistantViewModel: ObservableObject {
     @Published var liveTranscript = ""
     @Published var errorMessage: String?
     @Published var micMode: MicMode = .pushToTalk
+    @Published var isWaitingToSend = false
+    @Published var isPaused = false
 
     private var hasStartedSession = false
+    private var releaseDelayTask: Task<Void, Never>?
 
     var voiceState: VoiceState {
+        if isPaused { return .paused }
         if isSpeaking { return .speaking }
         if isLoading { return .processing }
         if isRecording { return .listening }
@@ -111,10 +116,14 @@ final class AssistantViewModel: ObservableObject {
         ttsDelegate.onFinish = { [weak self] in
             Task { @MainActor [weak self] in
                 self?.isSpeaking = false
-                // Auto-restart mic after TTS in continuous mode
-                if self?.micMode == .continuousListening {
-                    self?.startRecording()
-                }
+                // Auto-restart mic after TTS in continuous mode (with cooldown)
+                guard let self,
+                      self.micMode == .continuousListening,
+                      !self.isPaused else { return }
+                // 0.5s cooldown to avoid capturing TTS echo
+                try? await Task.sleep(nanoseconds: 500_000_000)
+                guard !self.isPaused, !self.isRecording, !self.isLoading else { return }
+                self.startRecording()
             }
         }
     }
@@ -133,6 +142,7 @@ final class AssistantViewModel: ObservableObject {
     // MARK: - Mic Mode Toggle
 
     func toggleMicMode() {
+        isPaused = false
         if micMode == .pushToTalk {
             micMode = .continuousListening
             UserDefaults.standard.set(micMode.rawValue, forKey: "assistantMode")
@@ -227,25 +237,53 @@ final class AssistantViewModel: ObservableObject {
     // MARK: - Push-to-Talk
 
     func handleButtonPress() {
-        // Interrupt TTS → start listening (both modes)
+        // Cancel pending release delay — user wants to keep talking (push-to-talk)
+        if isWaitingToSend {
+            releaseDelayTask?.cancel()
+            releaseDelayTask = nil
+            isWaitingToSend = false
+            return
+        }
+
+        // Continuous mode: pause/resume logic
+        if micMode == .continuousListening {
+            // Resume from pause
+            if isPaused {
+                isPaused = false
+                startRecording()
+                return
+            }
+
+            // Pause TTS
+            if isSpeaking {
+                synthesizer.stopSpeaking(at: .immediate)
+                isSpeaking = false
+                isPaused = true
+                return
+            }
+
+            // Pause recording
+            if isRecording {
+                silenceTimer?.invalidate()
+                silenceTimer = nil
+                stopRecording()
+                liveTranscript = ""
+                isPaused = true
+                return
+            }
+
+            // Idle → start recording
+            if !isLoading {
+                startRecording()
+            }
+            return
+        }
+
+        // Push-to-talk: interrupt TTS → start listening
         if isSpeaking {
             synthesizer.stopSpeaking(at: .immediate)
             isSpeaking = false
             startRecording()
-            return
-        }
-
-        // Continuous mode: tap while recording → force send
-        if micMode == .continuousListening && isRecording {
-            silenceTimer?.invalidate()
-            silenceTimer = nil
-            let text = liveTranscript.trimmingCharacters(in: .whitespacesAndNewlines)
-            stopRecording()
-            if !text.isEmpty {
-                inputText = text
-                liveTranscript = ""
-                sendMessage()
-            }
             return
         }
 
@@ -259,18 +297,26 @@ final class AssistantViewModel: ObservableObject {
         // Continuous mode: mic stays on after release
         if micMode == .continuousListening { return }
 
-        // Push-to-talk: stop and send on release
+        // Push-to-talk: delay 2s before sending (mic stays on)
         guard isRecording else { return }
         silenceTimer?.invalidate()
         silenceTimer = nil
 
-        let text = liveTranscript.trimmingCharacters(in: .whitespacesAndNewlines)
-        stopRecording()
+        isWaitingToSend = true
 
-        if !text.isEmpty {
-            inputText = text
-            liveTranscript = ""
-            sendMessage()
+        releaseDelayTask = Task {
+            try? await Task.sleep(nanoseconds: 2_000_000_000)
+            guard !Task.isCancelled else { return }
+
+            isWaitingToSend = false
+            let text = liveTranscript.trimmingCharacters(in: .whitespacesAndNewlines)
+            stopRecording()
+
+            if !text.isEmpty {
+                inputText = text
+                liveTranscript = ""
+                sendMessage()
+            }
         }
     }
 
@@ -369,11 +415,17 @@ final class AssistantViewModel: ObservableObject {
     // MARK: - Text-to-Speech
 
     private func speak(_ text: String) {
+        // Stop mic before TTS to prevent audio loop
+        if isRecording {
+            stopRecording()
+            liveTranscript = ""
+        }
+
         synthesizer.stopSpeaking(at: .immediate)
 
         let audioSession = AVAudioSession.sharedInstance()
         do {
-            try audioSession.setCategory(.playback, mode: .default, options: [])
+            try audioSession.setCategory(.playback, mode: .default, options: [.duckOthers])
             try audioSession.setActive(true)
         } catch {
             logger.error("TTS audio session error: \(error.localizedDescription)")
@@ -446,6 +498,7 @@ final class AssistantViewModel: ObservableObject {
 
     private func resetSilenceTimer() {
         silenceTimer?.invalidate()
+        guard !isWaitingToSend else { return }
         guard !liveTranscript.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
         silenceTimer = Timer.scheduledTimer(withTimeInterval: silenceThreshold, repeats: false) { [weak self] _ in
             Task { @MainActor [weak self] in
@@ -458,10 +511,22 @@ final class AssistantViewModel: ObservableObject {
         let text = liveTranscript.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !text.isEmpty, isRecording, !isLoading else { return }
 
+        // VAD in continuous mode: require 3+ words to filter noise/echo
+        if micMode == .continuousListening && text.split(separator: " ").count < 3 {
+            liveTranscript = ""
+            restartListening()
+            return
+        }
+
         inputText = text
         liveTranscript = ""
         stopRecording()
         sendMessage()
+    }
+
+    private func restartListening() {
+        stopRecording()
+        startRecording()
     }
 
     // MARK: - Tool Descriptions
