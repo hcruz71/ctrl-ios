@@ -9,6 +9,10 @@ final class MeetingsViewModel: ObservableObject {
     @Published var isProcessingMinutes = false
     @Published var errorMessage: String?
 
+    @Published var todayMeetings: [Meeting] = []
+    @Published var upcomingMeetings: [Meeting] = []
+    @Published var productivity: MeetingProductivity?
+
     func fetchMeetings() async {
         isLoading = true
         errorMessage = nil
@@ -18,6 +22,46 @@ final class MeetingsViewModel: ObservableObject {
             errorMessage = error.localizedDescription
         }
         isLoading = false
+    }
+
+    func fetchToday() async {
+        do {
+            todayMeetings = try await APIClient.shared.request(.meetingsToday)
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+    }
+
+    func fetchUpcoming() async {
+        do {
+            upcomingMeetings = try await APIClient.shared.request(.meetingsUpcoming)
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+    }
+
+    func fetchProductivity() async {
+        do {
+            productivity = try await APIClient.shared.request(.meetingsProductivity)
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+    }
+
+    struct DeletePastResult: Codable { let deleted: Int }
+
+    func deletePast() async -> Int {
+        do {
+            let result: DeletePastResult = try await APIClient.shared.request(
+                .meetingsPast, method: "DELETE"
+            )
+            await fetchMeetings()
+            await fetchToday()
+            return result.deleted
+        } catch {
+            errorMessage = error.localizedDescription
+            return 0
+        }
     }
 
     func fetchObjectives() async {

@@ -10,6 +10,7 @@
 		04388FA1B50E3F0FACDF3B89 /* MinutasView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E893A92F4812A42E4DE54FB /* MinutasView.swift */; };
 		04AABF8526DBC32FAC7B1630 /* MeetingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFC8CD8F102E1D7A8108D211 /* MeetingsView.swift */; };
 		0C50D5C3ACBF22F2E42291D3 /* Meeting.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA55BCCF6F7843807C220466 /* Meeting.swift */; };
+		0C770997CCB984B6E626E963 /* NetworkInsightView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6223F1DED857FA60FB7ABC84 /* NetworkInsightView.swift */; };
 		0CC7C83FCE028FFC0A1E7C3E /* APIError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70D8DBCD3BE31DD2352D1222 /* APIError.swift */; };
 		0F2117FC145E8900456B2DB7 /* MyDayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A506986E53390A2DEA73CFB /* MyDayView.swift */; };
 		192021404792135B6A473264 /* AuthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 947B08635E4E237675826275 /* AuthManager.swift */; };
@@ -38,6 +39,7 @@
 		899887BEBCF9012F73FB2B7A /* LoginViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 757CFD3291A5F2CC1C182E79 /* LoginViewModel.swift */; };
 		8C5FD08BCE5A9187F713D471 /* ContactPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA37C484E3A3F7904F1E8E73 /* ContactPickerView.swift */; };
 		901F43A3C05C793E253F9EE1 /* ICSImportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BDE28EC8D4BE52841802BBD /* ICSImportView.swift */; };
+		9417916A725AC4EBE9574FAD /* ProductivityDashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92121CD052BEFFB61BBA8D24 /* ProductivityDashboardView.swift */; };
 		982840541515DB56C9ADFC6C /* ObjectiveRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10DF027E47C9DECD467A86A0 /* ObjectiveRowView.swift */; };
 		9B1DDC4FBC57C357E0821FE0 /* Contact.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EBA67F8D2B73CBDE6A78384 /* Contact.swift */; };
 		9F3DB3A768CEE1232E41C9E0 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3617F069BB9E3B6F50B30776 /* AppDelegate.swift */; };
@@ -81,6 +83,7 @@
 		54AFD9AA8053E5283F3F50C3 /* AssistantView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssistantView.swift; sourceTree = "<group>"; };
 		5EBA67F8D2B73CBDE6A78384 /* Contact.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Contact.swift; sourceTree = "<group>"; };
 		61BEB5DEEEEB32A38882CE10 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		6223F1DED857FA60FB7ABC84 /* NetworkInsightView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkInsightView.swift; sourceTree = "<group>"; };
 		622F7A4D76C2F5FA8DCED64E /* TaskRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskRowView.swift; sourceTree = "<group>"; };
 		6A6B6FBC59EF9ED3269E8751 /* MessageBubbleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBubbleView.swift; sourceTree = "<group>"; };
 		6E35A5A425EDD5E673AC495B /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -92,6 +95,7 @@
 		7B7A8F927A1269926D196750 /* Date+Formatting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+Formatting.swift"; sourceTree = "<group>"; };
 		80B0F44B02257D8251AAF414 /* APIEndpoints.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIEndpoints.swift; sourceTree = "<group>"; };
 		893796B7C9E94CE74C00A3AE /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
+		92121CD052BEFFB61BBA8D24 /* ProductivityDashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductivityDashboardView.swift; sourceTree = "<group>"; };
 		947B08635E4E237675826275 /* AuthManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthManager.swift; sourceTree = "<group>"; };
 		96D3BF6E73B972941299F959 /* CTRL.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = CTRL.entitlements; sourceTree = "<group>"; };
 		9B1DA4DE1AB14C8D4DAE080D /* QuickCaptureView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickCaptureView.swift; sourceTree = "<group>"; };
@@ -281,6 +285,7 @@
 				DF4D22D98D857F3FD4CC2218 /* ContactRowView.swift */,
 				3FBC851CDC4F1352747B1800 /* ContactsView.swift */,
 				46D2313733E4F034245B93D1 /* ContactsViewModel.swift */,
+				6223F1DED857FA60FB7ABC84 /* NetworkInsightView.swift */,
 			);
 			path = Contacts;
 			sourceTree = "<group>";
@@ -324,6 +329,7 @@
 				AFC8CD8F102E1D7A8108D211 /* MeetingsView.swift */,
 				0CD51DF9DC658F3AE13A3FA7 /* MeetingsViewModel.swift */,
 				1E893A92F4812A42E4DE54FB /* MinutasView.swift */,
+				92121CD052BEFFB61BBA8D24 /* ProductivityDashboardView.swift */,
 			);
 			path = Meetings;
 			sourceTree = "<group>";
@@ -450,10 +456,12 @@
 				04388FA1B50E3F0FACDF3B89 /* MinutasView.swift in Sources */,
 				0F2117FC145E8900456B2DB7 /* MyDayView.swift in Sources */,
 				81B50579F75774F603AEF383 /* NavigationState.swift in Sources */,
+				0C770997CCB984B6E626E963 /* NetworkInsightView.swift in Sources */,
 				80168B1C2B1A02CAE06680AA /* Objective.swift in Sources */,
 				982840541515DB56C9ADFC6C /* ObjectiveRowView.swift in Sources */,
 				6DCA646E48A1B9155B28E114 /* ObjectivesView.swift in Sources */,
 				A7C17EED98CE02D9EEC440FC /* ObjectivesViewModel.swift in Sources */,
+				9417916A725AC4EBE9574FAD /* ProductivityDashboardView.swift in Sources */,
 				FA335682AC85D581642F83D4 /* ProfileToolbarModifier.swift in Sources */,
 				6565E8001B8A0717019CC40C /* ProfileView.swift in Sources */,
 				6AE6759224BEACEDF0238E7A /* ProgressRingView.swift in Sources */,

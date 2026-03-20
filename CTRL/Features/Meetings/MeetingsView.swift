@@ -4,32 +4,83 @@ struct MeetingsView: View {
     @StateObject private var vm = MeetingsViewModel()
     @State private var showingAdd = false
     @State private var showingICSImport = false
+    @State private var showingProductivity = false
+    @State private var showingDeletePast = false
     @State private var isSyncing = false
+    @State private var selectedTab = 0
+    @State private var deletedCount = 0
+
     @State private var newTitle = ""
     @State private var newDate = Date()
     @State private var newTime = Date()
     @State private var newParticipants = ""
     @State private var newAgenda = ""
 
+    private var currentMeetings: [Meeting] {
+        switch selectedTab {
+        case 0:  return vm.todayMeetings
+        case 1:  return vm.upcomingMeetings
+        default: return vm.meetings
+        }
+    }
+
+    private var todayWithObjective: Int {
+        vm.todayMeetings.filter { $0.objectiveId != nil }.count
+    }
+
     var body: some View {
         NavigationStack {
-            Group {
-                if vm.isLoading && vm.meetings.isEmpty {
+            VStack(spacing: 0) {
+                // Tab selector
+                Picker("Vista", selection: $selectedTab) {
+                    Text("Hoy").tag(0)
+                    Text("Proximas").tag(1)
+                    Text("Todas").tag(2)
+                }
+                .pickerStyle(.segmented)
+                .padding(.horizontal)
+                .padding(.vertical, 8)
+
+                // Header counters for "Hoy" tab
+                if selectedTab == 0 && !vm.todayMeetings.isEmpty {
+                    HStack {
+                        Text("\(vm.todayMeetings.count) reuniones hoy")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                        Text("|")
+                            .foregroundStyle(.quaternary)
+                        Text("\(todayWithObjective) con objetivo")
+                            .font(.caption)
+                            .foregroundStyle(todayWithObjective > 0 ? .green : .orange)
+                        Spacer()
+                    }
+                    .padding(.horizontal)
+                    .padding(.bottom, 4)
+                }
+
+                // Content
+                if vm.isLoading && currentMeetings.isEmpty {
+                    Spacer()
                     ProgressView()
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                } else if vm.meetings.isEmpty {
-                    EmptyStateView(
-                        icon: "calendar",
-                        title: "Sin reuniones",
-                        message: "Agenda tu primera reunión."
-                    )
+                    Spacer()
+                } else if currentMeetings.isEmpty {
+                    Spacer()
+                    VStack(spacing: 8) {
+                        Image(systemName: "calendar")
+                            .font(.system(size: 40))
+                            .foregroundStyle(.secondary)
+                        Text(selectedTab == 0 ? "Sin reuniones hoy" : "Sin reuniones")
+                            .font(.headline)
+                            .foregroundStyle(.secondary)
+                    }
+                    Spacer()
                 } else {
                     List {
-                        ForEach(vm.meetings) { meeting in
+                        ForEach(currentMeetings) { meeting in
                             NavigationLink {
                                 MeetingDetailView(vm: vm, meeting: meeting)
                             } label: {
-                                MeetingRowView(meeting: meeting)
+                                MeetingRowWithObjective(meeting: meeting)
                             }
                             .swipeActions(edge: .trailing) {
                                 Button(role: .destructive) {
@@ -41,20 +92,28 @@ struct MeetingsView: View {
                         }
                     }
                     .listStyle(.plain)
-                    .refreshable { await vm.fetchMeetings() }
+                    .refreshable { await refreshCurrentTab() }
                 }
             }
             .navigationTitle("Reuniones")
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     HStack(spacing: 12) {
+                        // Productivity dashboard
+                        Button {
+                            showingProductivity = true
+                        } label: {
+                            Image(systemName: "chart.bar")
+                        }
+
+                        // Sync / Import menu
                         Menu {
                             Button {
                                 Task {
                                     isSyncing = true
                                     struct R: Codable { let created: Int; let updated: Int }
                                     let _: R? = try? await APIClient.shared.request(.googleCalendarSync)
-                                    await vm.fetchMeetings()
+                                    await refreshCurrentTab()
                                     isSyncing = false
                                 }
                             } label: {
@@ -65,13 +124,20 @@ struct MeetingsView: View {
                             } label: {
                                 Label("Importar archivo .ics", systemImage: "doc.badge.plus")
                             }
+                            Divider()
+                            Button(role: .destructive) {
+                                showingDeletePast = true
+                            } label: {
+                                Label("Limpiar reuniones pasadas", systemImage: "trash.circle")
+                            }
                         } label: {
                             if isSyncing {
                                 ProgressView()
                             } else {
-                                Image(systemName: "arrow.triangle.2.circlepath")
+                                Image(systemName: "ellipsis.circle")
                             }
                         }
+
                         Button { showingAdd = true } label: {
                             Image(systemName: "plus")
                         }
@@ -79,13 +145,27 @@ struct MeetingsView: View {
                 }
             }
             .withProfileButton()
-            .sheet(isPresented: $showingAdd) {
-                addMeetingSheet
+            .sheet(isPresented: $showingAdd) { addMeetingSheet }
+            .sheet(isPresented: $showingICSImport) { ICSImportView(vm: vm) }
+            .sheet(isPresented: $showingProductivity) { ProductivityDashboardView(vm: vm) }
+            .alert("Limpiar reuniones pasadas", isPresented: $showingDeletePast) {
+                Button("Cancelar", role: .cancel) {}
+                Button("Eliminar", role: .destructive) {
+                    Task {
+                        deletedCount = await vm.deletePast()
+                    }
+                }
+            } message: {
+                Text("Se eliminaran todas las reuniones anteriores a hoy. Esta accion no se puede deshacer.")
             }
-            .sheet(isPresented: $showingICSImport) {
-                ICSImportView(vm: vm)
+            .onChange(of: selectedTab) { _ in
+                Task { await refreshCurrentTab() }
             }
-            .task { await vm.fetchMeetings() }
+            .task {
+                await vm.fetchToday()
+                await vm.fetchUpcoming()
+                await vm.fetchMeetings()
+            }
             .alert("Error", isPresented: .constant(vm.errorMessage != nil)) {
                 Button("OK") { vm.errorMessage = nil }
             } message: {
@@ -94,11 +174,19 @@ struct MeetingsView: View {
         }
     }
 
+    private func refreshCurrentTab() async {
+        switch selectedTab {
+        case 0:  await vm.fetchToday()
+        case 1:  await vm.fetchUpcoming()
+        default: await vm.fetchMeetings()
+        }
+    }
+
     private var addMeetingSheet: some View {
         NavigationStack {
             Form {
-                Section("Reunión") {
-                    TextField("Título", text: $newTitle)
+                Section("Reunion") {
+                    TextField("Titulo", text: $newTitle)
                     DatePicker("Fecha", selection: $newDate, displayedComponents: .date)
                     DatePicker("Hora", selection: $newTime, displayedComponents: .hourAndMinute)
                 }
@@ -108,7 +196,7 @@ struct MeetingsView: View {
                         .lineLimit(3...6)
                 }
             }
-            .navigationTitle("Nueva reunión")
+            .navigationTitle("Nueva reunion")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
@@ -141,6 +229,61 @@ struct MeetingsView: View {
             }
         }
         .presentationDetents([.medium, .large])
+    }
+}
+
+// MARK: - Meeting row with objective badge
+
+private struct MeetingRowWithObjective: View {
+    let meeting: Meeting
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            HStack {
+                Text(meeting.title)
+                    .font(.headline)
+                    .lineLimit(1)
+                Spacer()
+                if meeting.isFromGoogle {
+                    Image(systemName: "globe")
+                        .font(.caption)
+                        .foregroundStyle(.blue)
+                }
+            }
+
+            HStack(spacing: 8) {
+                if let time = meeting.meetingTime {
+                    Label(time, systemImage: "clock")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+                if let date = meeting.meetingDate {
+                    Label(date, systemImage: "calendar")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+            }
+
+            // Objective badge
+            if let obj = meeting.objective {
+                Text(obj.title)
+                    .font(.caption2)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 3)
+                    .background(Color.green.opacity(0.15))
+                    .foregroundStyle(.green)
+                    .clipShape(Capsule())
+            } else if meeting.objectiveId == nil {
+                Text("Sin objetivo")
+                    .font(.caption2)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 3)
+                    .background(Color.gray.opacity(0.15))
+                    .foregroundStyle(.secondary)
+                    .clipShape(Capsule())
+            }
+        }
+        .padding(.vertical, 2)
     }
 }
 

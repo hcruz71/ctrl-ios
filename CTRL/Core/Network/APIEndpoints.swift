@@ -21,6 +21,10 @@ enum APIEndpoint {
     case processMinutes
     case confirmTasks
     case importICS
+    case meetingsToday
+    case meetingsUpcoming
+    case meetingsProductivity
+    case meetingsPast
 
     // MARK: - Tasks
     case tasks
@@ -72,6 +76,10 @@ enum APIEndpoint {
         case .processMinutes:            return "/meetings/process-minutes"
         case .confirmTasks:              return "/meetings/confirm-tasks"
         case .importICS:                 return "/meetings/import-ics"
+        case .meetingsToday:             return "/meetings/today"
+        case .meetingsUpcoming:          return "/meetings/upcoming"
+        case .meetingsProductivity:      return "/meetings/productivity"
+        case .meetingsPast:              return "/meetings/past"
         case .tasks:              return "/tasks"
         case .task(let id):       return "/tasks/\(id)"
         case .tasksToday:         return "/tasks/today"
@@ -107,7 +115,7 @@ enum APIEndpoint {
     /// Whether this endpoint targets a collection (no id) vs a single resource.
     var isCollection: Bool {
         switch self {
-        case .objectives, .meetings, .tasks, .delegations, .contacts, .login, .register, .registerToken, .revokeMcpToken, .assistantChat, .tasksToday, .tasksInbox, .tasksReorder, .updateMe, .processMinutes, .confirmTasks, .importICS, .sendDelegationEmail, .prepareDelegationEmail, .googleCalendarAuth, .googleCalendarSync, .googleCalendarSyncAccount, .googleCalendarStatus, .googleCalendarAccounts:
+        case .objectives, .meetings, .tasks, .delegations, .contacts, .login, .register, .registerToken, .revokeMcpToken, .assistantChat, .tasksToday, .tasksInbox, .tasksReorder, .updateMe, .processMinutes, .confirmTasks, .importICS, .meetingsToday, .meetingsUpcoming, .meetingsProductivity, .meetingsPast, .sendDelegationEmail, .prepareDelegationEmail, .googleCalendarAuth, .googleCalendarSync, .googleCalendarSyncAccount, .googleCalendarStatus, .googleCalendarAccounts:
             return true
         default:
             return false
