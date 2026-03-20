@@ -10,6 +10,7 @@ struct Meeting: Codable, Identifiable {
     var actionItems: String?
     var googleCalendarEventId: String?
     var googleCalendarSyncAt: Date?
+    var googleCalendarId: UUID?
     var objectiveId: UUID?
     var minutesProcessedAt: Date?
     var objective: Objective?

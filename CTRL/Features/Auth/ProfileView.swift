@@ -25,8 +25,9 @@ struct ProfileView: View {
     @State private var assistantVoice: String = "es-MX-female"
     @State private var isSaving = false
     @State private var previewSynthesizer = AVSpeechSynthesizer()
-    @State private var gcalConnected = false
+    @State private var googleAccounts: [GoogleCalendarAccount] = []
     @State private var gcalLoading = false
+    @State private var accountToDelete: GoogleCalendarAccount?
     @State private var oauthCoordinator = OAuthCoordinator()
 
     private let personalities: [(id: String, icon: String, label: String, desc: String)] = [
@@ -136,40 +137,104 @@ struct ProfileView: View {
                 }
 
                 Section("Google Calendar") {
-                    HStack {
-                        Label("Estado", systemImage: "calendar.badge.clock")
-                        Spacer()
-                        if gcalLoading {
+                    if gcalLoading && googleAccounts.isEmpty {
+                        HStack {
+                            Spacer()
                             ProgressView()
-                        } else {
-                            Text(gcalConnected ? "Conectado" : "No conectado")
-                                .foregroundStyle(gcalConnected ? .green : .secondary)
+                            Spacer()
                         }
                     }
 
-                    if !gcalConnected {
-                        Button {
-                            startGoogleOAuth()
-                        } label: {
-                            Label("Conectar Google Calendar", systemImage: "link")
+                    ForEach(googleAccounts) { account in
+                        HStack(spacing: 12) {
+                            // Avatar with initial
+                            Circle()
+                                .fill(Color.blue.opacity(0.15))
+                                .frame(width: 36, height: 36)
+                                .overlay {
+                                    Text(String(account.email.prefix(1)).uppercased())
+                                        .font(.subheadline.bold())
+                                        .foregroundStyle(.blue)
+                                }
+
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(account.label ?? account.email)
+                                    .font(.subheadline)
+                                    .fontWeight(.medium)
+                                if account.label != nil {
+                                    Text(account.email)
+                                        .font(.caption)
+                                        .foregroundStyle(.secondary)
+                                }
+                            }
+
+                            Spacer()
+
+                            if account.isActive {
+                                Image(systemName: "checkmark.circle.fill")
+                                    .foregroundStyle(.green)
+                                    .font(.caption)
+                            } else {
+                                Image(systemName: "pause.circle.fill")
+                                    .foregroundStyle(.secondary)
+                                    .font(.caption)
+                            }
                         }
-                    } else {
+                        .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                            Button(role: .destructive) {
+                                accountToDelete = account
+                            } label: {
+                                Label("Eliminar", systemImage: "trash")
+                            }
+
+                            Button {
+                                Task { await toggleAccountActive(account) }
+                            } label: {
+                                Label(
+                                    account.isActive ? "Pausar" : "Activar",
+                                    systemImage: account.isActive ? "pause" : "play"
+                                )
+                            }
+                            .tint(account.isActive ? .orange : .green)
+                        }
+                    }
+
+                    Button {
+                        startGoogleOAuth()
+                    } label: {
+                        Label("Agregar cuenta de Google", systemImage: "plus.circle")
+                    }
+
+                    if !googleAccounts.isEmpty {
                         Button {
                             Task {
                                 gcalLoading = true
-                                struct SyncResult: Codable {
-                                    let created: Int
-                                    let updated: Int
-                                }
-                                do {
-                                    let _: SyncResult = try await APIClient.shared.request(.googleCalendarSync)
-                                } catch { }
+                                struct R: Codable { let created: Int; let updated: Int }
+                                let _: R? = try? await APIClient.shared.request(.googleCalendarSync)
+                                await loadGoogleAccounts()
                                 gcalLoading = false
                             }
                         } label: {
-                            Label("Sincronizar ahora", systemImage: "arrow.triangle.2.circlepath")
+                            Label(
+                                gcalLoading ? "Sincronizando..." : "Sincronizar todas",
+                                systemImage: "arrow.triangle.2.circlepath"
+                            )
+                        }
+                        .disabled(gcalLoading)
+                    }
+                }
+                .alert("Desconectar cuenta", isPresented: .init(
+                    get: { accountToDelete != nil },
+                    set: { if !$0 { accountToDelete = nil } }
+                )) {
+                    Button("Cancelar", role: .cancel) { accountToDelete = nil }
+                    Button("Desconectar", role: .destructive) {
+                        if let account = accountToDelete {
+                            Task { await deleteAccount(account) }
                         }
                     }
+                } message: {
+                    Text("Se desconectará \(accountToDelete?.email ?? "") de CTRL. Las reuniones importadas se conservan.")
                 }
 
                 Section("Notificaciones") {
@@ -237,7 +302,7 @@ struct ProfileView: View {
             .task {
                 await pushManager.refreshPermissionStatus()
                 loadAssistantSettings()
-                await checkGoogleCalendar()
+                await loadGoogleAccounts()
             }
         }
     }
@@ -319,23 +384,47 @@ struct ProfileView: View {
         ) { _, _ in
             // Backend redirects to ctrl://oauth/google/success after linking.
             // ASWebAuthenticationSession auto-dismisses on scheme match.
-            Task { await checkGoogleCalendar() }
+            Task { await loadGoogleAccounts() }
         }
         session.prefersEphemeralWebBrowserSession = false
         session.presentationContextProvider = oauthCoordinator
         session.start()
     }
 
-    private func checkGoogleCalendar() async {
-        struct Status: Codable { let connected: Bool }
+    private func loadGoogleAccounts() async {
         gcalLoading = true
         do {
-            let status: Status = try await APIClient.shared.request(.googleCalendarStatus)
-            gcalConnected = status.connected
+            let accounts: [GoogleCalendarAccount] = try await APIClient.shared.request(.googleCalendarAccounts)
+            googleAccounts = accounts
+            print("[ProfileView] Loaded \(accounts.count) Google account(s)")
         } catch {
-            gcalConnected = false
+            print("[ProfileView] Failed to load Google accounts: \(error)")
+            googleAccounts = []
         }
         gcalLoading = false
+    }
+
+    private func toggleAccountActive(_ account: GoogleCalendarAccount) async {
+        let body = UpdateGoogleCalendarBody(isActive: !account.isActive)
+        do {
+            let _: GoogleCalendarAccount = try await APIClient.shared.request(
+                .googleCalendarAccount(id: account.id),
+                method: "PATCH",
+                body: body
+            )
+            await loadGoogleAccounts()
+        } catch { }
+    }
+
+    private func deleteAccount(_ account: GoogleCalendarAccount) async {
+        do {
+            try await APIClient.shared.requestVoid(
+                .googleCalendarAccount(id: account.id),
+                method: "DELETE"
+            )
+        } catch { }
+        accountToDelete = nil
+        await loadGoogleAccounts()
     }
 
     private var permissionLabel: String {
