@@ -7,6 +7,7 @@ struct User: Codable, Identifiable {
     let role: String?
     var assistantName: String?
     var assistantPersonality: String?
+    var assistantVoice: String?
     let createdAt: Date?
     let updatedAt: Date?
 }
@@ -15,4 +16,5 @@ struct UpdateUserBody: Encodable {
     var name: String?
     var assistantName: String?
     var assistantPersonality: String?
+    var assistantVoice: String?
 }

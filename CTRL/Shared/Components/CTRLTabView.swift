@@ -7,7 +7,7 @@ struct CTRLTabView: View {
     @State private var showingQuickCapture = false
 
     var body: some View {
-        ZStack(alignment: .bottom) {
+        ZStack(alignment: .bottomTrailing) {
             TabView(selection: $selectedTab) {
                 ObjectivesView()
                     .tabItem {
@@ -42,19 +42,20 @@ struct CTRLTabView: View {
             }
             .tint(Color.ctrlPurple)
 
-            // Floating quick capture button
+            // FAB — bottom-right, above tab bar
             Button {
                 showingQuickCapture = true
             } label: {
                 Image(systemName: "plus")
                     .font(.title2.weight(.semibold))
                     .foregroundStyle(.white)
-                    .frame(width: 56, height: 56)
+                    .frame(width: 52, height: 52)
                     .background(Color.ctrlPurple)
                     .clipShape(Circle())
                     .shadow(color: .ctrlPurple.opacity(0.4), radius: 8, y: 4)
             }
-            .offset(y: -60)
+            .padding(.trailing, 20)
+            .padding(.bottom, 64)
         }
         .sheet(isPresented: $showingQuickCapture) {
             QuickCaptureView { body in

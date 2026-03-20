@@ -239,13 +239,66 @@ final class AssistantViewModel: ObservableObject {
         }
 
         let utterance = AVSpeechUtterance(string: text)
-        utterance.voice = AVSpeechSynthesisVoice(language: "es-MX")
+        utterance.voice = Self.resolveVoice()
         utterance.rate = AVSpeechUtteranceDefaultSpeechRate
         utterance.pitchMultiplier = 1.0
 
         isSpeaking = true
         synthesizer.speak(utterance)
     }
+
+    /// Resolves the user's preferred voice, falling back to es-MX default.
+    static func resolveVoice() -> AVSpeechSynthesisVoice? {
+        let pref = UserDefaults.standard.string(forKey: "assistantVoice") ?? "es-MX-female"
+        let config = voiceConfigs.first { $0.id == pref }
+        guard let config else {
+            return AVSpeechSynthesisVoice(language: "es-MX")
+        }
+        // Try exact identifier first
+        if let identifier = config.identifier,
+           let voice = AVSpeechSynthesisVoice(identifier: identifier) {
+            return voice
+        }
+        // Fallback: find by language + name prefix
+        let allVoices = AVSpeechSynthesisVoice.speechVoices()
+        if let match = allVoices.first(where: {
+            $0.language == config.language && $0.name.localizedCaseInsensitiveContains(config.namePrefix)
+        }) {
+            return match
+        }
+        // Final fallback: any voice for the language
+        return AVSpeechSynthesisVoice(language: config.language)
+            ?? AVSpeechSynthesisVoice(language: "es-MX")
+    }
+
+    // MARK: - Voice catalog
+
+    struct VoiceConfig: Identifiable {
+        let id: String          // UserDefaults key
+        let flag: String
+        let label: String
+        let language: String
+        let namePrefix: String
+        let identifier: String? // com.apple.voice.compact...
+    }
+
+    static let voiceConfigs: [VoiceConfig] = [
+        VoiceConfig(id: "es-MX-female", flag: "🇲🇽", label: "Paulina (es-MX)",
+                    language: "es-MX", namePrefix: "Paulina",
+                    identifier: "com.apple.voice.compact.es-MX.Paulina"),
+        VoiceConfig(id: "es-MX-male", flag: "🇲🇽", label: "Juan (es-MX)",
+                    language: "es-MX", namePrefix: "Juan",
+                    identifier: "com.apple.voice.compact.es-MX.Juan"),
+        VoiceConfig(id: "es-ES-female", flag: "🇪🇸", label: "Mónica (es-ES)",
+                    language: "es-ES", namePrefix: "Mónica",
+                    identifier: "com.apple.voice.compact.es-ES.Monica"),
+        VoiceConfig(id: "es-ES-male", flag: "🇪🇸", label: "Jorge (es-ES)",
+                    language: "es-ES", namePrefix: "Jorge",
+                    identifier: "com.apple.voice.compact.es-ES.Jorge"),
+        VoiceConfig(id: "en-US-female", flag: "🇺🇸", label: "Nicky (en-US)",
+                    language: "en-US", namePrefix: "Nicky",
+                    identifier: "com.apple.voice.compact.en-US.Samantha"),
+    ]
 
     // MARK: - Silence Detection
 

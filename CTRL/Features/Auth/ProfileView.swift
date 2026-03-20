@@ -1,5 +1,6 @@
 import SwiftUI
 import UserNotifications
+import AVFoundation
 
 struct ProfileView: View {
     @EnvironmentObject var authManager: AuthManager
@@ -9,7 +10,9 @@ struct ProfileView: View {
 
     @State private var assistantName: String = ""
     @State private var assistantPersonality: String = "ejecutivo"
+    @State private var assistantVoice: String = "es-MX-female"
     @State private var isSaving = false
+    @State private var previewSynthesizer = AVSpeechSynthesizer()
 
     private let personalities: [(id: String, icon: String, label: String, desc: String)] = [
         ("ejecutivo", "🎯", "Ejecutivo", "Directo, conciso, orientado a resultados"),
@@ -77,6 +80,44 @@ struct ProfileView: View {
                         }
                     }
                     .disabled(isSaving)
+                }
+
+                Section("Voz del Asistente") {
+                    ForEach(AssistantViewModel.voiceConfigs) { vc in
+                        let available = isVoiceAvailable(vc)
+                        Button {
+                            withAnimation { assistantVoice = vc.id }
+                        } label: {
+                            HStack(spacing: 12) {
+                                Text(vc.flag)
+                                    .font(.title3)
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text(vc.label)
+                                        .font(.subheadline)
+                                        .fontWeight(.medium)
+                                        .foregroundStyle(.primary)
+                                    if !available {
+                                        Text("Descargar en Ajustes → Accesibilidad → Contenido leído")
+                                            .font(.caption2)
+                                            .foregroundStyle(.orange)
+                                    }
+                                }
+                                Spacer()
+                                Button {
+                                    previewVoice(vc)
+                                } label: {
+                                    Image(systemName: "play.circle.fill")
+                                        .font(.title3)
+                                        .foregroundStyle(Color.ctrlPurple)
+                                }
+                                .buttonStyle(.plain)
+                                if assistantVoice == vc.id {
+                                    Image(systemName: "checkmark.circle.fill")
+                                        .foregroundStyle(Color.ctrlPurple)
+                                }
+                            }
+                        }
+                    }
                 }
 
                 Section("Notificaciones") {
@@ -157,6 +198,9 @@ struct ProfileView: View {
         assistantPersonality = UserDefaults.standard.string(forKey: "assistantPersonality")
             ?? authManager.currentUser?.assistantPersonality
             ?? "ejecutivo"
+        assistantVoice = UserDefaults.standard.string(forKey: "assistantVoice")
+            ?? authManager.currentUser?.assistantVoice
+            ?? "es-MX-female"
     }
 
     private func saveAssistantSettings() async {
@@ -166,10 +210,12 @@ struct ProfileView: View {
 
         UserDefaults.standard.set(finalName, forKey: "assistantName")
         UserDefaults.standard.set(assistantPersonality, forKey: "assistantPersonality")
+        UserDefaults.standard.set(assistantVoice, forKey: "assistantVoice")
 
         let body = UpdateUserBody(
             assistantName: finalName,
-            assistantPersonality: assistantPersonality
+            assistantPersonality: assistantPersonality,
+            assistantVoice: assistantVoice
         )
         do {
             let _: User = try await APIClient.shared.request(.updateMe, method: "PATCH", body: body)
@@ -178,6 +224,34 @@ struct ProfileView: View {
             // Saved locally regardless
         }
         isSaving = false
+    }
+
+    private func isVoiceAvailable(_ vc: AssistantViewModel.VoiceConfig) -> Bool {
+        if let id = vc.identifier,
+           AVSpeechSynthesisVoice(identifier: id) != nil {
+            return true
+        }
+        return AVSpeechSynthesisVoice.speechVoices().contains {
+            $0.language == vc.language && $0.name.localizedCaseInsensitiveContains(vc.namePrefix)
+        }
+    }
+
+    private func previewVoice(_ vc: AssistantViewModel.VoiceConfig) {
+        previewSynthesizer.stopSpeaking(at: .immediate)
+        let sampleText = vc.language.hasPrefix("en")
+            ? "Hi, I'm your CTRL assistant"
+            : "Hola, soy tu asistente CTRL"
+        let utterance = AVSpeechUtterance(string: sampleText)
+
+        if let id = vc.identifier {
+            utterance.voice = AVSpeechSynthesisVoice(identifier: id)
+        }
+        if utterance.voice == nil {
+            utterance.voice = AVSpeechSynthesisVoice(language: vc.language)
+        }
+
+        utterance.rate = AVSpeechUtteranceDefaultSpeechRate
+        previewSynthesizer.speak(utterance)
     }
 
     private var permissionLabel: String {
