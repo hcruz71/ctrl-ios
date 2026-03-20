@@ -3,6 +3,7 @@ import SwiftUI
 struct MeetingsView: View {
     @StateObject private var vm = MeetingsViewModel()
     @State private var showingAdd = false
+    @State private var showingICSImport = false
     @State private var isSyncing = false
     @State private var newTitle = ""
     @State private var newDate = Date()
@@ -47,13 +48,22 @@ struct MeetingsView: View {
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     HStack(spacing: 12) {
-                        Button {
-                            Task {
-                                isSyncing = true
-                                struct R: Codable { let created: Int; let updated: Int }
-                                let _: R? = try? await APIClient.shared.request(.googleCalendarSync)
-                                await vm.fetchMeetings()
-                                isSyncing = false
+                        Menu {
+                            Button {
+                                Task {
+                                    isSyncing = true
+                                    struct R: Codable { let created: Int; let updated: Int }
+                                    let _: R? = try? await APIClient.shared.request(.googleCalendarSync)
+                                    await vm.fetchMeetings()
+                                    isSyncing = false
+                                }
+                            } label: {
+                                Label("Sincronizar Google Calendar", systemImage: "arrow.triangle.2.circlepath")
+                            }
+                            Button {
+                                showingICSImport = true
+                            } label: {
+                                Label("Importar archivo .ics", systemImage: "doc.badge.plus")
                             }
                         } label: {
                             if isSyncing {
@@ -71,6 +81,9 @@ struct MeetingsView: View {
             .withProfileButton()
             .sheet(isPresented: $showingAdd) {
                 addMeetingSheet
+            }
+            .sheet(isPresented: $showingICSImport) {
+                ICSImportView(vm: vm)
             }
             .task { await vm.fetchMeetings() }
             .alert("Error", isPresented: .constant(vm.errorMessage != nil)) {

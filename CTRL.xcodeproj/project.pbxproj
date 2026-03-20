@@ -37,6 +37,7 @@
 		84E00A4D24A1E121DE1C799C /* MeetingDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE393C862CA2537E7DEBEA84 /* MeetingDetailView.swift */; };
 		899887BEBCF9012F73FB2B7A /* LoginViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 757CFD3291A5F2CC1C182E79 /* LoginViewModel.swift */; };
 		8C5FD08BCE5A9187F713D471 /* ContactPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA37C484E3A3F7904F1E8E73 /* ContactPickerView.swift */; };
+		901F43A3C05C793E253F9EE1 /* ICSImportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BDE28EC8D4BE52841802BBD /* ICSImportView.swift */; };
 		982840541515DB56C9ADFC6C /* ObjectiveRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10DF027E47C9DECD467A86A0 /* ObjectiveRowView.swift */; };
 		9B1DDC4FBC57C357E0821FE0 /* Contact.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EBA67F8D2B73CBDE6A78384 /* Contact.swift */; };
 		9F3DB3A768CEE1232E41C9E0 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3617F069BB9E3B6F50B30776 /* AppDelegate.swift */; };
@@ -52,6 +53,7 @@
 		D83E452881C7A11FA3E02D80 /* KeychainHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = C635AE199357CAAC50E92DB1 /* KeychainHelper.swift */; };
 		DE2A321B082C6C317DD3C2F8 /* DelegationsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B24F1A613ECD6D4FCA90F290 /* DelegationsView.swift */; };
 		DE59C250AF0CDEA115938FB2 /* APIEndpoints.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80B0F44B02257D8251AAF414 /* APIEndpoints.swift */; };
+		E66672160A7D169A7CC45F4D /* ICSParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = F95DC4AB30B52BC0EB622CDA /* ICSParser.swift */; };
 		E78750EB942D8496644FAB3A /* CTRLApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BE52C713FC3E56E3C6A9936 /* CTRLApp.swift */; };
 		EC2D68A58C414C352AF6FB8E /* MessageBubbleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A6B6FBC59EF9ED3269E8751 /* MessageBubbleView.swift */; };
 		F146BA769BC4C599485E5061 /* ContactRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF4D22D98D857F3FD4CC2218 /* ContactRowView.swift */; };
@@ -68,6 +70,7 @@
 		0CD51DF9DC658F3AE13A3FA7 /* MeetingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeetingsViewModel.swift; sourceTree = "<group>"; };
 		10DF027E47C9DECD467A86A0 /* ObjectiveRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjectiveRowView.swift; sourceTree = "<group>"; };
 		1E893A92F4812A42E4DE54FB /* MinutasView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MinutasView.swift; sourceTree = "<group>"; };
+		2BDE28EC8D4BE52841802BBD /* ICSImportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICSImportView.swift; sourceTree = "<group>"; };
 		2E8AA15000B0BF7981C24182 /* ObjectivesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjectivesViewModel.swift; sourceTree = "<group>"; };
 		3617F069BB9E3B6F50B30776 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		3A1CF888F823BB03C5B99460 /* ProfileToolbarModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileToolbarModifier.swift; sourceTree = "<group>"; };
@@ -114,6 +117,7 @@
 		EE393C862CA2537E7DEBEA84 /* MeetingDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeetingDetailView.swift; sourceTree = "<group>"; };
 		F1063F17C6BC9D67D616FF26 /* DelegationsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DelegationsViewModel.swift; sourceTree = "<group>"; };
 		F73627F64906A12A6F0383B2 /* ProgressRingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressRingView.swift; sourceTree = "<group>"; };
+		F95DC4AB30B52BC0EB622CDA /* ICSParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICSParser.swift; sourceTree = "<group>"; };
 		F9CA0E49E2BD38F3214AB2EA /* DelegationEmailSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DelegationEmailSheet.swift; sourceTree = "<group>"; };
 		FA55BCCF6F7843807C220466 /* Meeting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Meeting.swift; sourceTree = "<group>"; };
 		FC1E7A0DF4D448B002898EFC /* EmptyStateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyStateView.swift; sourceTree = "<group>"; };
@@ -313,6 +317,8 @@
 		E8CA7F268C55041B0ECCD1FF /* Meetings */ = {
 			isa = PBXGroup;
 			children = (
+				2BDE28EC8D4BE52841802BBD /* ICSImportView.swift */,
+				F95DC4AB30B52BC0EB622CDA /* ICSParser.swift */,
 				EE393C862CA2537E7DEBEA84 /* MeetingDetailView.swift */,
 				7576480B783D9D902039666D /* MeetingRowView.swift */,
 				AFC8CD8F102E1D7A8108D211 /* MeetingsView.swift */,
@@ -430,6 +436,8 @@
 				B60589455F8842F4E0B5673C /* DelegationsViewModel.swift in Sources */,
 				BB1BE756C32ECB01497ADBED /* EmptyStateView.swift in Sources */,
 				FD8F460F80B4E0436D8F2E42 /* GoogleCalendarAccount.swift in Sources */,
+				901F43A3C05C793E253F9EE1 /* ICSImportView.swift in Sources */,
+				E66672160A7D169A7CC45F4D /* ICSParser.swift in Sources */,
 				D83E452881C7A11FA3E02D80 /* KeychainHelper.swift in Sources */,
 				C69A16C8D80FC73E6AFED95C /* LoginView.swift in Sources */,
 				899887BEBCF9012F73FB2B7A /* LoginViewModel.swift in Sources */,

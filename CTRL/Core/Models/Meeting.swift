@@ -17,7 +17,26 @@ struct Meeting: Codable, Identifiable {
     let createdAt: Date?
     let updatedAt: Date?
 
+    var icsImported: Bool?
+
     var isFromGoogle: Bool { googleCalendarEventId != nil }
+}
+
+struct ICSImportEventBody: Encodable {
+    var title: String
+    var date: String
+    var time: String?
+    var participants: String?
+    var agenda: String?
+}
+
+struct ICSImportBody: Encodable {
+    var events: [ICSImportEventBody]
+}
+
+struct ICSImportResult: Codable {
+    var imported: Int
+    var skipped: Int
 }
 
 struct CreateMeetingBody: Encodable {

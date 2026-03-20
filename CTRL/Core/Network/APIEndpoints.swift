@@ -20,6 +20,7 @@ enum APIEndpoint {
     case meetingObjective(id: UUID)
     case processMinutes
     case confirmTasks
+    case importICS
 
     // MARK: - Tasks
     case tasks
@@ -70,6 +71,7 @@ enum APIEndpoint {
         case .meetingObjective(let id):  return "/meetings/\(id)/objective"
         case .processMinutes:            return "/meetings/process-minutes"
         case .confirmTasks:              return "/meetings/confirm-tasks"
+        case .importICS:                 return "/meetings/import-ics"
         case .tasks:              return "/tasks"
         case .task(let id):       return "/tasks/\(id)"
         case .tasksToday:         return "/tasks/today"
@@ -105,7 +107,7 @@ enum APIEndpoint {
     /// Whether this endpoint targets a collection (no id) vs a single resource.
     var isCollection: Bool {
         switch self {
-        case .objectives, .meetings, .tasks, .delegations, .contacts, .login, .register, .registerToken, .revokeMcpToken, .assistantChat, .tasksToday, .tasksInbox, .tasksReorder, .updateMe, .processMinutes, .confirmTasks, .sendDelegationEmail, .prepareDelegationEmail, .googleCalendarAuth, .googleCalendarSync, .googleCalendarSyncAccount, .googleCalendarStatus, .googleCalendarAccounts:
+        case .objectives, .meetings, .tasks, .delegations, .contacts, .login, .register, .registerToken, .revokeMcpToken, .assistantChat, .tasksToday, .tasksInbox, .tasksReorder, .updateMe, .processMinutes, .confirmTasks, .importICS, .sendDelegationEmail, .prepareDelegationEmail, .googleCalendarAuth, .googleCalendarSync, .googleCalendarSyncAccount, .googleCalendarStatus, .googleCalendarAccounts:
             return true
         default:
             return false
