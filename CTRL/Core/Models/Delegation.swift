@@ -34,3 +34,23 @@ struct UpdateDelegationBody: Encodable {
     var notes: String?
     var contactId: String?
 }
+
+struct DelegationEmailContext: Encodable {
+    var objetivoVinculado: String?
+    var contextoAdicional: String?
+    var recursosDisponibles: String?
+    var fechaPrimerCheckpoint: String?
+    var nivelAutonomia: String?
+    var tono: String?
+}
+
+struct PrepareEmailBody: Encodable {
+    var context: DelegationEmailContext
+    var send: Bool
+}
+
+struct SmartEmailResult: Codable {
+    let emailSubject: String
+    let emailDraft: String
+    let emailSentAt: Date?
+}

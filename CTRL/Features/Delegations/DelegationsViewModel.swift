@@ -76,4 +76,29 @@ final class DelegationsViewModel: ObservableObject {
             return nil
         }
     }
+
+    // MARK: - Smart Email
+
+    func prepareSmartEmail(
+        id: UUID,
+        context: DelegationEmailContext,
+        send: Bool
+    ) async -> SmartEmailResult? {
+        let body = PrepareEmailBody(context: context, send: send)
+        do {
+            let result: SmartEmailResult = try await APIClient.shared.request(
+                .prepareDelegationEmail(id: id), method: "POST", body: body
+            )
+            if send {
+                if let idx = delegations.firstIndex(where: { $0.id == id }) {
+                    delegations[idx].emailSentAt = result.emailSentAt
+                    delegations[idx].emailDraft = result.emailDraft
+                }
+            }
+            return result
+        } catch {
+            errorMessage = error.localizedDescription
+            return nil
+        }
+    }
 }
