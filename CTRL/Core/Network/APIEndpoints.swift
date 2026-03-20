@@ -43,6 +43,11 @@ enum APIEndpoint {
     // MARK: - MCP
     case revokeMcpToken
 
+    // MARK: - Google Calendar
+    case googleCalendarAuth
+    case googleCalendarSync
+    case googleCalendarStatus
+
     // MARK: - Assistant
     case assistantChat
 
@@ -72,8 +77,11 @@ enum APIEndpoint {
         case .contacts:           return "/contacts"
         case .contact(let id):    return "/contacts/\(id)"
         case .registerToken:      return "/push/register-token"
-        case .revokeMcpToken:     return "/auth/mcp-token"
-        case .assistantChat:      return "/assistant/chat"
+        case .revokeMcpToken:          return "/auth/mcp-token"
+        case .googleCalendarAuth:      return "/google-calendar/auth"
+        case .googleCalendarSync:      return "/google-calendar/sync"
+        case .googleCalendarStatus:    return "/google-calendar/status"
+        case .assistantChat:           return "/assistant/chat"
         }
     }
 
@@ -89,7 +97,7 @@ enum APIEndpoint {
     /// Whether this endpoint targets a collection (no id) vs a single resource.
     var isCollection: Bool {
         switch self {
-        case .objectives, .meetings, .tasks, .delegations, .contacts, .login, .register, .registerToken, .revokeMcpToken, .assistantChat, .tasksToday, .tasksInbox, .tasksReorder, .updateMe, .processMinutes, .confirmTasks, .sendDelegationEmail:
+        case .objectives, .meetings, .tasks, .delegations, .contacts, .login, .register, .registerToken, .revokeMcpToken, .assistantChat, .tasksToday, .tasksInbox, .tasksReorder, .updateMe, .processMinutes, .confirmTasks, .sendDelegationEmail, .googleCalendarAuth, .googleCalendarSync, .googleCalendarStatus:
             return true
         default:
             return false

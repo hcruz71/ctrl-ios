@@ -3,6 +3,7 @@ import SwiftUI
 struct MeetingsView: View {
     @StateObject private var vm = MeetingsViewModel()
     @State private var showingAdd = false
+    @State private var isSyncing = false
     @State private var newTitle = ""
     @State private var newDate = Date()
     @State private var newTime = Date()
@@ -45,8 +46,25 @@ struct MeetingsView: View {
             .navigationTitle("Reuniones")
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button { showingAdd = true } label: {
-                        Image(systemName: "plus")
+                    HStack(spacing: 12) {
+                        Button {
+                            Task {
+                                isSyncing = true
+                                struct R: Codable { let created: Int; let updated: Int }
+                                let _: R? = try? await APIClient.shared.request(.googleCalendarSync)
+                                await vm.fetchMeetings()
+                                isSyncing = false
+                            }
+                        } label: {
+                            if isSyncing {
+                                ProgressView()
+                            } else {
+                                Image(systemName: "arrow.triangle.2.circlepath")
+                            }
+                        }
+                        Button { showingAdd = true } label: {
+                            Image(systemName: "plus")
+                        }
                     }
                 }
             }

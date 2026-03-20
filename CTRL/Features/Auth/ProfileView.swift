@@ -1,6 +1,7 @@
 import SwiftUI
 import UserNotifications
 import AVFoundation
+import AuthenticationServices
 
 struct ProfileView: View {
     @EnvironmentObject var authManager: AuthManager
@@ -13,6 +14,8 @@ struct ProfileView: View {
     @State private var assistantVoice: String = "es-MX-female"
     @State private var isSaving = false
     @State private var previewSynthesizer = AVSpeechSynthesizer()
+    @State private var gcalConnected = false
+    @State private var gcalLoading = false
 
     private let personalities: [(id: String, icon: String, label: String, desc: String)] = [
         ("ejecutivo", "🎯", "Ejecutivo", "Directo, conciso, orientado a resultados"),
@@ -120,6 +123,43 @@ struct ProfileView: View {
                     }
                 }
 
+                Section("Google Calendar") {
+                    HStack {
+                        Label("Estado", systemImage: "calendar.badge.clock")
+                        Spacer()
+                        if gcalLoading {
+                            ProgressView()
+                        } else {
+                            Text(gcalConnected ? "Conectado" : "No conectado")
+                                .foregroundStyle(gcalConnected ? .green : .secondary)
+                        }
+                    }
+
+                    if !gcalConnected {
+                        Button {
+                            startGoogleOAuth()
+                        } label: {
+                            Label("Conectar Google Calendar", systemImage: "link")
+                        }
+                    } else {
+                        Button {
+                            Task {
+                                gcalLoading = true
+                                struct SyncResult: Codable {
+                                    let created: Int
+                                    let updated: Int
+                                }
+                                do {
+                                    let _: SyncResult = try await APIClient.shared.request(.googleCalendarSync)
+                                } catch { }
+                                gcalLoading = false
+                            }
+                        } label: {
+                            Label("Sincronizar ahora", systemImage: "arrow.triangle.2.circlepath")
+                        }
+                    }
+                }
+
                 Section("Notificaciones") {
                     HStack {
                         Label("Estado", systemImage: "bell.fill")
@@ -185,6 +225,7 @@ struct ProfileView: View {
             .task {
                 await pushManager.refreshPermissionStatus()
                 loadAssistantSettings()
+                await checkGoogleCalendar()
             }
         }
     }
@@ -252,6 +293,37 @@ struct ProfileView: View {
 
         utterance.rate = AVSpeechUtteranceDefaultSpeechRate
         previewSynthesizer.speak(utterance)
+    }
+
+    private func startGoogleOAuth() {
+        guard let token = authManager.token,
+              let url = URL(string: "\(APIEndpoint.baseURL)/google-calendar/auth?token=\(token)") else {
+            return
+        }
+
+        let session = ASWebAuthenticationSession(
+            url: url,
+            callbackURLScheme: nil
+        ) { _, _ in
+            // Google redirects to our backend callback which shows an HTML success page.
+            // When the user closes the sheet, refresh the connection status.
+            Task { await checkGoogleCalendar() }
+        }
+        session.prefersEphemeralWebBrowserSession = false
+        session.presentationContextProvider = nil
+        session.start()
+    }
+
+    private func checkGoogleCalendar() async {
+        struct Status: Codable { let connected: Bool }
+        gcalLoading = true
+        do {
+            let status: Status = try await APIClient.shared.request(.googleCalendarStatus)
+            gcalConnected = status.connected
+        } catch {
+            gcalConnected = false
+        }
+        gcalLoading = false
     }
 
     private var permissionLabel: String {
