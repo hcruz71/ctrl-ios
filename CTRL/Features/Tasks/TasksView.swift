@@ -207,11 +207,12 @@ private struct AddTaskSheet: View {
 
     @State private var title = ""
     @State private var selectedLevel: String?
-    @State private var project = ""
     @State private var newDueDate = Date()
     @State private var hasDueDate = false
     @State private var selectedContactIds: Set<UUID> = []
     @State private var showingContactPicker = false
+    @State private var selectedProjectId: UUID?
+    @State private var showingProjectPicker = false
 
     private let levels: [(label: String, value: String, color: Color, icon: String)] = [
         ("A", "A", .red, "flame.fill"),
@@ -224,7 +225,17 @@ private struct AddTaskSheet: View {
             Form {
                 Section("Tarea") {
                     TextField("Título", text: $title)
-                    TextField("Proyecto", text: $project)
+                    Button {
+                        showingProjectPicker = true
+                    } label: {
+                        HStack {
+                            Text("Proyecto")
+                                .foregroundStyle(.primary)
+                            Spacer()
+                            Text(selectedProjectId != nil ? "Seleccionado" : "Ninguno")
+                                .foregroundStyle(.secondary)
+                        }
+                    }
                 }
 
                 Section("Prioridad Franklin Covey") {
@@ -311,6 +322,9 @@ private struct AddTaskSheet: View {
             .sheet(isPresented: $showingContactPicker) {
                 ContactPickerView(selectedIds: $selectedContactIds)
             }
+            .sheet(isPresented: $showingProjectPicker) {
+                ProjectPickerView(selectedProjectId: $selectedProjectId)
+            }
         }
         .presentationDetents([.medium, .large])
     }
@@ -322,7 +336,7 @@ private struct AddTaskSheet: View {
         let body = CreateTaskBody(
             title: title,
             priorityLevel: selectedLevel,
-            project: project.isEmpty ? nil : project,
+            projectId: selectedProjectId?.uuidString,
             dueDate: hasDueDate ? df.string(from: newDueDate) : nil,
             inbox: selectedLevel == nil ? true : false,
             contactIds: selectedContactIds.isEmpty

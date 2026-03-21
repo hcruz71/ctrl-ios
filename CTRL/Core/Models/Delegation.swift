@@ -9,6 +9,7 @@ struct Delegation: Codable, Identifiable {
     var notes: String?
     var taskId: UUID?
     var contactId: UUID?
+    var projectId: UUID?
     var contact: Contact?
     var emailSentAt: Date?
     var emailDraft: String?
@@ -24,6 +25,7 @@ struct CreateDelegationBody: Encodable {
     var notes: String?
     var taskId: UUID?
     var contactId: String?
+    var projectId: String?
 }
 
 struct UpdateDelegationBody: Encodable {
@@ -33,6 +35,7 @@ struct UpdateDelegationBody: Encodable {
     var dueDate: String?
     var notes: String?
     var contactId: String?
+    var projectId: String?
 }
 
 struct DelegationEmailContext: Encodable {

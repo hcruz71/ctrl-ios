@@ -7,6 +7,7 @@ struct CTRLTask: Codable, Identifiable {
     var priorityLevel: String?
     var priorityOrder: Int?
     var project: String?
+    var projectId: UUID?
     var dueDate: String?
     var done: Bool
     var inbox: Bool?
@@ -27,6 +28,7 @@ struct CreateTaskBody: Encodable {
     var priorityLevel: String?
     var priorityOrder: Int?
     var project: String?
+    var projectId: String?
     var dueDate: String?
     var done: Bool = false
     var inbox: Bool?
@@ -38,6 +40,7 @@ struct UpdateTaskBody: Encodable {
     var priorityLevel: String?
     var priorityOrder: Int?
     var project: String?
+    var projectId: String?
     var dueDate: String?
     var done: Bool?
     var inbox: Bool?

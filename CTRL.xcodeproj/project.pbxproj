@@ -74,6 +74,11 @@
 		FA335682AC85D581642F83D4 /* ProfileToolbarModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A1CF888F823BB03C5B99460 /* ProfileToolbarModifier.swift */; };
 		FCEDC0FCBFE371BE8DF49BAC /* QuickCaptureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B1DA4DE1AB14C8D4DAE080D /* QuickCaptureView.swift */; };
 		FD8F460F80B4E0436D8F2E42 /* GoogleCalendarAccount.swift in Sources */ = {isa = PBXBuildFile; fileRef = 498DF89075DEA18FF03D827E /* GoogleCalendarAccount.swift */; };
+		2A3B4C5D6E7F8A9B0C1D2E3F /* Project.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A2B3C4D5E6F7A8B9C0D1E2F /* Project.swift */; };
+		4A5B6C7D8E9F0A1B2C3D4E5F /* ProjectsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A4B5C6D7E8F9A0B1C2D3E4F /* ProjectsView.swift */; };
+		6A7B8C9D0E1F2A3B4C5D6E7F /* ProjectsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A6B7C8D9E0F1A2B3C4D5E6F /* ProjectsViewModel.swift */; };
+		8A9B0C1D2E3F4A5B6C7D8E9F /* ProjectDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A8B9C0D1E2F3A4B5C6D7E8F /* ProjectDetailView.swift */; };
+		0A1B2C3D4E5F6A7B8C9D0E1F /* ProjectPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A0B1C2D3E4F5A6B7C8D9E0F /* ProjectPickerView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -147,6 +152,11 @@
 		F9CA0E49E2BD38F3214AB2EA /* DelegationEmailSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DelegationEmailSheet.swift; sourceTree = "<group>"; };
 		FA55BCCF6F7843807C220466 /* Meeting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Meeting.swift; sourceTree = "<group>"; };
 		FC1E7A0DF4D448B002898EFC /* EmptyStateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyStateView.swift; sourceTree = "<group>"; };
+		1A2B3C4D5E6F7A8B9C0D1E2F /* Project.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Project.swift; sourceTree = "<group>"; };
+		3A4B5C6D7E8F9A0B1C2D3E4F /* ProjectsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectsView.swift; sourceTree = "<group>"; };
+		5A6B7C8D9E0F1A2B3C4D5E6F /* ProjectsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectsViewModel.swift; sourceTree = "<group>"; };
+		7A8B9C0D1E2F3A4B5C6D7E8F /* ProjectDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectDetailView.swift; sourceTree = "<group>"; };
+		9A0B1C2D3E4F5A6B7C8D9E0F /* ProjectPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectPickerView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -178,6 +188,7 @@
 				498DF89075DEA18FF03D827E /* GoogleCalendarAccount.swift */,
 				FA55BCCF6F7843807C220466 /* Meeting.swift */,
 				AD42369D15A9D66A16BE4468 /* Objective.swift */,
+				1A2B3C4D5E6F7A8B9C0D1E2F /* Project.swift */,
 				D1EDC5357EAF1A0105D69B4B /* User.swift */,
 				EA6F58A745597745EDCF35F0 /* WorkMode.swift */,
 			);
@@ -194,6 +205,7 @@
 				E8CA7F268C55041B0ECCD1FF /* Meetings */,
 				BB454D308ADEE23B0A1626EF /* Objectives */,
 				84CDC111E39A2D6374D60048 /* People */,
+				AABB11223344556677889900 /* Projects */,
 				B652B9923F5923F1B5FCB54E /* Schedule */,
 				6621F2E404E4C03E1397C056 /* Tasks */,
 			);
@@ -394,6 +406,17 @@
 			path = Delegations;
 			sourceTree = "<group>";
 		};
+		AABB11223344556677889900 /* Projects */ = {
+			isa = PBXGroup;
+			children = (
+				7A8B9C0D1E2F3A4B5C6D7E8F /* ProjectDetailView.swift */,
+				9A0B1C2D3E4F5A6B7C8D9E0F /* ProjectPickerView.swift */,
+				3A4B5C6D7E8F9A0B1C2D3E4F /* ProjectsView.swift */,
+				5A6B7C8D9E0F1A2B3C4D5E6F /* ProjectsViewModel.swift */,
+			);
+			path = Projects;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -520,6 +543,11 @@
 				9417916A725AC4EBE9574FAD /* ProductivityDashboardView.swift in Sources */,
 				FA335682AC85D581642F83D4 /* ProfileToolbarModifier.swift in Sources */,
 				6565E8001B8A0717019CC40C /* ProfileView.swift in Sources */,
+				2A3B4C5D6E7F8A9B0C1D2E3F /* Project.swift in Sources */,
+				4A5B6C7D8E9F0A1B2C3D4E5F /* ProjectsView.swift in Sources */,
+				6A7B8C9D0E1F2A3B4C5D6E7F /* ProjectsViewModel.swift in Sources */,
+				8A9B0C1D2E3F4A5B6C7D8E9F /* ProjectDetailView.swift in Sources */,
+				0A1B2C3D4E5F6A7B8C9D0E1F /* ProjectPickerView.swift in Sources */,
 				6AE6759224BEACEDF0238E7A /* ProgressRingView.swift in Sources */,
 				4A5C8B925724E78A303F21BD /* PushManager.swift in Sources */,
 				FCEDC0FCBFE371BE8DF49BAC /* QuickCaptureView.swift in Sources */,

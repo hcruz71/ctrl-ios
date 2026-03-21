@@ -28,6 +28,7 @@ struct Meeting: Codable, Identifiable {
     var delegateContactId: UUID?
     var delegateBriefing: String?
     var delegateEmailSentAt: Date?
+    var projectId: UUID?
 
     var isFromGoogle: Bool { googleCalendarEventId != nil }
 
@@ -79,6 +80,7 @@ struct CreateMeetingBody: Encodable {
     var agenda: String?
     var actionItems: String?
     var objectiveId: String?
+    var projectId: String?
 }
 
 struct UpdateMeetingBody: Encodable {
@@ -89,6 +91,7 @@ struct UpdateMeetingBody: Encodable {
     var agenda: String?
     var actionItems: String?
     var objectiveId: String?
+    var projectId: String?
 }
 
 struct SuggestedTask: Codable, Identifiable {
