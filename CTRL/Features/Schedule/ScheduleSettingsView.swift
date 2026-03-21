@@ -2,9 +2,9 @@ import SwiftUI
 
 struct ScheduleSettingsView: View {
     @State private var workDays: Set<Int> = [1, 2, 3, 4, 5]
-    @State private var workStart = dateFromTime("08:00")
-    @State private var workEnd = dateFromTime("18:00")
-    @State private var personalEnd = dateFromTime("22:00")
+    @State private var workStart = Self.dateFromTime("08:00")
+    @State private var workEnd = Self.dateFromTime("18:00")
+    @State private var personalEnd = Self.dateFromTime("22:00")
     @State private var restMessage = "Es dia de descanso. Disfruta."
     @State private var isSaving = false
     @State private var isLoading = true
@@ -54,14 +54,18 @@ struct ScheduleSettingsView: View {
                 DatePicker("Fin", selection: $workEnd, displayedComponents: .hourAndMinute)
             }
 
-            Section("Tiempo personal") {
+            Section {
                 DatePicker("Termina a las", selection: $personalEnd, displayedComponents: .hourAndMinute)
+            } header: {
+                Text("Tiempo personal")
             } footer: {
                 Text("Despues de esta hora se activa el modo descanso")
             }
 
-            Section("Mensaje de descanso") {
+            Section {
                 TextField("Mensaje cuando es dia libre", text: $restMessage)
+            } header: {
+                Text("Mensaje de descanso")
             } footer: {
                 Text("Se muestra cuando el asistente detecta dia de descanso")
             }
