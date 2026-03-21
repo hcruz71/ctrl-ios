@@ -3,6 +3,7 @@ import SwiftUI
 struct TaskRowView: View {
     let task: CTRLTask
     let onToggle: () -> Void
+    var onChangePriority: ((String) -> Void)?
 
     var body: some View {
         HStack(spacing: 12) {
@@ -21,7 +22,35 @@ struct TaskRowView: View {
 
                 HStack(spacing: 6) {
                     if let label = task.priorityLabel {
-                        BadgeView(text: label, color: levelColor)
+                        if let onChangePriority {
+                            Menu {
+                                if task.priorityLevel != "A" {
+                                    Button {
+                                        onChangePriority("A")
+                                    } label: {
+                                        Label("Urgente (A)", systemImage: "flame.fill")
+                                    }
+                                }
+                                if task.priorityLevel != "B" {
+                                    Button {
+                                        onChangePriority("B")
+                                    } label: {
+                                        Label("Importante (B)", systemImage: "star.fill")
+                                    }
+                                }
+                                if task.priorityLevel != "C" {
+                                    Button {
+                                        onChangePriority("C")
+                                    } label: {
+                                        Label("Pendiente (C)", systemImage: "clock.fill")
+                                    }
+                                }
+                            } label: {
+                                BadgeView(text: label, color: levelColor)
+                            }
+                        } else {
+                            BadgeView(text: label, color: levelColor)
+                        }
                     }
                     if let project = task.project, !project.isEmpty {
                         BadgeView(text: project, color: .ctrlPurple)

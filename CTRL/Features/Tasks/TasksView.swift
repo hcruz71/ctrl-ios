@@ -75,6 +75,12 @@ struct TasksView: View {
 
     // MARK: - Priority Section
 
+    private static let allLevels: [(key: String, label: String, icon: String, color: Color)] = [
+        ("A", "Urgente (A)", "flame.fill", .red),
+        ("B", "Importante (B)", "star.fill", .orange),
+        ("C", "Pendiente (C)", "clock.fill", .blue),
+    ]
+
     @ViewBuilder
     private func prioritySection(
         title: String,
@@ -87,14 +93,27 @@ struct TasksView: View {
         Section {
             if expanded.wrappedValue {
                 ForEach(tasks) { task in
-                    TaskRowView(task: task) {
+                    TaskRowView(task: task, onToggle: {
                         Task { await vm.toggleDone(task: task) }
-                    }
+                    }, onChangePriority: { newLevel in
+                        Task { await vm.changePriority(task: task, newLevel: newLevel) }
+                    })
+                    .draggable(task.id.uuidString)
                     .swipeActions(edge: .trailing) {
                         Button(role: .destructive) {
                             Task { await vm.delete(id: task.id) }
                         } label: {
                             Label("Eliminar", systemImage: "trash")
+                        }
+                    }
+                    .swipeActions(edge: .leading) {
+                        ForEach(Self.allLevels.filter { $0.key != level }, id: \.key) { lvl in
+                            Button {
+                                Task { await vm.changePriority(task: task, newLevel: lvl.key) }
+                            } label: {
+                                Label(lvl.label, systemImage: lvl.icon)
+                            }
+                            .tint(lvl.color)
                         }
                     }
                 }
@@ -126,6 +145,14 @@ struct TasksView: View {
                         .font(.caption2)
                         .foregroundStyle(.secondary)
                 }
+            }
+            .dropDestination(for: String.self) { droppedIds, _ in
+                guard let taskIdStr = droppedIds.first,
+                      let taskId = UUID(uuidString: taskIdStr) else { return false }
+                Task { await vm.changePriorityById(taskId, newLevel: level) }
+                return true
+            } isTargeted: { isTargeted in
+                // visual feedback handled by SwiftUI's default highlight
             }
         }
     }

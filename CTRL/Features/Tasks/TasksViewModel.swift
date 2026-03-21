@@ -85,6 +85,33 @@ final class TasksViewModel: ObservableObject {
         }
     }
 
+    // MARK: - Change Priority (move between A/B/C)
+
+    func changePriority(task: CTRLTask, newLevel: String) async {
+        guard task.priorityLevel != newLevel else { return }
+        do {
+            let body = UpdateTaskBody(priorityLevel: newLevel, inbox: false)
+            let updated: CTRLTask = try await APIClient.shared.request(
+                .task(id: task.id), body: body
+            )
+            withAnimation {
+                todayTasks.removeAll { $0.id == task.id }
+                inboxTasks.removeAll { $0.id == task.id }
+                todayTasks.append(updated)
+                tasks = todayTasks + inboxTasks
+            }
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+    }
+
+    func changePriorityById(_ taskId: UUID, newLevel: String) async {
+        if let task = todayTasks.first(where: { $0.id == taskId })
+            ?? inboxTasks.first(where: { $0.id == taskId }) {
+            await changePriority(task: task, newLevel: newLevel)
+        }
+    }
+
     // MARK: - Reorder
 
     func reorder(level: String, ids: [UUID]) async {
