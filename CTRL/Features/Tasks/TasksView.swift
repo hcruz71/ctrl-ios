@@ -93,29 +93,7 @@ struct TasksView: View {
         Section {
             if expanded.wrappedValue {
                 ForEach(tasks) { task in
-                    TaskRowView(task: task, onToggle: {
-                        Task { await vm.toggleDone(task: task) }
-                    }, onChangePriority: { newLevel in
-                        Task { await vm.changePriority(task: task, newLevel: newLevel) }
-                    })
-                    .draggable(task.id.uuidString)
-                    .swipeActions(edge: .trailing) {
-                        Button(role: .destructive) {
-                            Task { await vm.delete(id: task.id) }
-                        } label: {
-                            Label("Eliminar", systemImage: "trash")
-                        }
-                    }
-                    .swipeActions(edge: .leading) {
-                        ForEach(Self.allLevels.filter { $0.key != level }, id: \.key) { lvl in
-                            Button {
-                                Task { await vm.changePriority(task: task, newLevel: lvl.key) }
-                            } label: {
-                                Label(lvl.label, systemImage: lvl.icon)
-                            }
-                            .tint(lvl.color)
-                        }
-                    }
+                    taskRow(task: task, level: level)
                 }
                 .onMove { from, to in
                     var ids = tasks.map(\.id)
@@ -124,37 +102,76 @@ struct TasksView: View {
                 }
             }
         } header: {
-            Button {
-                withAnimation { expanded.wrappedValue.toggle() }
+            sectionHeader(title: title, icon: icon, color: color, tasks: tasks, expanded: expanded, level: level)
+        }
+    }
+
+    @ViewBuilder
+    private func taskRow(task: CTRLTask, level: String) -> some View {
+        let otherLevels = Self.allLevels.filter { $0.key != level }
+        TaskRowView(task: task, onToggle: {
+            Task { await vm.toggleDone(task: task) }
+        }, onChangePriority: { newLevel in
+            Task { await vm.changePriority(task: task, newLevel: newLevel) }
+        })
+        .draggable(task.id.uuidString)
+        .swipeActions(edge: .trailing) {
+            Button(role: .destructive) {
+                Task { await vm.delete(id: task.id) }
             } label: {
-                HStack(spacing: 6) {
-                    Image(systemName: icon)
-                        .foregroundStyle(color)
-                    Text(title)
-                        .fontWeight(.semibold)
-                        .foregroundStyle(.primary)
-                    Spacer()
-                    Text("\(tasks.filter { !$0.done }.count)")
-                        .font(.caption)
-                        .fontWeight(.bold)
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 2)
-                        .background(color.opacity(0.15), in: Capsule())
-                        .foregroundStyle(color)
-                    Image(systemName: expanded.wrappedValue ? "chevron.up" : "chevron.down")
-                        .font(.caption2)
-                        .foregroundStyle(.secondary)
-                }
-            }
-            .dropDestination(for: String.self) { droppedIds, _ in
-                guard let taskIdStr = droppedIds.first,
-                      let taskId = UUID(uuidString: taskIdStr) else { return false }
-                Task { await vm.changePriorityById(taskId, newLevel: level) }
-                return true
-            } isTargeted: { isTargeted in
-                // visual feedback handled by SwiftUI's default highlight
+                Label("Eliminar", systemImage: "trash")
             }
         }
+        .swipeActions(edge: .leading) {
+            ForEach(otherLevels, id: \.key) { lvl in
+                Button {
+                    Task { await vm.changePriority(task: task, newLevel: lvl.key) }
+                } label: {
+                    Label(lvl.label, systemImage: lvl.icon)
+                }
+                .tint(lvl.color)
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func sectionHeader(
+        title: String,
+        icon: String,
+        color: Color,
+        tasks: [CTRLTask],
+        expanded: Binding<Bool>,
+        level: String
+    ) -> some View {
+        let pendingCount = tasks.filter { !$0.done }.count
+        Button {
+            withAnimation { expanded.wrappedValue.toggle() }
+        } label: {
+            HStack(spacing: 6) {
+                Image(systemName: icon)
+                    .foregroundStyle(color)
+                Text(title)
+                    .fontWeight(.semibold)
+                    .foregroundStyle(.primary)
+                Spacer()
+                Text("\(pendingCount)")
+                    .font(.caption)
+                    .fontWeight(.bold)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 2)
+                    .background(color.opacity(0.15), in: Capsule())
+                    .foregroundStyle(color)
+                Image(systemName: expanded.wrappedValue ? "chevron.up" : "chevron.down")
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+            }
+        }
+        .dropDestination(for: String.self) { droppedIds, _ in
+            guard let taskIdStr = droppedIds.first,
+                  let taskId = UUID(uuidString: taskIdStr) else { return false }
+            Task { await vm.changePriorityById(taskId, newLevel: level) }
+            return true
+        } isTargeted: { _ in }
     }
 
     // MARK: - Inbox Section

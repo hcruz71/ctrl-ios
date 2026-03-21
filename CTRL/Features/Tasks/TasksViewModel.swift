@@ -94,12 +94,10 @@ final class TasksViewModel: ObservableObject {
             let updated: CTRLTask = try await APIClient.shared.request(
                 .task(id: task.id), body: body
             )
-            withAnimation {
-                todayTasks.removeAll { $0.id == task.id }
-                inboxTasks.removeAll { $0.id == task.id }
-                todayTasks.append(updated)
-                tasks = todayTasks + inboxTasks
-            }
+            todayTasks.removeAll { $0.id == task.id }
+            inboxTasks.removeAll { $0.id == task.id }
+            todayTasks.append(updated)
+            tasks = todayTasks + inboxTasks
         } catch {
             errorMessage = error.localizedDescription
         }
