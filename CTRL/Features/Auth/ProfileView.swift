@@ -16,6 +16,7 @@ private class OAuthCoordinator: NSObject, ASWebAuthenticationPresentationContext
 
 struct ProfileView: View {
     @EnvironmentObject var authManager: AuthManager
+    @EnvironmentObject var lang: LanguageManager
     @StateObject private var pushManager = PushManager.shared
     @Environment(\.dismiss) private var dismiss
     @State private var showingPermissionAlert = false
@@ -81,7 +82,7 @@ struct ProfileView: View {
                 }
 
                 // 2. Mi Asistente — collapsible, default expanded
-                collapsibleSection(title: "Mi Asistente", icon: "sparkles", expanded: $expandedAssistant) {
+                collapsibleSection(title: lang.t("profile.assistant"), icon: "sparkles", expanded: $expandedAssistant) {
                     HStack {
                         Label("Nombre", systemImage: "sparkles")
                         Spacer()
@@ -123,7 +124,7 @@ struct ProfileView: View {
                             if isSaving {
                                 ProgressView()
                             } else {
-                                Text("Guardar cambios")
+                                Text(lang.t("profile.saveChanges"))
                                     .fontWeight(.medium)
                             }
                             Spacer()
@@ -133,7 +134,7 @@ struct ProfileView: View {
                 }
 
                 // 3. Voz del Asistente — only voices for selected language
-                collapsibleSection(title: "Voz del Asistente", icon: "waveform", expanded: $expandedVoice) {
+                collapsibleSection(title: lang.t("profile.voice"), icon: "waveform", expanded: $expandedVoice) {
                     ForEach(voicesForSelectedLanguage) { vc in
                         let available = isVoiceAvailable(vc)
                         Button {
@@ -172,7 +173,7 @@ struct ProfileView: View {
                 }
 
                 // 4. Idioma — collapsible, default expanded (NEW)
-                collapsibleSection(title: "Idioma", icon: "globe", expanded: $expandedLanguage) {
+                collapsibleSection(title: lang.t("profile.language"), icon: "globe", expanded: $expandedLanguage) {
                     ForEach(LanguageManager.supportedLanguages, id: \.code) { lang in
                         Button {
                             selectedLanguage = lang.code
@@ -199,7 +200,7 @@ struct ProfileView: View {
                 }
 
                 // 5. Google Calendar — collapsible, default expanded
-                collapsibleSection(title: "Google Calendar", icon: "calendar", expanded: $expandedGCal) {
+                collapsibleSection(title: "Google Calendar", icon: "calendar.badge.checkmark", expanded: $expandedGCal) {
                     if gcalLoading && googleAccounts.isEmpty {
                         HStack {
                             Spacer()
@@ -300,7 +301,7 @@ struct ProfileView: View {
                 }
 
                 // 6. Horario y modos — collapsible, default collapsed
-                collapsibleSection(title: "Horario y modos", icon: "clock", expanded: $expandedSchedule) {
+                collapsibleSection(title: lang.t("profile.schedule"), icon: "clock", expanded: $expandedSchedule) {
                     NavigationLink {
                         ScheduleSettingsView()
                     } label: {
@@ -327,7 +328,7 @@ struct ProfileView: View {
                 }
 
                 // 7. Notificaciones — collapsible, default collapsed
-                collapsibleSection(title: "Notificaciones", icon: "bell.fill", expanded: $expandedNotifications) {
+                collapsibleSection(title: lang.t("profile.notifications"), icon: "bell.fill", expanded: $expandedNotifications) {
                     HStack {
                         Label("Estado", systemImage: "bell.fill")
                         Spacer()
@@ -380,14 +381,14 @@ struct ProfileView: View {
                         authManager.logout()
                         dismiss()
                     } label: {
-                        Label("Cerrar sesion", systemImage: "rectangle.portrait.and.arrow.right")
+                        Label(lang.t("profile.logout"), systemImage: "rectangle.portrait.and.arrow.right")
                     }
                 }
             }
-            .navigationTitle("Perfil")
+            .navigationTitle(lang.t("profile.title"))
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Cerrar") { dismiss() }
+                    Button(lang.t("action.close")) { dismiss() }
                 }
             }
             .task {

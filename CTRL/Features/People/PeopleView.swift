@@ -1,14 +1,15 @@
 import SwiftUI
 
 struct PeopleView: View {
+    @EnvironmentObject var lang: LanguageManager
     @State private var selectedTab = 0
 
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
                 Picker("Vista", selection: $selectedTab) {
-                    Text("Delegaciones").tag(0)
-                    Text("Contactos").tag(1)
+                    Text(lang.t("delegations.title")).tag(0)
+                    Text(lang.t("contacts.title")).tag(1)
                 }
                 .pickerStyle(.segmented)
                 .padding(.horizontal)
@@ -20,7 +21,7 @@ struct PeopleView: View {
                     ContactsContentView()
                 }
             }
-            .navigationTitle(selectedTab == 0 ? "Delegaciones" : "Contactos")
+            .navigationTitle(selectedTab == 0 ? lang.t("delegations.title") : lang.t("contacts.title"))
         }
     }
 }

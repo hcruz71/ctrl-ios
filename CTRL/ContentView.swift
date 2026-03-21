@@ -3,11 +3,12 @@ import SwiftUI
 struct ContentView: View {
     @EnvironmentObject var authManager: AuthManager
     @EnvironmentObject var navigationState: NavigationState
+    @EnvironmentObject var lang: LanguageManager
 
     var body: some View {
         Group {
             if authManager.isLoading {
-                ProgressView("Cargando sesión…")
+                ProgressView(lang.t("loading.session"))
             } else if authManager.isAuthenticated {
                 CTRLTabView(selectedTab: $navigationState.selectedTab)
             } else {

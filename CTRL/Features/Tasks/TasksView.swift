@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct TasksView: View {
+    @EnvironmentObject var lang: LanguageManager
     @StateObject private var vm = TasksViewModel()
     @State private var showingAdd = false
     @State private var expandedA = true
@@ -17,13 +18,13 @@ struct TasksView: View {
                 } else if vm.tasks.isEmpty {
                     EmptyStateView(
                         icon: "checkmark.circle",
-                        title: "Sin tareas",
-                        message: "Crea tu primera tarea pendiente."
+                        title: lang.t("tasks.empty"),
+                        message: ""
                     )
                 } else {
                     List {
                         prioritySection(
-                            title: "URGENTES (A)",
+                            title: lang.t("tasks.urgentA"),
                             icon: "flame.fill",
                             color: .red,
                             tasks: vm.tasksA,
@@ -31,7 +32,7 @@ struct TasksView: View {
                             level: "A"
                         )
                         prioritySection(
-                            title: "IMPORTANTES (B)",
+                            title: lang.t("tasks.importantB"),
                             icon: "star.fill",
                             color: .orange,
                             tasks: vm.tasksB,
@@ -39,7 +40,7 @@ struct TasksView: View {
                             level: "B"
                         )
                         prioritySection(
-                            title: "PENDIENTES (C)",
+                            title: lang.t("tasks.pendingC"),
                             icon: "clock.fill",
                             color: .blue,
                             tasks: vm.tasksC,
@@ -52,7 +53,7 @@ struct TasksView: View {
                     .refreshable { await vm.fetchAll() }
                 }
             }
-            .navigationTitle("Tareas")
+            .navigationTitle(lang.t("tasks.title"))
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button { showingAdd = true } label: {
@@ -351,14 +352,14 @@ private struct AddTaskSheet: View {
                     }
                 }
             }
-            .navigationTitle("Nueva tarea")
+            .navigationTitle(LanguageManager.shared.t("tasks.add"))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancelar") { dismiss() }
+                    Button(LanguageManager.shared.t("action.cancel")) { dismiss() }
                 }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Guardar") {
+                    Button(LanguageManager.shared.t("action.save")) {
                         save()
                     }
                     .disabled(title.isEmpty)

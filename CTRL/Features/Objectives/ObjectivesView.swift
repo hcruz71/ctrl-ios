@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct ObjectivesView: View {
+    @EnvironmentObject var lang: LanguageManager
     @StateObject private var vm = ObjectivesViewModel()
     @State private var showingAdd = false
     @State private var selectedArea = "all"
@@ -36,10 +37,10 @@ struct ObjectivesView: View {
 
                 // Status filter
                 Picker("Status", selection: $selectedStatus) {
-                    Text("Activos").tag("activo")
-                    Text("Completados").tag("completado")
-                    Text("Pausados").tag("pausado")
-                    Text("Todos").tag("all")
+                    Text(lang.t("objectives.status.active")).tag("activo")
+                    Text(lang.t("objectives.status.completed")).tag("completado")
+                    Text(lang.t("objectives.status.paused")).tag("pausado")
+                    Text(lang.t("objectives.all")).tag("all")
                 }
                 .pickerStyle(.segmented)
                 .padding(.horizontal)
@@ -56,7 +57,7 @@ struct ObjectivesView: View {
                         Image(systemName: "target")
                             .font(.system(size: 40))
                             .foregroundStyle(.secondary)
-                        Text("Sin objetivos")
+                        Text(lang.t("objectives.empty"))
                             .font(.headline)
                             .foregroundStyle(.secondary)
                     }
@@ -80,7 +81,7 @@ struct ObjectivesView: View {
                     .refreshable { await vm.fetchObjectives() }
                 }
             }
-            .navigationTitle("Objetivos")
+            .navigationTitle(lang.t("objectives.title"))
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button { showingProjects = true } label: {

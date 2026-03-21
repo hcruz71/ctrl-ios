@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct MeetingsView: View {
+    @EnvironmentObject var lang: LanguageManager
     @StateObject private var vm = MeetingsViewModel()
     @State private var showingAdd = false
     @State private var showingICSImport = false
@@ -33,9 +34,9 @@ struct MeetingsView: View {
             VStack(spacing: 0) {
                 // Tab selector
                 Picker("Vista", selection: $selectedTab) {
-                    Text("Hoy").tag(0)
-                    Text("Proximas").tag(1)
-                    Text("Todas").tag(2)
+                    Text(lang.t("meetings.today")).tag(0)
+                    Text(lang.t("meetings.upcoming")).tag(1)
+                    Text(lang.t("meetings.all")).tag(2)
                 }
                 .pickerStyle(.segmented)
                 .padding(.horizontal)
@@ -44,12 +45,12 @@ struct MeetingsView: View {
                 // Header counters for "Hoy" tab
                 if selectedTab == 0 && !vm.todayMeetings.isEmpty {
                     HStack {
-                        Text("\(vm.todayMeetings.count) reuniones hoy")
+                        Text("\(vm.todayMeetings.count) \(lang.t("meetings.countToday"))")
                             .font(.caption)
                             .foregroundStyle(.secondary)
                         Text("|")
                             .foregroundStyle(.quaternary)
-                        Text("\(todayWithObjective) con objetivo")
+                        Text("\(todayWithObjective) \(lang.t("meetings.withObj"))")
                             .font(.caption)
                             .foregroundStyle(todayWithObjective > 0 ? .green : .orange)
                         Spacer()
@@ -69,7 +70,7 @@ struct MeetingsView: View {
                         Image(systemName: "calendar")
                             .font(.system(size: 40))
                             .foregroundStyle(.secondary)
-                        Text(selectedTab == 0 ? "Sin reuniones hoy" : "Sin reuniones")
+                        Text(lang.t("meetings.empty"))
                             .font(.headline)
                             .foregroundStyle(.secondary)
                     }
@@ -86,7 +87,7 @@ struct MeetingsView: View {
                                 Button(role: .destructive) {
                                     Task { await vm.delete(id: meeting.id) }
                                 } label: {
-                                    Label("Eliminar", systemImage: "trash")
+                                    Label(lang.t("action.delete"), systemImage: "trash")
                                 }
                             }
                         }
@@ -95,7 +96,7 @@ struct MeetingsView: View {
                     .refreshable { await refreshCurrentTab() }
                 }
             }
-            .navigationTitle("Reuniones")
+            .navigationTitle(lang.t("meetings.title"))
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     HStack(spacing: 12) {
@@ -196,14 +197,14 @@ struct MeetingsView: View {
                         .lineLimit(3...6)
                 }
             }
-            .navigationTitle("Nueva reunion")
+            .navigationTitle(lang.t("meetings.new"))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancelar") { showingAdd = false }
+                    Button(lang.t("action.cancel")) { showingAdd = false }
                 }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Guardar") {
+                    Button(lang.t("action.save")) {
                         let df = DateFormatter()
                         df.dateFormat = "yyyy-MM-dd"
                         let tf = DateFormatter()
@@ -274,7 +275,7 @@ private struct MeetingRowWithObjective: View {
                     .foregroundStyle(.green)
                     .clipShape(Capsule())
             } else if meeting.objectiveId == nil {
-                Text("Sin objetivo")
+                Text(LanguageManager.shared.t("meetings.noObjective"))
                     .font(.caption2)
                     .padding(.horizontal, 8)
                     .padding(.vertical, 3)
