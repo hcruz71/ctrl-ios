@@ -39,8 +39,16 @@ struct ProfileView: View {
     @AppStorage("profile.section.schedule") private var expandedSchedule = false
     @AppStorage("profile.section.notifications") private var expandedNotifications = false
     @AppStorage("profile.section.language") private var expandedLanguage = true
+    @AppStorage("profile.section.byok") private var expandedByok = false
     @State private var selectedLanguage: String = LanguageManager.shared.currentLanguage
     @State private var showLanguageRestart = false
+    @State private var byokEnabled = KeychainHelper.getAnthropicKey()?.isEmpty == false
+    @State private var byokKeyInput = ""
+    @State private var byokStatus: ByokStatus = .none
+
+    private enum ByokStatus {
+        case none, validating, valid, invalid(String)
+    }
 
     private let personalities: [(id: String, icon: String, label: String, desc: String)] = [
         ("ejecutivo", "🎯", "Ejecutivo", "Directo, conciso, orientado a resultados"),
@@ -211,6 +219,62 @@ struct ProfileView: View {
                         Label("Reinicia la app para aplicar el idioma", systemImage: "arrow.clockwise")
                             .font(.caption)
                             .foregroundStyle(.orange)
+                    }
+                }
+
+                // 4.5 API Key propia (BYOK)
+                collapsibleSection(title: "API Key propia", icon: "key.fill", expanded: $expandedByok) {
+                    Toggle("Usar mi propia API Key", isOn: $byokEnabled)
+                        .onChange(of: byokEnabled) { enabled in
+                            if !enabled {
+                                KeychainHelper.deleteAnthropicKey()
+                                byokKeyInput = ""
+                                byokStatus = .none
+                            }
+                        }
+
+                    if byokEnabled {
+                        SecureField("sk-ant-...", text: $byokKeyInput)
+                            .textContentType(.password)
+                            .autocorrectionDisabled()
+                            .textInputAutocapitalization(.never)
+                            .font(.system(.body, design: .monospaced))
+                            .onAppear {
+                                byokKeyInput = KeychainHelper.getAnthropicKey() ?? ""
+                            }
+
+                        HStack {
+                            Button {
+                                validateAndSaveByokKey()
+                            } label: {
+                                HStack(spacing: 4) {
+                                    if case .validating = byokStatus {
+                                        ProgressView()
+                                            .controlSize(.small)
+                                    }
+                                    Text("Verificar key")
+                                }
+                            }
+                            .disabled(byokKeyInput.isEmpty || {
+                                if case .validating = byokStatus { return true }
+                                return false
+                            }())
+
+                            Spacer()
+
+                            switch byokStatus {
+                            case .valid:
+                                Label("Key valida — uso ilimitado", systemImage: "checkmark.circle.fill")
+                                    .font(.caption)
+                                    .foregroundStyle(.green)
+                            case .invalid(let msg):
+                                Label(msg, systemImage: "xmark.circle.fill")
+                                    .font(.caption)
+                                    .foregroundStyle(.red)
+                            default:
+                                EmptyView()
+                            }
+                        }
                     }
                 }
 
@@ -602,6 +666,44 @@ struct ProfileView: View {
         case .free: return .gray
         case .pro: return Color.ctrlPurple
         case .team: return .orange
+        }
+    }
+
+    private func validateAndSaveByokKey() {
+        let key = byokKeyInput.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !key.isEmpty else { return }
+
+        byokStatus = .validating
+        Task {
+            do {
+                // Quick validation: try a minimal API call
+                let url = URL(string: "https://api.anthropic.com/v1/messages")!
+                var req = URLRequest(url: url)
+                req.httpMethod = "POST"
+                req.setValue(key, forHTTPHeaderField: "x-api-key")
+                req.setValue("2023-06-01", forHTTPHeaderField: "anthropic-version")
+                req.setValue("application/json", forHTTPHeaderField: "Content-Type")
+                let body = """
+                {"model":"claude-haiku-4-5-20251001","max_tokens":1,"messages":[{"role":"user","content":"hi"}]}
+                """
+                req.httpBody = body.data(using: .utf8)
+
+                let (_, response) = try await URLSession.shared.data(for: req)
+                let status = (response as? HTTPURLResponse)?.statusCode ?? 0
+
+                if (200...299).contains(status) {
+                    KeychainHelper.saveAnthropicKey(key)
+                    byokStatus = .valid
+                } else if status == 401 {
+                    byokStatus = .invalid("API Key invalida")
+                } else {
+                    // Non-auth error means key format is OK
+                    KeychainHelper.saveAnthropicKey(key)
+                    byokStatus = .valid
+                }
+            } catch {
+                byokStatus = .invalid("Error de conexion")
+            }
         }
     }
 

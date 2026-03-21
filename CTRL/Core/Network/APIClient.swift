@@ -44,6 +44,13 @@ actor APIClient {
             urlRequest.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         }
 
+        // BYOK: inject user's Anthropic key for assistant endpoints
+        if endpoint.path.hasPrefix("/assistant"),
+           let anthropicKey = KeychainHelper.getAnthropicKey(),
+           !anthropicKey.isEmpty {
+            urlRequest.setValue(anthropicKey, forHTTPHeaderField: "X-Anthropic-Api-Key")
+        }
+
         if let body {
             let encoder = JSONEncoder()
             encoder.keyEncodingStrategy = .convertToSnakeCase

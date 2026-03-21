@@ -202,7 +202,15 @@ struct AssistantView: View {
                     }
                 }
                 ToolbarItem(placement: .topBarTrailing) {
-                    if let s = usageSummary {
+                    if hasByokKey {
+                        Text("Ilimitado")
+                            .font(.caption.bold())
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 4)
+                            .background(Color.green.opacity(0.15))
+                            .foregroundStyle(.green)
+                            .clipShape(Capsule())
+                    } else if let s = usageSummary {
                         Button {
                             showingUsage = true
                         } label: {
@@ -289,6 +297,10 @@ struct AssistantView: View {
         case .speaking:   return "Claude está respondiendo"
         case .paused:     return "Pausado"
         }
+    }
+
+    private var hasByokKey: Bool {
+        KeychainHelper.getAnthropicKey()?.isEmpty == false
     }
 
     private func usageBadgeColor(_ pct: Int) -> Color {

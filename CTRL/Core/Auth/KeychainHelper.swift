@@ -5,6 +5,40 @@ import Security
 enum KeychainHelper {
     private static let service = "com.hector.ctrl"
     private static let tokenKey = "jwt_token"
+    private static let anthropicKey = "anthropic_api_key"
+
+    // MARK: - Anthropic API Key (BYOK)
+
+    static func saveAnthropicKey(_ key: String) {
+        guard let data = key.data(using: .utf8) else { return }
+        delete(key: anthropicKey)
+        let query: [String: Any] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrService as String: service,
+            kSecAttrAccount as String: anthropicKey,
+            kSecValueData as String: data,
+            kSecAttrAccessible as String: kSecAttrAccessibleAfterFirstUnlock,
+        ]
+        SecItemAdd(query as CFDictionary, nil)
+    }
+
+    static func getAnthropicKey() -> String? {
+        let query: [String: Any] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrService as String: service,
+            kSecAttrAccount as String: anthropicKey,
+            kSecReturnData as String: true,
+            kSecMatchLimit as String: kSecMatchLimitOne,
+        ]
+        var result: AnyObject?
+        let status = SecItemCopyMatching(query as CFDictionary, &result)
+        guard status == errSecSuccess, let data = result as? Data else { return nil }
+        return String(data: data, encoding: .utf8)
+    }
+
+    static func deleteAnthropicKey() {
+        delete(key: anthropicKey)
+    }
 
     static func saveToken(_ token: String) {
         guard let data = token.data(using: .utf8) else { return }
