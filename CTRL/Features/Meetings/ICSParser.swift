@@ -89,6 +89,8 @@ actor ICSParser {
         var props: [String: String] = [:]
         var attendeeLines: [String] = []
         var organizerLine: String?
+        var eventLineBuffer: [String] = []
+        var debugEventCount = 0
         let cutoff = options.dateFilter.cutoffDate
         let keywordLower = options.keyword?.lowercased()
         let today = Calendar.current.startOfDay(for: Date())
@@ -101,11 +103,29 @@ actor ICSParser {
                 props = [:]
                 attendeeLines = []
                 organizerLine = nil
+                eventLineBuffer = []
                 continue
             }
 
             if trimmed == "END:VEVENT" {
                 inEvent = false
+                debugEventCount += 1
+
+                // DEBUG: print raw lines of first 3 events
+                if debugEventCount <= 3 {
+                    let summary = props["SUMMARY"] ?? "(no title)"
+                    print("[ICSParser] === EVENT #\(debugEventCount): \(summary) ===")
+                    print("[ICSParser] ORGANIZER line: \(organizerLine ?? "(none)")")
+                    print("[ICSParser] ATTENDEE lines (\(attendeeLines.count)):")
+                    for (i, att) in attendeeLines.enumerated() {
+                        print("[ICSParser]   [\(i)] \(att)")
+                    }
+                    print("[ICSParser] First 20 raw lines of VEVENT:")
+                    for (i, rawLine) in eventLineBuffer.prefix(20).enumerated() {
+                        print("[ICSParser]   \(i): \(rawLine)")
+                    }
+                    print("[ICSParser] === END EVENT #\(debugEventCount) ===")
+                }
                 if let event = buildEvent(
                     from: props,
                     attendeeLines: attendeeLines,
@@ -123,6 +143,8 @@ actor ICSParser {
             }
 
             if inEvent {
+                eventLineBuffer.append(trimmed)
+
                 // Accumulate ATTENDEE lines (there can be many per event)
                 if trimmed.hasPrefix("ATTENDEE") {
                     attendeeLines.append(trimmed)

@@ -318,6 +318,18 @@ struct ICSImportView: View {
 
         let events = await parser.parse(data: data, options: options)
 
+        // DEBUG: log parse results
+        print("[ICSImport] Total eventos parseados: \(events.count)")
+        for (i, ev) in events.prefix(3).enumerated() {
+            print("[ICSImport] Evento[\(i)]: \(ev.title)")
+            print("[ICSImport]   fecha: \(ev.date), hora: \(ev.time ?? "nil")")
+            print("[ICSImport]   organizer: \(ev.organizer ?? "nil")")
+            print("[ICSImport]   attendees: \(ev.attendees.count)")
+            for att in ev.attendees {
+                print("[ICSImport]     - \(att.name ?? "?") <\(att.email ?? "?")> org=\(att.isOrganizer)")
+            }
+        }
+
         allEvents = events
         selectedIds = Set(events.map(\.id))
         parseProgress = "\(events.count) eventos encontrados"
@@ -331,7 +343,7 @@ struct ICSImportView: View {
         totalSkipped = 0
 
         let selected = allEvents.filter { selectedIds.contains($0.id) }
-        let batches = stride(from: 0, to: selected.count, by: 50).map {
+        let batches = stride(from: 0, to: selected.count, by: 10).map {
             Array(selected[$0..<min($0 + 50, selected.count)])
         }
 
