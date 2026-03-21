@@ -43,6 +43,13 @@ enum APIEndpoint {
     case contacts
     case contact(id: UUID)
 
+    // MARK: - Schedule & Absences
+    case schedule
+    case scheduleMode
+    case absences
+    case absence(id: UUID)
+    case generateHandover(id: UUID)
+
     // MARK: - Push
     case registerToken
 
@@ -91,7 +98,12 @@ enum APIEndpoint {
         case .prepareDelegationEmail(let id):  return "/delegations/\(id)/prepare-email"
         case .contacts:           return "/contacts"
         case .contact(let id):    return "/contacts/\(id)"
-        case .registerToken:      return "/push/register-token"
+        case .schedule:                  return "/schedule"
+        case .scheduleMode:              return "/schedule/mode"
+        case .absences:                  return "/schedule/absences"
+        case .absence(let id):           return "/schedule/absences/\(id)"
+        case .generateHandover(let id):  return "/schedule/absences/\(id)/generate-documents"
+        case .registerToken:             return "/push/register-token"
         case .revokeMcpToken:          return "/auth/mcp-token"
         case .googleCalendarAuth:               return "/google-calendar/auth"
         case .googleCalendarSync:               return "/google-calendar/sync"
@@ -115,7 +127,7 @@ enum APIEndpoint {
     /// Whether this endpoint targets a collection (no id) vs a single resource.
     var isCollection: Bool {
         switch self {
-        case .objectives, .meetings, .tasks, .delegations, .contacts, .login, .register, .registerToken, .revokeMcpToken, .assistantChat, .tasksToday, .tasksInbox, .tasksReorder, .updateMe, .processMinutes, .confirmTasks, .importICS, .meetingsToday, .meetingsUpcoming, .meetingsProductivity, .meetingsPast, .sendDelegationEmail, .prepareDelegationEmail, .googleCalendarAuth, .googleCalendarSync, .googleCalendarSyncAccount, .googleCalendarStatus, .googleCalendarAccounts:
+        case .objectives, .meetings, .tasks, .delegations, .contacts, .login, .register, .registerToken, .revokeMcpToken, .assistantChat, .tasksToday, .tasksInbox, .tasksReorder, .updateMe, .processMinutes, .confirmTasks, .importICS, .meetingsToday, .meetingsUpcoming, .meetingsProductivity, .meetingsPast, .sendDelegationEmail, .prepareDelegationEmail, .googleCalendarAuth, .googleCalendarSync, .googleCalendarSyncAccount, .googleCalendarStatus, .googleCalendarAccounts, .schedule, .scheduleMode, .absences, .generateHandover:
             return true
         default:
             return false

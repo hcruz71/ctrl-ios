@@ -13,6 +13,7 @@
 		0C770997CCB984B6E626E963 /* NetworkInsightView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6223F1DED857FA60FB7ABC84 /* NetworkInsightView.swift */; };
 		0CC7C83FCE028FFC0A1E7C3E /* APIError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70D8DBCD3BE31DD2352D1222 /* APIError.swift */; };
 		0F2117FC145E8900456B2DB7 /* MyDayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A506986E53390A2DEA73CFB /* MyDayView.swift */; };
+		12367AFE806819A9C575FE67 /* AbsenceFormView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A6D0A7A60FD996865FDDA7D /* AbsenceFormView.swift */; };
 		192021404792135B6A473264 /* AuthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 947B08635E4E237675826275 /* AuthManager.swift */; };
 		19D4B0FB286696E7D3B3E0E6 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1EDC5357EAF1A0105D69B4B /* User.swift */; };
 		1E19D9FD3E0C46EFE26B345B /* Color+CTRL.swift in Sources */ = {isa = PBXBuildFile; fileRef = 036BD62DCD2DC50060A4C0C8 /* Color+CTRL.swift */; };
@@ -20,6 +21,7 @@
 		31D95A21FDB11944E06EA4E4 /* TasksView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEC10A3922719C59B9D9C719 /* TasksView.swift */; };
 		35369D4C9AB74D97481A3588 /* TaskRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 622F7A4D76C2F5FA8DCED64E /* TaskRowView.swift */; };
 		3D800444EF79ED74CD655F1C /* MeetingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CD51DF9DC658F3AE13A3FA7 /* MeetingsViewModel.swift */; };
+		3F35DCAC89657348E919B50B /* ScheduleSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ECE709E82631F9D7341FAB1 /* ScheduleSettingsView.swift */; };
 		4410F3F2F5012E0C51BE7596 /* ContactsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46D2313733E4F034245B93D1 /* ContactsViewModel.swift */; };
 		4889113267D7155BAFC887ED /* PeopleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D1DEBF2E1339735151F9F96 /* PeopleView.swift */; };
 		4A5C8B925724E78A303F21BD /* PushManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADFDB41BC7D103108536BCB4 /* PushManager.swift */; };
@@ -44,11 +46,14 @@
 		901F43A3C05C793E253F9EE1 /* ICSImportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BDE28EC8D4BE52841802BBD /* ICSImportView.swift */; };
 		9417916A725AC4EBE9574FAD /* ProductivityDashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92121CD052BEFFB61BBA8D24 /* ProductivityDashboardView.swift */; };
 		982840541515DB56C9ADFC6C /* ObjectiveRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10DF027E47C9DECD467A86A0 /* ObjectiveRowView.swift */; };
+		99C7E337BBB538E7E6FF3E0C /* AbsencesListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7A39DFFC304E1CBC642BC0A /* AbsencesListView.swift */; };
 		9B1DDC4FBC57C357E0821FE0 /* Contact.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EBA67F8D2B73CBDE6A78384 /* Contact.swift */; };
+		9D56F40DDBABEDE53FE23886 /* WorkMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA6F58A745597745EDCF35F0 /* WorkMode.swift */; };
 		9F3DB3A768CEE1232E41C9E0 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3617F069BB9E3B6F50B30776 /* AppDelegate.swift */; };
 		A32269CA08F74A74DA8F827B /* Delegation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 747152AAA74268420C1757F3 /* Delegation.swift */; };
 		A7C17EED98CE02D9EEC440FC /* ObjectivesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E8AA15000B0BF7981C24182 /* ObjectivesViewModel.swift */; };
 		A9564A98AEC45DD83039CC26 /* APIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8FABDF842457B4F00BD05B5 /* APIClient.swift */; };
+		AA9B670F7CB1B488B12FDA8D /* AbsenceDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDFBF773AC465660D16E454B /* AbsenceDetailView.swift */; };
 		B429929FD1B4F04707F6590E /* BadgeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADFCA71CA86F7F5B4ADB27B6 /* BadgeView.swift */; };
 		B60589455F8842F4E0B5673C /* DelegationsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1063F17C6BC9D67D616FF26 /* DelegationsViewModel.swift */; };
 		BB1BE756C32ECB01497ADBED /* EmptyStateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC1E7A0DF4D448B002898EFC /* EmptyStateView.swift */; };
@@ -72,6 +77,7 @@
 		00DB347F4103CABFE7FA5CB9 /* ContactsContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactsContentView.swift; sourceTree = "<group>"; };
 		036BD62DCD2DC50060A4C0C8 /* Color+CTRL.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+CTRL.swift"; sourceTree = "<group>"; };
 		0A506986E53390A2DEA73CFB /* MyDayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyDayView.swift; sourceTree = "<group>"; };
+		0A6D0A7A60FD996865FDDA7D /* AbsenceFormView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AbsenceFormView.swift; sourceTree = "<group>"; };
 		0BE52C713FC3E56E3C6A9936 /* CTRLApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CTRLApp.swift; sourceTree = "<group>"; };
 		0CD51DF9DC658F3AE13A3FA7 /* MeetingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeetingsViewModel.swift; sourceTree = "<group>"; };
 		10DF027E47C9DECD467A86A0 /* ObjectiveRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjectiveRowView.swift; sourceTree = "<group>"; };
@@ -88,6 +94,7 @@
 		498DF89075DEA18FF03D827E /* GoogleCalendarAccount.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoogleCalendarAccount.swift; sourceTree = "<group>"; };
 		54AFD9AA8053E5283F3F50C3 /* AssistantView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssistantView.swift; sourceTree = "<group>"; };
 		5EBA67F8D2B73CBDE6A78384 /* Contact.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Contact.swift; sourceTree = "<group>"; };
+		5ECE709E82631F9D7341FAB1 /* ScheduleSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleSettingsView.swift; sourceTree = "<group>"; };
 		61BEB5DEEEEB32A38882CE10 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		6223F1DED857FA60FB7ABC84 /* NetworkInsightView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkInsightView.swift; sourceTree = "<group>"; };
 		622F7A4D76C2F5FA8DCED64E /* TaskRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskRowView.swift; sourceTree = "<group>"; };
@@ -107,6 +114,7 @@
 		9B1DA4DE1AB14C8D4DAE080D /* QuickCaptureView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickCaptureView.swift; sourceTree = "<group>"; };
 		9B33EFFE7580C84B7AA3D4C8 /* DelegationRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DelegationRowView.swift; sourceTree = "<group>"; };
 		A00E7AE65E31C73949B99BEC /* TasksViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TasksViewModel.swift; sourceTree = "<group>"; };
+		A7A39DFFC304E1CBC642BC0A /* AbsencesListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AbsencesListView.swift; sourceTree = "<group>"; };
 		AD42369D15A9D66A16BE4468 /* Objective.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Objective.swift; sourceTree = "<group>"; };
 		ADFCA71CA86F7F5B4ADB27B6 /* BadgeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeView.swift; sourceTree = "<group>"; };
 		ADFDB41BC7D103108536BCB4 /* PushManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushManager.swift; sourceTree = "<group>"; };
@@ -118,12 +126,14 @@
 		C8FABDF842457B4F00BD05B5 /* APIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIClient.swift; sourceTree = "<group>"; };
 		CA37C484E3A3F7904F1E8E73 /* ContactPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactPickerView.swift; sourceTree = "<group>"; };
 		CDCDAAF0697BF9291877BEFC /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
+		CDFBF773AC465660D16E454B /* AbsenceDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AbsenceDetailView.swift; sourceTree = "<group>"; };
 		D1EDC5357EAF1A0105D69B4B /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		D204C87FA053788E023A105D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		DEC10A3922719C59B9D9C719 /* TasksView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TasksView.swift; sourceTree = "<group>"; };
 		DF4D22D98D857F3FD4CC2218 /* ContactRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactRowView.swift; sourceTree = "<group>"; };
 		DF8C8DB862AB78703FF596CC /* NavigationState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationState.swift; sourceTree = "<group>"; };
 		E64BC0E4BEA4290D599549BD /* CTRLTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CTRLTask.swift; sourceTree = "<group>"; };
+		EA6F58A745597745EDCF35F0 /* WorkMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkMode.swift; sourceTree = "<group>"; };
 		EE393C862CA2537E7DEBEA84 /* MeetingDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeetingDetailView.swift; sourceTree = "<group>"; };
 		F1063F17C6BC9D67D616FF26 /* DelegationsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DelegationsViewModel.swift; sourceTree = "<group>"; };
 		F73627F64906A12A6F0383B2 /* ProgressRingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressRingView.swift; sourceTree = "<group>"; };
@@ -163,6 +173,7 @@
 				FA55BCCF6F7843807C220466 /* Meeting.swift */,
 				AD42369D15A9D66A16BE4468 /* Objective.swift */,
 				D1EDC5357EAF1A0105D69B4B /* User.swift */,
+				EA6F58A745597745EDCF35F0 /* WorkMode.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -177,6 +188,7 @@
 				E8CA7F268C55041B0ECCD1FF /* Meetings */,
 				BB454D308ADEE23B0A1626EF /* Objectives */,
 				84CDC111E39A2D6374D60048 /* People */,
+				B652B9923F5923F1B5FCB54E /* Schedule */,
 				6621F2E404E4C03E1397C056 /* Tasks */,
 			);
 			path = Features;
@@ -305,6 +317,17 @@
 				6223F1DED857FA60FB7ABC84 /* NetworkInsightView.swift */,
 			);
 			path = Contacts;
+			sourceTree = "<group>";
+		};
+		B652B9923F5923F1B5FCB54E /* Schedule */ = {
+			isa = PBXGroup;
+			children = (
+				CDFBF773AC465660D16E454B /* AbsenceDetailView.swift */,
+				0A6D0A7A60FD996865FDDA7D /* AbsenceFormView.swift */,
+				A7A39DFFC304E1CBC642BC0A /* AbsencesListView.swift */,
+				5ECE709E82631F9D7341FAB1 /* ScheduleSettingsView.swift */,
+			);
+			path = Schedule;
 			sourceTree = "<group>";
 		};
 		BB454D308ADEE23B0A1626EF /* Objectives */ = {
@@ -436,6 +459,9 @@
 				A9564A98AEC45DD83039CC26 /* APIClient.swift in Sources */,
 				DE59C250AF0CDEA115938FB2 /* APIEndpoints.swift in Sources */,
 				0CC7C83FCE028FFC0A1E7C3E /* APIError.swift in Sources */,
+				AA9B670F7CB1B488B12FDA8D /* AbsenceDetailView.swift in Sources */,
+				12367AFE806819A9C575FE67 /* AbsenceFormView.swift in Sources */,
+				99C7E337BBB538E7E6FF3E0C /* AbsencesListView.swift in Sources */,
 				9F3DB3A768CEE1232E41C9E0 /* AppDelegate.swift in Sources */,
 				D5DD6A7BEB126C9BC25ADC56 /* AssistantView.swift in Sources */,
 				5674285CE8C94000AB7E3FD6 /* AssistantViewModel.swift in Sources */,
@@ -487,10 +513,12 @@
 				6AE6759224BEACEDF0238E7A /* ProgressRingView.swift in Sources */,
 				4A5C8B925724E78A303F21BD /* PushManager.swift in Sources */,
 				FCEDC0FCBFE371BE8DF49BAC /* QuickCaptureView.swift in Sources */,
+				3F35DCAC89657348E919B50B /* ScheduleSettingsView.swift in Sources */,
 				35369D4C9AB74D97481A3588 /* TaskRowView.swift in Sources */,
 				31D95A21FDB11944E06EA4E4 /* TasksView.swift in Sources */,
 				249F41BC741203A70092F09C /* TasksViewModel.swift in Sources */,
 				19D4B0FB286696E7D3B3E0E6 /* User.swift in Sources */,
+				9D56F40DDBABEDE53FE23886 /* WorkMode.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

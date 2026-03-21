@@ -29,6 +29,7 @@ struct ProfileView: View {
     @State private var gcalLoading = false
     @State private var accountToDelete: GoogleCalendarAccount?
     @State private var oauthCoordinator = OAuthCoordinator()
+    @State private var currentMode: WorkMode?
 
     private let personalities: [(id: String, icon: String, label: String, desc: String)] = [
         ("ejecutivo", "🎯", "Ejecutivo", "Directo, conciso, orientado a resultados"),
@@ -284,12 +285,38 @@ struct ProfileView: View {
                     #endif
                 }
 
+                Section("Horario y modos") {
+                    NavigationLink {
+                        ScheduleSettingsView()
+                    } label: {
+                        HStack {
+                            Label("Horario laboral", systemImage: "clock")
+                            Spacer()
+                            if let mode = currentMode {
+                                Text(mode.label)
+                                    .font(.caption)
+                                    .padding(.horizontal, 8)
+                                    .padding(.vertical, 3)
+                                    .background(modeColor(mode).opacity(0.15))
+                                    .foregroundStyle(modeColor(mode))
+                                    .clipShape(Capsule())
+                            }
+                        }
+                    }
+
+                    NavigationLink {
+                        AbsencesListView()
+                    } label: {
+                        Label("Vacaciones y ausencias", systemImage: "sun.max")
+                    }
+                }
+
                 Section {
                     Button(role: .destructive) {
                         authManager.logout()
                         dismiss()
                     } label: {
-                        Label("Cerrar sesión", systemImage: "rectangle.portrait.and.arrow.right")
+                        Label("Cerrar sesion", systemImage: "rectangle.portrait.and.arrow.right")
                     }
                 }
             }
@@ -303,6 +330,7 @@ struct ProfileView: View {
                 await pushManager.refreshPermissionStatus()
                 loadAssistantSettings()
                 await loadGoogleAccounts()
+                await loadCurrentMode()
             }
         }
     }
@@ -425,6 +453,24 @@ struct ProfileView: View {
         } catch { }
         accountToDelete = nil
         await loadGoogleAccounts()
+    }
+
+    private func loadCurrentMode() async {
+        do {
+            let response: WorkModeResponse = try await APIClient.shared.request(.scheduleMode)
+            currentMode = response.mode
+        } catch {
+            currentMode = .work
+        }
+    }
+
+    private func modeColor(_ mode: WorkMode) -> Color {
+        switch mode {
+        case .work:     return .blue
+        case .personal: return .green
+        case .rest:     return .gray
+        case .vacation: return .orange
+        }
     }
 
     private var permissionLabel: String {
