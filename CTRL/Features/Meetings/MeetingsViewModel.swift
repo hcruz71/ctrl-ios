@@ -106,10 +106,14 @@ final class MeetingsViewModel: ObservableObject {
     }
 
     private func updateLocal(_ meeting: Meeting) {
-        for list in [\meetings, \todayMeetings, \upcomingMeetings] as [WritableKeyPath<MeetingsViewModel, [Meeting]>] {
-            if let idx = self[keyPath: list].firstIndex(where: { $0.id == meeting.id }) {
-                self[keyPath: list][idx] = meeting
-            }
+        if let idx = meetings.firstIndex(where: { $0.id == meeting.id }) {
+            meetings[idx] = meeting
+        }
+        if let idx = todayMeetings.firstIndex(where: { $0.id == meeting.id }) {
+            todayMeetings[idx] = meeting
+        }
+        if let idx = upcomingMeetings.firstIndex(where: { $0.id == meeting.id }) {
+            upcomingMeetings[idx] = meeting
         }
     }
 
