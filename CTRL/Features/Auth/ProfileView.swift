@@ -48,25 +48,22 @@ struct ProfileView: View {
         ("amigable", "😊", "Amigable", "Casual, usa emojis, tono conversacional"),
     ]
 
-    // MARK: - Voice grouping helper
+    // MARK: - Voice helpers
 
-    private var voicesByLangGroup: [(key: String, voices: [AssistantViewModel.VoiceConfig])] {
-        let grouped = Dictionary(grouping: AssistantViewModel.voiceConfigs, by: { $0.langGroup })
-        let order = ["es", "en", "pt", "fr", "de"]
-        return order.compactMap { code in
-            guard let voices = grouped[code] else { return nil }
-            return (key: code, voices: voices)
-        }
+    private var voicesForSelectedLanguage: [AssistantViewModel.VoiceConfig] {
+        AssistantViewModel.voiceConfigs.filter { $0.langGroup == selectedLanguage }
     }
 
-    private func langGroupLabel(_ code: String) -> String {
-        switch code {
-        case "es": return "Espanol"
-        case "en": return "English"
-        case "pt": return "Portugues"
-        case "fr": return "Francais"
-        case "de": return "Deutsch"
-        default:   return code
+    private func onLanguageChanged(to code: String) {
+        LanguageManager.shared.currentLanguage = code
+        showLanguageRestart = true
+        // Auto-switch voice if current voice doesn't match new language
+        let currentVoiceLang = AssistantViewModel.voiceConfigs.first { $0.id == assistantVoice }?.langGroup
+        if currentVoiceLang != code {
+            if let firstVoice = AssistantViewModel.voiceConfigs.first(where: { $0.langGroup == code }) {
+                assistantVoice = firstVoice.id
+                UserDefaults.standard.set(firstVoice.id, forKey: "assistantVoice")
+            }
         }
     }
 
@@ -135,48 +132,39 @@ struct ProfileView: View {
                     .disabled(isSaving)
                 }
 
-                // 3. Voz del Asistente — collapsible, default collapsed, voices grouped by language
+                // 3. Voz del Asistente — only voices for selected language
                 collapsibleSection(title: "Voz del Asistente", icon: "waveform", expanded: $expandedVoice) {
-                    ForEach(voicesByLangGroup, id: \.key) { group in
-                        Text(langGroupLabel(group.key))
-                            .font(.caption)
-                            .fontWeight(.semibold)
-                            .foregroundStyle(.secondary)
-                            .textCase(.uppercase)
-                            .listRowSeparator(.hidden, edges: .top)
-
-                        ForEach(group.voices) { vc in
-                            let available = isVoiceAvailable(vc)
-                            Button {
-                                withAnimation { assistantVoice = vc.id }
-                            } label: {
-                                HStack(spacing: 12) {
-                                    Text(vc.flag)
+                    ForEach(voicesForSelectedLanguage) { vc in
+                        let available = isVoiceAvailable(vc)
+                        Button {
+                            withAnimation { assistantVoice = vc.id }
+                        } label: {
+                            HStack(spacing: 12) {
+                                Text(vc.flag)
+                                    .font(.title3)
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text(vc.label)
+                                        .font(.subheadline)
+                                        .fontWeight(.medium)
+                                        .foregroundStyle(.primary)
+                                    if !available {
+                                        Text("Descargar en Ajustes → Accesibilidad → Contenido leido")
+                                            .font(.caption2)
+                                            .foregroundStyle(.orange)
+                                    }
+                                }
+                                Spacer()
+                                Button {
+                                    previewVoice(vc)
+                                } label: {
+                                    Image(systemName: "play.circle.fill")
                                         .font(.title3)
-                                    VStack(alignment: .leading, spacing: 2) {
-                                        Text(vc.label)
-                                            .font(.subheadline)
-                                            .fontWeight(.medium)
-                                            .foregroundStyle(.primary)
-                                        if !available {
-                                            Text("Descargar en Ajustes → Accesibilidad → Contenido leído")
-                                                .font(.caption2)
-                                                .foregroundStyle(.orange)
-                                        }
-                                    }
-                                    Spacer()
-                                    Button {
-                                        previewVoice(vc)
-                                    } label: {
-                                        Image(systemName: "play.circle.fill")
-                                            .font(.title3)
-                                            .foregroundStyle(Color.ctrlPurple)
-                                    }
-                                    .buttonStyle(.plain)
-                                    if assistantVoice == vc.id {
-                                        Image(systemName: "checkmark.circle.fill")
-                                            .foregroundStyle(Color.ctrlPurple)
-                                    }
+                                        .foregroundStyle(Color.ctrlPurple)
+                                }
+                                .buttonStyle(.plain)
+                                if assistantVoice == vc.id {
+                                    Image(systemName: "checkmark.circle.fill")
+                                        .foregroundStyle(Color.ctrlPurple)
                                 }
                             }
                         }
@@ -188,8 +176,7 @@ struct ProfileView: View {
                     ForEach(LanguageManager.supportedLanguages, id: \.code) { lang in
                         Button {
                             selectedLanguage = lang.code
-                            LanguageManager.shared.currentLanguage = lang.code
-                            showLanguageRestart = true
+                            onLanguageChanged(to: lang.code)
                         } label: {
                             HStack(spacing: 12) {
                                 Text(lang.flag)

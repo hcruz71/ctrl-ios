@@ -86,7 +86,7 @@ final class AssistantViewModel: ObservableObject {
     }
 
     // MARK: Speech recognition
-    private let speechRecognizer = SFSpeechRecognizer(locale: Locale(identifier: "es-MX"))
+    private let speechRecognizer = SFSpeechRecognizer(locale: Locale(identifier: AssistantViewModel.speechLocale))
     private var recognitionTask: SFSpeechRecognitionTask?
     private var audioEngine = AVAudioEngine()
     private var recognitionRequest: SFSpeechAudioBufferRecognitionRequest?
@@ -543,6 +543,18 @@ final class AssistantViewModel: ObservableObject {
         }
     }
 
+    /// Locale identifier for SFSpeechRecognizer based on user's selected language.
+    static var speechLocale: String {
+        let lang = UserDefaults.standard.string(forKey: "appLanguage") ?? "es"
+        switch lang {
+        case "en": return "en-US"
+        case "pt": return "pt-BR"
+        case "fr": return "fr-FR"
+        case "de": return "de-DE"
+        default:   return "es-MX"
+        }
+    }
+
     // MARK: - Silence Detection
 
     private func resetSilenceTimer() {
@@ -608,26 +620,37 @@ final class AssistantViewModel: ObservableObject {
 
     static func buildGreeting(name: String) -> String {
         let hour = Calendar.current.component(.hour, from: Date())
-        let weekday = Calendar.current.component(.weekday, from: Date()) // 1=Sun, 2=Mon...
+        let lang = UserDefaults.standard.string(forKey: "appLanguage") ?? "es"
 
-        let saludo: String
-        if hour < 12 { saludo = "Buenos días" }
-        else if hour < 18 { saludo = "Buenas tardes" }
-        else { saludo = "Buenas noches" }
-
-        let contexto: String
-        switch (weekday, hour) {
-        case (2, 0..<12):
-            contexto = "Arrancamos semana. ¿Revisamos tus prioridades?"
-        case (6, 15...23):
-            contexto = "Cerrando semana. ¿Revisamos qué queda pendiente?"
-        case (_, 0..<10):
-            contexto = "¿Empezamos con tu briefing del día?"
+        switch lang {
+        case "en":
+            let greeting = hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening"
+            return "\(greeting), I am \(name). How can I help you today?"
+        case "pt":
+            let greeting = hour < 12 ? "Bom dia" : hour < 18 ? "Boa tarde" : "Boa noite"
+            return "\(greeting), sou \(name). Como posso ajuda-lo hoje?"
+        case "fr":
+            let greeting = hour < 18 ? "Bonjour" : "Bonsoir"
+            return "\(greeting), je suis \(name). Comment puis-je vous aider?"
+        case "de":
+            let greeting = hour < 12 ? "Guten Morgen" : hour < 18 ? "Guten Tag" : "Guten Abend"
+            return "\(greeting), ich bin \(name). Wie kann ich Ihnen helfen?"
         default:
-            contexto = "¿En qué nos enfocamos?"
+            let saludo = hour < 12 ? "Buenos dias" : hour < 18 ? "Buenas tardes" : "Buenas noches"
+            let weekday = Calendar.current.component(.weekday, from: Date())
+            let contexto: String
+            switch (weekday, hour) {
+            case (2, 0..<12):
+                contexto = "Arrancamos semana. Revisamos tus prioridades?"
+            case (6, 15...23):
+                contexto = "Cerrando semana. Revisamos que queda pendiente?"
+            case (_, 0..<10):
+                contexto = "Empezamos con tu briefing del dia?"
+            default:
+                contexto = "En que nos enfocamos?"
+            }
+            return "\(saludo), soy \(name). \(contexto)"
         }
-
-        return "\(saludo), soy \(name). \(contexto)"
     }
 
     // MARK: - Priority Parsing (Franklin Covey)
