@@ -31,6 +31,16 @@ struct ProfileView: View {
     @State private var oauthCoordinator = OAuthCoordinator()
     @State private var currentMode: WorkMode?
 
+    // MARK: Collapsible section state
+    @AppStorage("profile.section.assistant") private var expandedAssistant = true
+    @AppStorage("profile.section.voice") private var expandedVoice = false
+    @AppStorage("profile.section.gcal") private var expandedGCal = true
+    @AppStorage("profile.section.schedule") private var expandedSchedule = false
+    @AppStorage("profile.section.notifications") private var expandedNotifications = false
+    @AppStorage("profile.section.language") private var expandedLanguage = true
+    @State private var selectedLanguage: String = LanguageManager.shared.currentLanguage
+    @State private var showLanguageRestart = false
+
     private let personalities: [(id: String, icon: String, label: String, desc: String)] = [
         ("ejecutivo", "🎯", "Ejecutivo", "Directo, conciso, orientado a resultados"),
         ("coach", "🤝", "Coach", "Motivador, empático, da contexto adicional"),
@@ -38,9 +48,34 @@ struct ProfileView: View {
         ("amigable", "😊", "Amigable", "Casual, usa emojis, tono conversacional"),
     ]
 
+    // MARK: - Voice grouping helper
+
+    private var voicesByLangGroup: [(key: String, voices: [AssistantViewModel.VoiceConfig])] {
+        let grouped = Dictionary(grouping: AssistantViewModel.voiceConfigs, by: { $0.langGroup })
+        let order = ["es", "en", "pt", "fr", "de"]
+        return order.compactMap { code in
+            guard let voices = grouped[code] else { return nil }
+            return (key: code, voices: voices)
+        }
+    }
+
+    private func langGroupLabel(_ code: String) -> String {
+        switch code {
+        case "es": return "Espanol"
+        case "en": return "English"
+        case "pt": return "Portugues"
+        case "fr": return "Francais"
+        case "de": return "Deutsch"
+        default:   return code
+        }
+    }
+
+    // MARK: - Body
+
     var body: some View {
         NavigationStack {
             List {
+                // 1. User info — always visible
                 if let user = authManager.currentUser {
                     Section {
                         Label(user.name, systemImage: "person.fill")
@@ -48,7 +83,8 @@ struct ProfileView: View {
                     }
                 }
 
-                Section("Mi Asistente") {
+                // 2. Mi Asistente — collapsible, default expanded
+                collapsibleSection(title: "Mi Asistente", icon: "sparkles", expanded: $expandedAssistant) {
                     HStack {
                         Label("Nombre", systemImage: "sparkles")
                         Spacer()
@@ -99,45 +135,84 @@ struct ProfileView: View {
                     .disabled(isSaving)
                 }
 
-                Section("Voz del Asistente") {
-                    ForEach(AssistantViewModel.voiceConfigs) { vc in
-                        let available = isVoiceAvailable(vc)
-                        Button {
-                            withAnimation { assistantVoice = vc.id }
-                        } label: {
-                            HStack(spacing: 12) {
-                                Text(vc.flag)
-                                    .font(.title3)
-                                VStack(alignment: .leading, spacing: 2) {
-                                    Text(vc.label)
-                                        .font(.subheadline)
-                                        .fontWeight(.medium)
-                                        .foregroundStyle(.primary)
-                                    if !available {
-                                        Text("Descargar en Ajustes → Accesibilidad → Contenido leído")
-                                            .font(.caption2)
-                                            .foregroundStyle(.orange)
-                                    }
-                                }
-                                Spacer()
-                                Button {
-                                    previewVoice(vc)
-                                } label: {
-                                    Image(systemName: "play.circle.fill")
+                // 3. Voz del Asistente — collapsible, default collapsed, voices grouped by language
+                collapsibleSection(title: "Voz del Asistente", icon: "waveform", expanded: $expandedVoice) {
+                    ForEach(voicesByLangGroup, id: \.key) { group in
+                        Text(langGroupLabel(group.key))
+                            .font(.caption)
+                            .fontWeight(.semibold)
+                            .foregroundStyle(.secondary)
+                            .textCase(.uppercase)
+                            .listRowSeparator(.hidden, edges: .top)
+
+                        ForEach(group.voices) { vc in
+                            let available = isVoiceAvailable(vc)
+                            Button {
+                                withAnimation { assistantVoice = vc.id }
+                            } label: {
+                                HStack(spacing: 12) {
+                                    Text(vc.flag)
                                         .font(.title3)
-                                        .foregroundStyle(Color.ctrlPurple)
-                                }
-                                .buttonStyle(.plain)
-                                if assistantVoice == vc.id {
-                                    Image(systemName: "checkmark.circle.fill")
-                                        .foregroundStyle(Color.ctrlPurple)
+                                    VStack(alignment: .leading, spacing: 2) {
+                                        Text(vc.label)
+                                            .font(.subheadline)
+                                            .fontWeight(.medium)
+                                            .foregroundStyle(.primary)
+                                        if !available {
+                                            Text("Descargar en Ajustes → Accesibilidad → Contenido leído")
+                                                .font(.caption2)
+                                                .foregroundStyle(.orange)
+                                        }
+                                    }
+                                    Spacer()
+                                    Button {
+                                        previewVoice(vc)
+                                    } label: {
+                                        Image(systemName: "play.circle.fill")
+                                            .font(.title3)
+                                            .foregroundStyle(Color.ctrlPurple)
+                                    }
+                                    .buttonStyle(.plain)
+                                    if assistantVoice == vc.id {
+                                        Image(systemName: "checkmark.circle.fill")
+                                            .foregroundStyle(Color.ctrlPurple)
+                                    }
                                 }
                             }
                         }
                     }
                 }
 
-                Section("Google Calendar") {
+                // 4. Idioma — collapsible, default expanded (NEW)
+                collapsibleSection(title: "Idioma", icon: "globe", expanded: $expandedLanguage) {
+                    ForEach(LanguageManager.supportedLanguages, id: \.code) { lang in
+                        Button {
+                            selectedLanguage = lang.code
+                            LanguageManager.shared.currentLanguage = lang.code
+                            showLanguageRestart = true
+                        } label: {
+                            HStack(spacing: 12) {
+                                Text(lang.flag)
+                                    .font(.title3)
+                                Text(lang.label)
+                                    .foregroundStyle(.primary)
+                                Spacer()
+                                if selectedLanguage == lang.code {
+                                    Image(systemName: "checkmark.circle.fill")
+                                        .foregroundStyle(Color.ctrlPurple)
+                                }
+                            }
+                        }
+                    }
+                    if showLanguageRestart {
+                        Label("Reinicia la app para aplicar el idioma", systemImage: "arrow.clockwise")
+                            .font(.caption)
+                            .foregroundStyle(.orange)
+                    }
+                }
+
+                // 5. Google Calendar — collapsible, default expanded
+                collapsibleSection(title: "Google Calendar", icon: "calendar", expanded: $expandedGCal) {
                     if gcalLoading && googleAccounts.isEmpty {
                         HStack {
                             Spacer()
@@ -148,7 +223,6 @@ struct ProfileView: View {
 
                     ForEach(googleAccounts) { account in
                         HStack(spacing: 12) {
-                            // Avatar with initial
                             Circle()
                                 .fill(Color.blue.opacity(0.15))
                                 .frame(width: 36, height: 36)
@@ -238,7 +312,35 @@ struct ProfileView: View {
                     Text("Se desconectará \(accountToDelete?.email ?? "") de CTRL. Las reuniones importadas se conservan.")
                 }
 
-                Section("Notificaciones") {
+                // 6. Horario y modos — collapsible, default collapsed
+                collapsibleSection(title: "Horario y modos", icon: "clock", expanded: $expandedSchedule) {
+                    NavigationLink {
+                        ScheduleSettingsView()
+                    } label: {
+                        HStack {
+                            Label("Horario laboral", systemImage: "clock")
+                            Spacer()
+                            if let mode = currentMode {
+                                Text(mode.label)
+                                    .font(.caption)
+                                    .padding(.horizontal, 8)
+                                    .padding(.vertical, 3)
+                                    .background(modeColor(mode).opacity(0.15))
+                                    .foregroundStyle(modeColor(mode))
+                                    .clipShape(Capsule())
+                            }
+                        }
+                    }
+
+                    NavigationLink {
+                        AbsencesListView()
+                    } label: {
+                        Label("Vacaciones y ausencias", systemImage: "sun.max")
+                    }
+                }
+
+                // 7. Notificaciones — collapsible, default collapsed
+                collapsibleSection(title: "Notificaciones", icon: "bell.fill", expanded: $expandedNotifications) {
                     HStack {
                         Label("Estado", systemImage: "bell.fill")
                         Spacer()
@@ -285,32 +387,7 @@ struct ProfileView: View {
                     #endif
                 }
 
-                Section("Horario y modos") {
-                    NavigationLink {
-                        ScheduleSettingsView()
-                    } label: {
-                        HStack {
-                            Label("Horario laboral", systemImage: "clock")
-                            Spacer()
-                            if let mode = currentMode {
-                                Text(mode.label)
-                                    .font(.caption)
-                                    .padding(.horizontal, 8)
-                                    .padding(.vertical, 3)
-                                    .background(modeColor(mode).opacity(0.15))
-                                    .foregroundStyle(modeColor(mode))
-                                    .clipShape(Capsule())
-                            }
-                        }
-                    }
-
-                    NavigationLink {
-                        AbsencesListView()
-                    } label: {
-                        Label("Vacaciones y ausencias", systemImage: "sun.max")
-                    }
-                }
-
+                // 8. Logout — always visible
                 Section {
                     Button(role: .destructive) {
                         authManager.logout()
@@ -331,6 +408,41 @@ struct ProfileView: View {
                 loadAssistantSettings()
                 await loadGoogleAccounts()
                 await loadCurrentMode()
+            }
+        }
+    }
+
+    // MARK: - Collapsible Section Builder
+
+    @ViewBuilder
+    private func collapsibleSection<Content: View>(
+        title: String,
+        icon: String,
+        expanded: Binding<Bool>,
+        @ViewBuilder content: () -> Content
+    ) -> some View {
+        Section {
+            if expanded.wrappedValue {
+                content()
+            }
+        } header: {
+            Button {
+                withAnimation(.easeInOut(duration: 0.25)) {
+                    expanded.wrappedValue.toggle()
+                }
+            } label: {
+                HStack(spacing: 8) {
+                    Image(systemName: icon)
+                        .foregroundStyle(Color.ctrlPurple)
+                        .frame(width: 20)
+                    Text(title)
+                        .fontWeight(.semibold)
+                        .foregroundStyle(.primary)
+                    Spacer()
+                    Image(systemName: expanded.wrappedValue ? "chevron.up" : "chevron.down")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
             }
         }
     }
@@ -357,11 +469,13 @@ struct ProfileView: View {
         UserDefaults.standard.set(finalName, forKey: "assistantName")
         UserDefaults.standard.set(assistantPersonality, forKey: "assistantPersonality")
         UserDefaults.standard.set(assistantVoice, forKey: "assistantVoice")
+        UserDefaults.standard.set(selectedLanguage, forKey: "appLanguage")
 
         let body = UpdateUserBody(
             assistantName: finalName,
             assistantPersonality: assistantPersonality,
-            assistantVoice: assistantVoice
+            assistantVoice: assistantVoice,
+            language: selectedLanguage
         )
         do {
             let _: User = try await APIClient.shared.request(.updateMe, method: "PATCH", body: body)
@@ -384,9 +498,7 @@ struct ProfileView: View {
 
     private func previewVoice(_ vc: AssistantViewModel.VoiceConfig) {
         previewSynthesizer.stopSpeaking(at: .immediate)
-        let sampleText = vc.language.hasPrefix("en")
-            ? "Hi, I'm your CTRL assistant"
-            : "Hola, soy tu asistente CTRL"
+        let sampleText = AssistantViewModel.voicePreviewText(for: vc.langGroup)
         let utterance = AVSpeechUtterance(string: sampleText)
 
         if let id = vc.identifier {

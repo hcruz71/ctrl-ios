@@ -474,25 +474,74 @@ final class AssistantViewModel: ObservableObject {
         let language: String
         let namePrefix: String
         let identifier: String? // com.apple.voice.compact...
+        let langGroup: String   // "es", "en", "pt", "fr", "de"
     }
 
     static let voiceConfigs: [VoiceConfig] = [
+        // Español
         VoiceConfig(id: "es-MX-female", flag: "🇲🇽", label: "Paulina (es-MX)",
                     language: "es-MX", namePrefix: "Paulina",
-                    identifier: "com.apple.voice.compact.es-MX.Paulina"),
+                    identifier: "com.apple.voice.compact.es-MX.Paulina", langGroup: "es"),
         VoiceConfig(id: "es-MX-male", flag: "🇲🇽", label: "Juan (es-MX)",
                     language: "es-MX", namePrefix: "Juan",
-                    identifier: "com.apple.voice.compact.es-MX.Juan"),
-        VoiceConfig(id: "es-ES-female", flag: "🇪🇸", label: "Mónica (es-ES)",
-                    language: "es-ES", namePrefix: "Mónica",
-                    identifier: "com.apple.voice.compact.es-ES.Monica"),
+                    identifier: "com.apple.voice.compact.es-MX.Juan", langGroup: "es"),
+        VoiceConfig(id: "es-ES-female", flag: "🇪🇸", label: "Monica (es-ES)",
+                    language: "es-ES", namePrefix: "Monica",
+                    identifier: "com.apple.voice.compact.es-ES.Monica", langGroup: "es"),
         VoiceConfig(id: "es-ES-male", flag: "🇪🇸", label: "Jorge (es-ES)",
                     language: "es-ES", namePrefix: "Jorge",
-                    identifier: "com.apple.voice.compact.es-ES.Jorge"),
-        VoiceConfig(id: "en-US-female", flag: "🇺🇸", label: "Nicky (en-US)",
-                    language: "en-US", namePrefix: "Nicky",
-                    identifier: "com.apple.voice.compact.en-US.Samantha"),
+                    identifier: "com.apple.voice.compact.es-ES.Jorge", langGroup: "es"),
+        // English
+        VoiceConfig(id: "en-US-female", flag: "🇺🇸", label: "Samantha (en-US)",
+                    language: "en-US", namePrefix: "Samantha",
+                    identifier: "com.apple.voice.compact.en-US.Samantha", langGroup: "en"),
+        VoiceConfig(id: "en-US-male", flag: "🇺🇸", label: "Alex (en-US)",
+                    language: "en-US", namePrefix: "Alex",
+                    identifier: nil, langGroup: "en"),
+        VoiceConfig(id: "en-GB-male", flag: "🇬🇧", label: "Daniel (en-GB)",
+                    language: "en-GB", namePrefix: "Daniel",
+                    identifier: "com.apple.voice.compact.en-GB.Daniel", langGroup: "en"),
+        VoiceConfig(id: "en-GB-female", flag: "🇬🇧", label: "Kate (en-GB)",
+                    language: "en-GB", namePrefix: "Kate",
+                    identifier: nil, langGroup: "en"),
+        VoiceConfig(id: "en-AU-female", flag: "🇦🇺", label: "Karen (en-AU)",
+                    language: "en-AU", namePrefix: "Karen",
+                    identifier: "com.apple.voice.compact.en-AU.Karen", langGroup: "en"),
+        // Portugues
+        VoiceConfig(id: "pt-BR-female", flag: "🇧🇷", label: "Luciana (pt-BR)",
+                    language: "pt-BR", namePrefix: "Luciana",
+                    identifier: "com.apple.voice.compact.pt-BR.Luciana", langGroup: "pt"),
+        VoiceConfig(id: "pt-BR-male", flag: "🇧🇷", label: "Felipe (pt-BR)",
+                    language: "pt-BR", namePrefix: "Felipe",
+                    identifier: nil, langGroup: "pt"),
+        VoiceConfig(id: "pt-PT-female", flag: "🇵🇹", label: "Joana (pt-PT)",
+                    language: "pt-PT", namePrefix: "Joana",
+                    identifier: "com.apple.voice.compact.pt-PT.Joana", langGroup: "pt"),
+        // Francais
+        VoiceConfig(id: "fr-FR-male", flag: "🇫🇷", label: "Thomas (fr-FR)",
+                    language: "fr-FR", namePrefix: "Thomas",
+                    identifier: "com.apple.voice.compact.fr-FR.Thomas", langGroup: "fr"),
+        VoiceConfig(id: "fr-FR-female", flag: "🇫🇷", label: "Amelie (fr-FR)",
+                    language: "fr-FR", namePrefix: "Amelie",
+                    identifier: "com.apple.voice.compact.fr-FR.Amelie", langGroup: "fr"),
+        // Deutsch
+        VoiceConfig(id: "de-DE-female", flag: "🇩🇪", label: "Anna (de-DE)",
+                    language: "de-DE", namePrefix: "Anna",
+                    identifier: "com.apple.voice.compact.de-DE.Anna", langGroup: "de"),
+        VoiceConfig(id: "de-DE-male", flag: "🇩🇪", label: "Stefan (de-DE)",
+                    language: "de-DE", namePrefix: "Stefan",
+                    identifier: nil, langGroup: "de"),
     ]
+
+    static func voicePreviewText(for langGroup: String) -> String {
+        switch langGroup {
+        case "en": return "Hello, I am your CTRL assistant"
+        case "pt": return "Ola, sou seu assistente CTRL"
+        case "fr": return "Bonjour, je suis votre assistant CTRL"
+        case "de": return "Hallo, ich bin Ihr CTRL-Assistent"
+        default:   return "Hola, soy tu asistente CTRL"
+        }
+    }
 
     // MARK: - Silence Detection
 
