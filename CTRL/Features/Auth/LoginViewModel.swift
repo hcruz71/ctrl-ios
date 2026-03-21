@@ -38,4 +38,39 @@ final class LoginViewModel: ObservableObject {
         }
         isLoading = false
     }
+
+    // MARK: - Social Auth
+
+    func loginWithApple(identityToken: String, fullName: String?) async {
+        isLoading = true
+        errorMessage = nil
+        do {
+            struct AppleBody: Encodable {
+                let identityToken: String
+                let fullName: String?
+            }
+            let body = AppleBody(identityToken: identityToken, fullName: fullName)
+            let result: AuthResponse = try await APIClient.shared.request(.loginApple, body: body)
+            await AuthManager.shared.handleAuthResponse(token: result.token)
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+        isLoading = false
+    }
+
+    func loginWithGoogle(idToken: String) async {
+        isLoading = true
+        errorMessage = nil
+        do {
+            struct GoogleBody: Encodable {
+                let idToken: String
+            }
+            let body = GoogleBody(idToken: idToken)
+            let result: AuthResponse = try await APIClient.shared.request(.loginGoogle, body: body)
+            await AuthManager.shared.handleAuthResponse(token: result.token)
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+        isLoading = false
+    }
 }

@@ -59,6 +59,16 @@ final class AuthManager: ObservableObject {
         await PushManager.shared.requestPermissionAndRegister()
     }
 
+    /// Handles a token received from social auth (Apple / Google).
+    func handleAuthResponse(token: String) async {
+        isLoading = true
+        defer { isLoading = false }
+        KeychainHelper.saveToken(token)
+        isAuthenticated = true
+        await fetchProfile()
+        await PushManager.shared.requestPermissionAndRegister()
+    }
+
     func fetchProfile() async {
         do {
             currentUser = try await APIClient.shared.request(.me)

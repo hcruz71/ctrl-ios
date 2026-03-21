@@ -7,6 +7,8 @@ enum APIEndpoint {
     // MARK: - Auth / User
     case login
     case register
+    case loginApple
+    case loginGoogle
     case me
     case updateMe
 
@@ -92,6 +94,8 @@ enum APIEndpoint {
         switch self {
         case .login:              return "/auth/login"
         case .register:           return "/auth/register"
+        case .loginApple:             return "/auth/apple"
+        case .loginGoogle:            return "/auth/google-login"
         case .me:                 return "/auth/me"
         case .updateMe:           return "/users/me"
         case .objectives:         return "/objectives"
@@ -149,7 +153,7 @@ enum APIEndpoint {
 
     var method: String {
         switch self {
-        case .login, .register:
+        case .login, .register, .loginApple, .loginGoogle:
             return "POST"
         default:
             return "GET"
@@ -159,7 +163,7 @@ enum APIEndpoint {
     /// Whether this endpoint targets a collection (no id) vs a single resource.
     var isCollection: Bool {
         switch self {
-        case .objectives, .meetings, .tasks, .delegations, .contacts, .login, .register, .registerToken, .revokeMcpToken, .assistantChat, .tasksToday, .tasksInbox, .tasksReorder, .updateMe, .processMinutes, .confirmTasks, .importICS, .meetingsToday, .meetingsUpcoming, .meetingsProductivity, .meetingsPast, .meetingAttendance, .meetingScore, .meetingDelegate, .sendDelegationEmail, .prepareDelegationEmail, .googleCalendarAuth, .googleCalendarSync, .googleCalendarSyncAccount, .googleCalendarStatus, .googleCalendarAccounts, .schedule, .scheduleMode, .absences, .generateHandover, .objectiveKpi, .objectiveMeasurements, .projects, .projectSummary, .usageSummary, .subscriptionVerify, .subscriptionMe, .subscriptionPlans, .subscriptionRestore:
+        case .objectives, .meetings, .tasks, .delegations, .contacts, .login, .register, .loginApple, .loginGoogle, .registerToken, .revokeMcpToken, .assistantChat, .tasksToday, .tasksInbox, .tasksReorder, .updateMe, .processMinutes, .confirmTasks, .importICS, .meetingsToday, .meetingsUpcoming, .meetingsProductivity, .meetingsPast, .meetingAttendance, .meetingScore, .meetingDelegate, .sendDelegationEmail, .prepareDelegationEmail, .googleCalendarAuth, .googleCalendarSync, .googleCalendarSyncAccount, .googleCalendarStatus, .googleCalendarAccounts, .schedule, .scheduleMode, .absences, .generateHandover, .objectiveKpi, .objectiveMeasurements, .projects, .projectSummary, .usageSummary, .subscriptionVerify, .subscriptionMe, .subscriptionPlans, .subscriptionRestore:
             return true
         default:
             return false
