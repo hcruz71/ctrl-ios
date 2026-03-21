@@ -19,7 +19,36 @@ struct Meeting: Codable, Identifiable {
 
     var icsImported: Bool?
 
+    // Attendance & scoring
+    var organizer: String?
+    var attendees: [MeetingAttendee]?
+    var attendanceStatus: String?
+    var importanceScore: Int?
+    var importanceReason: String?
+    var delegateContactId: UUID?
+    var delegateBriefing: String?
+    var delegateEmailSentAt: Date?
+
     var isFromGoogle: Bool { googleCalendarEventId != nil }
+
+    var importanceLevel: String {
+        guard let score = importanceScore else { return "sin evaluar" }
+        if score >= 70 { return "alta" }
+        if score >= 30 { return "media" }
+        return "baja"
+    }
+
+    var attendeeCount: Int {
+        attendees?.count ?? 0
+    }
+}
+
+struct MeetingAttendee: Codable {
+    var name: String?
+    var email: String?
+    var isOrganizer: Bool?
+    var contactId: String?
+    var status: String?
 }
 
 struct ICSImportEventBody: Encodable {

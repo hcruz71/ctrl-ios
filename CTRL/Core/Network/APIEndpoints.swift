@@ -27,6 +27,9 @@ enum APIEndpoint {
     case meetingsUpcoming
     case meetingsProductivity
     case meetingsPast
+    case meetingAttendance(id: UUID)
+    case meetingScore(id: UUID)
+    case meetingDelegate(id: UUID)
 
     // MARK: - Tasks
     case tasks
@@ -91,6 +94,9 @@ enum APIEndpoint {
         case .meetingsUpcoming:          return "/meetings/upcoming"
         case .meetingsProductivity:      return "/meetings/productivity"
         case .meetingsPast:              return "/meetings/past"
+        case .meetingAttendance(let id): return "/meetings/\(id)/attendance"
+        case .meetingScore(let id):      return "/meetings/\(id)/score"
+        case .meetingDelegate(let id):   return "/meetings/\(id)/delegate"
         case .tasks:              return "/tasks"
         case .task(let id):       return "/tasks/\(id)"
         case .tasksToday:         return "/tasks/today"
@@ -131,7 +137,7 @@ enum APIEndpoint {
     /// Whether this endpoint targets a collection (no id) vs a single resource.
     var isCollection: Bool {
         switch self {
-        case .objectives, .meetings, .tasks, .delegations, .contacts, .login, .register, .registerToken, .revokeMcpToken, .assistantChat, .tasksToday, .tasksInbox, .tasksReorder, .updateMe, .processMinutes, .confirmTasks, .importICS, .meetingsToday, .meetingsUpcoming, .meetingsProductivity, .meetingsPast, .sendDelegationEmail, .prepareDelegationEmail, .googleCalendarAuth, .googleCalendarSync, .googleCalendarSyncAccount, .googleCalendarStatus, .googleCalendarAccounts, .schedule, .scheduleMode, .absences, .generateHandover, .objectiveKpi, .objectiveMeasurements:
+        case .objectives, .meetings, .tasks, .delegations, .contacts, .login, .register, .registerToken, .revokeMcpToken, .assistantChat, .tasksToday, .tasksInbox, .tasksReorder, .updateMe, .processMinutes, .confirmTasks, .importICS, .meetingsToday, .meetingsUpcoming, .meetingsProductivity, .meetingsPast, .meetingAttendance, .meetingScore, .meetingDelegate, .sendDelegationEmail, .prepareDelegationEmail, .googleCalendarAuth, .googleCalendarSync, .googleCalendarSyncAccount, .googleCalendarStatus, .googleCalendarAccounts, .schedule, .scheduleMode, .absences, .generateHandover, .objectiveKpi, .objectiveMeasurements:
             return true
         default:
             return false

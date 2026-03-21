@@ -64,6 +64,55 @@ final class MeetingsViewModel: ObservableObject {
         }
     }
 
+    // MARK: - Attendance & Scoring
+
+    func updateAttendance(meetingId: UUID, status: String) async {
+        struct Body: Encodable { let status: String }
+        do {
+            let updated: Meeting = try await APIClient.shared.request(
+                .meetingAttendance(id: meetingId), method: "PATCH", body: Body(status: status)
+            )
+            updateLocal(updated)
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+    }
+
+    func scoreImportance(meetingId: UUID) async {
+        do {
+            let updated: Meeting = try await APIClient.shared.request(
+                .meetingScore(id: meetingId), method: "POST"
+            )
+            updateLocal(updated)
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+    }
+
+    func delegateMeeting(meetingId: UUID, contactId: UUID, sendEmail: Bool) async -> Meeting? {
+        struct Body: Encodable { let contactId: String; let sendEmail: Bool }
+        do {
+            let updated: Meeting = try await APIClient.shared.request(
+                .meetingDelegate(id: meetingId),
+                method: "POST",
+                body: Body(contactId: contactId.uuidString, sendEmail: sendEmail)
+            )
+            updateLocal(updated)
+            return updated
+        } catch {
+            errorMessage = error.localizedDescription
+            return nil
+        }
+    }
+
+    private func updateLocal(_ meeting: Meeting) {
+        for list in [\meetings, \todayMeetings, \upcomingMeetings] as [WritableKeyPath<MeetingsViewModel, [Meeting]>] {
+            if let idx = self[keyPath: list].firstIndex(where: { $0.id == meeting.id }) {
+                self[keyPath: list][idx] = meeting
+            }
+        }
+    }
+
     func fetchObjectives() async {
         do {
             objectives = try await APIClient.shared.request(.objectives)
