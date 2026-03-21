@@ -344,7 +344,9 @@ struct ICSImportView: View {
                     date: ev.date,
                     time: ev.time,
                     participants: ev.participants,
-                    agenda: ev.agenda
+                    agenda: ev.agenda,
+                    organizer: ev.organizer,
+                    attendees: ev.attendees.isEmpty ? nil : ev.attendees
                 )
             }
 

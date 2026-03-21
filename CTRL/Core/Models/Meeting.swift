@@ -57,6 +57,8 @@ struct ICSImportEventBody: Encodable {
     var time: String?
     var participants: String?
     var agenda: String?
+    var organizer: String?
+    var attendees: [ICSAttendee]?
 }
 
 struct ICSImportBody: Encodable {
@@ -66,6 +68,7 @@ struct ICSImportBody: Encodable {
 struct ICSImportResult: Codable {
     var imported: Int
     var skipped: Int
+    var updated: Int?
 }
 
 struct CreateMeetingBody: Encodable {
