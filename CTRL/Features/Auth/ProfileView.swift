@@ -78,6 +78,21 @@ struct ProfileView: View {
                     Section {
                         Label(user.name, systemImage: "person.fill")
                         Label(user.email, systemImage: "envelope.fill")
+                        HStack {
+                            Label("Plan", systemImage: "crown")
+                            Spacer()
+                            NavigationLink {
+                                SubscriptionView()
+                            } label: {
+                                Text(StoreManager.shared.currentPlan.label.uppercased())
+                                    .font(.caption.bold())
+                                    .padding(.horizontal, 8)
+                                    .padding(.vertical, 4)
+                                    .background(planBadgeColor.opacity(0.15))
+                                    .foregroundStyle(planBadgeColor)
+                                    .clipShape(Capsule())
+                            }
+                        }
                     }
                 }
 
@@ -579,6 +594,14 @@ struct ProfileView: View {
         case .personal: return .green
         case .rest:     return .gray
         case .vacation: return .orange
+        }
+    }
+
+    private var planBadgeColor: Color {
+        switch StoreManager.shared.currentPlan {
+        case .free: return .gray
+        case .pro: return Color.ctrlPurple
+        case .team: return .orange
         }
     }
 

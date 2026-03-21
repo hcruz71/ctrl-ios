@@ -6,6 +6,7 @@ struct CTRLApp: App {
     @StateObject private var authManager = AuthManager.shared
     @StateObject private var navigationState = NavigationState.shared
     @StateObject private var lang = LanguageManager.shared
+    @StateObject private var store = StoreManager.shared
 
     var body: some Scene {
         WindowGroup {
@@ -13,6 +14,9 @@ struct CTRLApp: App {
                 .environmentObject(authManager)
                 .environmentObject(navigationState)
                 .environmentObject(lang)
+                .environmentObject(store)
+                .task { await store.listenForTransactions() }
+                .task { await store.checkCurrentEntitlements() }
         }
     }
 }
