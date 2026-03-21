@@ -33,9 +33,9 @@ struct CTRLTabView: View {
                     }
                     .tag(3)
 
-                DelegationsView()
+                PeopleView()
                     .tabItem {
-                        Label("Delegaciones", systemImage: "person.2")
+                        Label("Personas", systemImage: "person.2")
                     }
                     .badge(delegationsVM.pendingCount)
                     .tag(4)

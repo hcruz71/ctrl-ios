@@ -1,11 +1,12 @@
 import SwiftUI
 
-struct ContactsView: View {
+/// Contacts list content without its own NavigationStack — embeddable in PeopleView.
+struct ContactsContentView: View {
     @StateObject private var vm = ContactsViewModel()
     @State private var showingAdd = false
     @State private var showingNetworkInsight = false
     @State private var searchText = ""
-    @State private var selectedTab = 0
+    @State private var selectedNetworkTab = 0
 
     @State private var newName = ""
     @State private var newEmail = ""
@@ -16,7 +17,7 @@ struct ContactsView: View {
     @State private var newInfluenceLevel = ""
     @State private var newRelationshipStrength = 3
 
-    private let tabs = ["Todos", "Operativa", "Personal", "Estrategica", "Sin clasificar"]
+    private let networkTabs = ["Todos", "Operativa", "Personal", "Estrategica", "Sin clasificar"]
     private let networkTypes = [
         ("operativa", "Operativa", "wrench.and.screwdriver", "Trabajamos juntos en el dia a dia"),
         ("personal", "Personal", "leaf", "Apoya mi desarrollo profesional"),
@@ -25,17 +26,13 @@ struct ContactsView: View {
 
     private var filteredContacts: [Contact] {
         var list = vm.contacts
-
-        // Tab filter
-        switch selectedTab {
+        switch selectedNetworkTab {
         case 1: list = list.filter { $0.networkType == "operativa" }
         case 2: list = list.filter { $0.networkType == "personal" }
         case 3: list = list.filter { $0.networkType == "estrategica" }
         case 4: list = list.filter { $0.networkType == nil || $0.networkType?.isEmpty == true }
         default: break
         }
-
-        // Search filter
         if !searchText.isEmpty {
             list = list.filter {
                 $0.name.localizedCaseInsensitiveContains(searchText)
@@ -43,95 +40,91 @@ struct ContactsView: View {
                 || ($0.company?.localizedCaseInsensitiveContains(searchText) ?? false)
             }
         }
-
         return list
     }
 
     var body: some View {
-        NavigationStack {
-            VStack(spacing: 0) {
-                // Tab bar
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 8) {
-                        ForEach(tabs.indices, id: \.self) { i in
-                            Button {
-                                withAnimation { selectedTab = i }
-                            } label: {
-                                Text(tabs[i])
-                                    .font(.caption)
-                                    .fontWeight(selectedTab == i ? .semibold : .regular)
-                                    .padding(.horizontal, 12)
-                                    .padding(.vertical, 6)
-                                    .background(selectedTab == i ? Color.ctrlPurple : Color(.systemGray5))
-                                    .foregroundStyle(selectedTab == i ? .white : .primary)
-                                    .clipShape(Capsule())
-                            }
-                        }
-                    }
-                    .padding(.horizontal)
-                    .padding(.vertical, 8)
-                }
-
-                // Content
-                if vm.isLoading && vm.contacts.isEmpty {
-                    Spacer()
-                    ProgressView()
-                    Spacer()
-                } else if filteredContacts.isEmpty {
-                    Spacer()
-                    VStack(spacing: 8) {
-                        Image(systemName: "person.crop.circle")
-                            .font(.system(size: 40))
-                            .foregroundStyle(.secondary)
-                        Text("Sin contactos")
-                            .font(.headline)
-                            .foregroundStyle(.secondary)
-                    }
-                    Spacer()
-                } else {
-                    List {
-                        ForEach(filteredContacts) { contact in
-                            ContactRowWithNetwork(contact: contact)
-                                .swipeActions(edge: .trailing) {
-                                    Button(role: .destructive) {
-                                        Task { await vm.delete(id: contact.id) }
-                                    } label: {
-                                        Label("Eliminar", systemImage: "trash")
-                                    }
-                                }
-                        }
-                    }
-                    .listStyle(.plain)
-                    .refreshable { await vm.fetchContacts() }
-                    .searchable(text: $searchText, prompt: "Buscar contacto")
-                }
-            }
-            .navigationTitle("Contactos")
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    HStack(spacing: 12) {
+        VStack(spacing: 0) {
+            // Network tabs
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 8) {
+                    ForEach(networkTabs.indices, id: \.self) { i in
                         Button {
-                            showingNetworkInsight = true
+                            withAnimation { selectedNetworkTab = i }
                         } label: {
-                            Image(systemName: "chart.pie")
-                        }
-                        Button { showingAdd = true } label: {
-                            Image(systemName: "plus")
+                            Text(networkTabs[i])
+                                .font(.caption)
+                                .fontWeight(selectedNetworkTab == i ? .semibold : .regular)
+                                .padding(.horizontal, 12)
+                                .padding(.vertical, 6)
+                                .background(selectedNetworkTab == i ? Color.ctrlPurple : Color(.systemGray5))
+                                .foregroundStyle(selectedNetworkTab == i ? .white : .primary)
+                                .clipShape(Capsule())
                         }
                     }
                 }
+                .padding(.horizontal)
+                .padding(.vertical, 8)
             }
-            .withProfileButton()
-            .sheet(isPresented: $showingAdd) { addContactSheet }
-            .sheet(isPresented: $showingNetworkInsight) {
-                NetworkInsightView(contacts: vm.contacts)
+
+            // Content
+            if vm.isLoading && vm.contacts.isEmpty {
+                Spacer()
+                ProgressView()
+                Spacer()
+            } else if filteredContacts.isEmpty {
+                Spacer()
+                VStack(spacing: 8) {
+                    Image(systemName: "person.crop.circle")
+                        .font(.system(size: 40))
+                        .foregroundStyle(.secondary)
+                    Text("Sin contactos")
+                        .font(.headline)
+                        .foregroundStyle(.secondary)
+                }
+                Spacer()
+            } else {
+                List {
+                    ForEach(filteredContacts) { contact in
+                        ContactRowWithNetwork(contact: contact)
+                            .swipeActions(edge: .trailing) {
+                                Button(role: .destructive) {
+                                    Task { await vm.delete(id: contact.id) }
+                                } label: {
+                                    Label("Eliminar", systemImage: "trash")
+                                }
+                            }
+                    }
+                }
+                .listStyle(.plain)
+                .refreshable { await vm.fetchContacts() }
+                .searchable(text: $searchText, prompt: "Buscar contacto")
             }
-            .task { await vm.fetchContacts() }
-            .alert("Error", isPresented: .constant(vm.errorMessage != nil)) {
-                Button("OK") { vm.errorMessage = nil }
-            } message: {
-                Text(vm.errorMessage ?? "")
+        }
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                HStack(spacing: 12) {
+                    Button {
+                        showingNetworkInsight = true
+                    } label: {
+                        Image(systemName: "chart.pie")
+                    }
+                    Button { showingAdd = true } label: {
+                        Image(systemName: "plus")
+                    }
+                }
             }
+        }
+        .withProfileButton()
+        .sheet(isPresented: $showingAdd) { addContactSheet }
+        .sheet(isPresented: $showingNetworkInsight) {
+            NetworkInsightView(contacts: vm.contacts)
+        }
+        .task { await vm.fetchContacts() }
+        .alert("Error", isPresented: .constant(vm.errorMessage != nil)) {
+            Button("OK") { vm.errorMessage = nil }
+        } message: {
+            Text(vm.errorMessage ?? "")
         }
     }
 
@@ -237,6 +230,68 @@ struct ContactsView: View {
     }
 }
 
-#Preview {
-    ContactsView()
+// MARK: - Contact Row (shared with ContactsView)
+
+struct ContactRowWithNetwork: View {
+    let contact: Contact
+
+    var body: some View {
+        HStack(spacing: 12) {
+            Circle()
+                .fill(networkColor.opacity(0.15))
+                .frame(width: 40, height: 40)
+                .overlay {
+                    Image(systemName: contact.networkIcon)
+                        .font(.subheadline)
+                        .foregroundStyle(networkColor)
+                }
+
+            VStack(alignment: .leading, spacing: 3) {
+                HStack {
+                    Text(contact.name)
+                        .font(.subheadline)
+                        .fontWeight(.medium)
+                    if let strength = contact.relationshipStrength, strength > 0 {
+                        HStack(spacing: 1) {
+                            ForEach(1...5, id: \.self) { s in
+                                Image(systemName: s <= strength ? "star.fill" : "star")
+                                    .font(.system(size: 8))
+                                    .foregroundStyle(s <= strength ? .yellow : .clear)
+                            }
+                        }
+                    }
+                }
+                HStack(spacing: 8) {
+                    if let company = contact.company, !company.isEmpty {
+                        Text(company)
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                    Text(contact.networkLabel)
+                        .font(.caption2)
+                        .padding(.horizontal, 6)
+                        .padding(.vertical, 2)
+                        .background(networkColor.opacity(0.1))
+                        .foregroundStyle(networkColor)
+                        .clipShape(Capsule())
+                }
+            }
+            Spacer()
+            if let level = contact.influenceLevel {
+                Text(level.capitalized)
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+            }
+        }
+        .padding(.vertical, 2)
+    }
+
+    private var networkColor: Color {
+        switch contact.networkType {
+        case "operativa":   return .blue
+        case "personal":    return .green
+        case "estrategica": return .purple
+        default:            return .gray
+        }
+    }
 }
