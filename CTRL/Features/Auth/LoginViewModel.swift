@@ -73,4 +73,12 @@ final class LoginViewModel: ObservableObject {
         }
         isLoading = false
     }
+
+    /// Handle JWT token extracted from Google OAuth callback URL
+    func handleGoogleOAuthToken(_ token: String) async {
+        isLoading = true
+        errorMessage = nil
+        await AuthManager.shared.handleAuthResponse(token: token)
+        isLoading = false
+    }
 }
