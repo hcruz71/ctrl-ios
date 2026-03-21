@@ -77,6 +77,9 @@ enum APIEndpoint {
     // MARK: - Assistant
     case assistantChat
 
+    // MARK: - Usage
+    case usageSummary
+
     // MARK: - URL building
 
     var path: String {
@@ -130,6 +133,7 @@ enum APIEndpoint {
         case .googleCalendarAccounts:           return "/google-calendar/accounts"
         case .googleCalendarAccount(let id):    return "/google-calendar/accounts/\(id)"
         case .assistantChat:           return "/assistant/chat"
+        case .usageSummary:              return "/usage/summary"
         }
     }
 
@@ -145,7 +149,7 @@ enum APIEndpoint {
     /// Whether this endpoint targets a collection (no id) vs a single resource.
     var isCollection: Bool {
         switch self {
-        case .objectives, .meetings, .tasks, .delegations, .contacts, .login, .register, .registerToken, .revokeMcpToken, .assistantChat, .tasksToday, .tasksInbox, .tasksReorder, .updateMe, .processMinutes, .confirmTasks, .importICS, .meetingsToday, .meetingsUpcoming, .meetingsProductivity, .meetingsPast, .meetingAttendance, .meetingScore, .meetingDelegate, .sendDelegationEmail, .prepareDelegationEmail, .googleCalendarAuth, .googleCalendarSync, .googleCalendarSyncAccount, .googleCalendarStatus, .googleCalendarAccounts, .schedule, .scheduleMode, .absences, .generateHandover, .objectiveKpi, .objectiveMeasurements, .projects, .projectSummary:
+        case .objectives, .meetings, .tasks, .delegations, .contacts, .login, .register, .registerToken, .revokeMcpToken, .assistantChat, .tasksToday, .tasksInbox, .tasksReorder, .updateMe, .processMinutes, .confirmTasks, .importICS, .meetingsToday, .meetingsUpcoming, .meetingsProductivity, .meetingsPast, .meetingAttendance, .meetingScore, .meetingDelegate, .sendDelegationEmail, .prepareDelegationEmail, .googleCalendarAuth, .googleCalendarSync, .googleCalendarSyncAccount, .googleCalendarStatus, .googleCalendarAccounts, .schedule, .scheduleMode, .absences, .generateHandover, .objectiveKpi, .objectiveMeasurements, .projects, .projectSummary, .usageSummary:
             return true
         default:
             return false

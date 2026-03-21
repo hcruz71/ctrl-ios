@@ -80,6 +80,7 @@
 		8A9B0C1D2E3F4A5B6C7D8E9F /* ProjectDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A8B9C0D1E2F3A4B5C6D7E8F /* ProjectDetailView.swift */; };
 		0A1B2C3D4E5F6A7B8C9D0E1F /* ProjectPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A0B1C2D3E4F5A6B7C8D9E0F /* ProjectPickerView.swift */; };
 		BB2233445566778899AA0011 /* LanguageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC3344556677889900AA1122 /* LanguageManager.swift */; };
+		EE5566778899001122334455 /* UsageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD4455667788990011223344 /* UsageView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -159,6 +160,7 @@
 		7A8B9C0D1E2F3A4B5C6D7E8F /* ProjectDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectDetailView.swift; sourceTree = "<group>"; };
 		9A0B1C2D3E4F5A6B7C8D9E0F /* ProjectPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectPickerView.swift; sourceTree = "<group>"; };
 		CC3344556677889900AA1122 /* LanguageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LanguageManager.swift; sourceTree = "<group>"; };
+		DD4455667788990011223344 /* UsageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsageView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -177,6 +179,7 @@
 				893796B7C9E94CE74C00A3AE /* LoginView.swift */,
 				757CFD3291A5F2CC1C182E79 /* LoginViewModel.swift */,
 				CDCDAAF0697BF9291877BEFC /* ProfileView.swift */,
+				DD4455667788990011223344 /* UsageView.swift */,
 			);
 			path = Auth;
 			sourceTree = "<group>";
@@ -560,6 +563,7 @@
 				35369D4C9AB74D97481A3588 /* TaskRowView.swift in Sources */,
 				31D95A21FDB11944E06EA4E4 /* TasksView.swift in Sources */,
 				249F41BC741203A70092F09C /* TasksViewModel.swift in Sources */,
+				EE5566778899001122334455 /* UsageView.swift in Sources */,
 				19D4B0FB286696E7D3B3E0E6 /* User.swift in Sources */,
 				9D56F40DDBABEDE53FE23886 /* WorkMode.swift in Sources */,
 			);

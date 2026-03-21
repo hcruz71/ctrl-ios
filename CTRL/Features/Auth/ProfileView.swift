@@ -375,6 +375,15 @@ struct ProfileView: View {
                     #endif
                 }
 
+                // Usage section — before logout
+                Section {
+                    NavigationLink {
+                        UsageView()
+                    } label: {
+                        Label("Uso de IA", systemImage: "chart.bar.fill")
+                    }
+                }
+
                 // 8. Logout — always visible
                 Section {
                     Button(role: .destructive) {

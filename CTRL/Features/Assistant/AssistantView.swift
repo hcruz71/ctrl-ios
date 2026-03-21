@@ -4,10 +4,41 @@ struct AssistantView: View {
     @StateObject private var viewModel = AssistantViewModel()
     @State private var isButtonPressed = false
     @State private var pulseAnimation = false
+    @State private var usageSummary: UsageSummary?
+    @State private var showingUsage = false
 
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
+                // Usage warning banner
+                if let s = usageSummary {
+                    if s.percentageUsed >= 90 && s.interactionsRemaining > 0 {
+                        HStack {
+                            Image(systemName: "exclamationmark.triangle.fill")
+                            Text("Quedan \(s.interactionsRemaining) interacciones")
+                            Spacer()
+                        }
+                        .font(.caption)
+                        .foregroundStyle(.white)
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 8)
+                        .background(Color.orange)
+                    } else if s.interactionsRemaining <= 0 {
+                        HStack {
+                            Image(systemName: "xmark.circle.fill")
+                            Text("Limite alcanzado")
+                            Spacer()
+                            Button("Ver plan") { showingUsage = true }
+                                .font(.caption.bold())
+                        }
+                        .font(.caption)
+                        .foregroundStyle(.white)
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 8)
+                        .background(Color.red)
+                    }
+                }
+
                 // Messages
                 ScrollViewReader { proxy in
                     ScrollView {
@@ -171,6 +202,21 @@ struct AssistantView: View {
                     }
                 }
                 ToolbarItem(placement: .topBarTrailing) {
+                    if let s = usageSummary {
+                        Button {
+                            showingUsage = true
+                        } label: {
+                            Text("\(s.interactionsUsed)/\(s.interactionsLimit)")
+                                .font(.caption.bold().monospacedDigit())
+                                .padding(.horizontal, 8)
+                                .padding(.vertical, 4)
+                                .background(usageBadgeColor(s.percentageUsed).opacity(0.15))
+                                .foregroundStyle(usageBadgeColor(s.percentageUsed))
+                                .clipShape(Capsule())
+                        }
+                    }
+                }
+                ToolbarItem(placement: .topBarTrailing) {
                     Button {
                         withAnimation(.easeInOut(duration: 0.3)) {
                             viewModel.toggleMicMode()
@@ -196,6 +242,16 @@ struct AssistantView: View {
                 Button("OK") { viewModel.errorMessage = nil }
             } message: {
                 Text(viewModel.errorMessage ?? "")
+            }
+            .sheet(isPresented: $showingUsage) {
+                NavigationStack {
+                    UsageView()
+                }
+            }
+            .task {
+                do {
+                    usageSummary = try await APIClient.shared.request(.usageSummary)
+                } catch { }
             }
         }
     }
@@ -233,6 +289,12 @@ struct AssistantView: View {
         case .speaking:   return "Claude está respondiendo"
         case .paused:     return "Pausado"
         }
+    }
+
+    private func usageBadgeColor(_ pct: Int) -> Color {
+        if pct >= 90 { return .red }
+        if pct >= 70 { return .orange }
+        return .green
     }
 
     private var hintLabel: String {

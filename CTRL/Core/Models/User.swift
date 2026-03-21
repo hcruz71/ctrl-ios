@@ -20,3 +20,15 @@ struct UpdateUserBody: Encodable {
     var assistantVoice: String?
     var language: String?
 }
+
+struct UsageSummary: Codable {
+    let plan: String
+    let interactionsUsed: Int
+    let interactionsLimit: Int
+    let interactionsRemaining: Int
+    let tokensInputTotal: Int
+    let tokensOutputTotal: Int
+    let costUsdTotal: Double
+    let resetDate: String
+    let percentageUsed: Int
+}
