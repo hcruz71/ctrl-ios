@@ -3,37 +3,76 @@ import SwiftUI
 struct ObjectivesView: View {
     @StateObject private var vm = ObjectivesViewModel()
     @State private var showingAdd = false
-    @State private var newTitle = ""
-    @State private var newKeyResult = ""
-    @State private var newArea = "Personal"
-    @State private var newHorizon = "mes"
+    @State private var selectedArea = "all"
+    @State private var selectedStatus = "activo"
+    @State private var measureObjective: Objective?
 
-    private let areas = ["SSFF", "BanCoppel", "Afore", "Omnicanal", "Personal"]
-    private let horizons = ["semana", "mes", "trimestre", "año"]
+    private var filteredObjectives: [Objective] {
+        var list = vm.objectives
+        if selectedArea != "all" {
+            list = list.filter { $0.area == selectedArea }
+        }
+        if selectedStatus != "all" {
+            list = list.filter { ($0.status ?? "activo") == selectedStatus }
+        }
+        return list
+    }
 
     var body: some View {
         NavigationStack {
-            Group {
+            VStack(spacing: 0) {
+                // Area filter tabs
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 8) {
+                        areaTab("all", "Todos", "square.grid.2x2")
+                        ForEach(ObjectiveArea.allCases) { a in
+                            areaTab(a.rawValue, a.label, a.icon)
+                        }
+                    }
+                    .padding(.horizontal)
+                    .padding(.vertical, 8)
+                }
+
+                // Status filter
+                Picker("Status", selection: $selectedStatus) {
+                    Text("Activos").tag("activo")
+                    Text("Completados").tag("completado")
+                    Text("Pausados").tag("pausado")
+                    Text("Todos").tag("all")
+                }
+                .pickerStyle(.segmented)
+                .padding(.horizontal)
+                .padding(.bottom, 8)
+
+                // Content
                 if vm.isLoading && vm.objectives.isEmpty {
+                    Spacer()
                     ProgressView()
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                } else if vm.objectives.isEmpty {
-                    EmptyStateView(
-                        icon: "target",
-                        title: "Sin objetivos",
-                        message: "Agrega tu primer objetivo para comenzar."
-                    )
+                    Spacer()
+                } else if filteredObjectives.isEmpty {
+                    Spacer()
+                    VStack(spacing: 8) {
+                        Image(systemName: "target")
+                            .font(.system(size: 40))
+                            .foregroundStyle(.secondary)
+                        Text("Sin objetivos")
+                            .font(.headline)
+                            .foregroundStyle(.secondary)
+                    }
+                    Spacer()
                 } else {
                     List {
-                        ForEach(vm.objectives) { objective in
-                            ObjectiveRowView(objective: objective)
-                                .swipeActions(edge: .trailing) {
-                                    Button(role: .destructive) {
-                                        Task { await vm.delete(id: objective.id) }
-                                    } label: {
-                                        Label("Eliminar", systemImage: "trash")
-                                    }
+                        ForEach(filteredObjectives) { objective in
+                            ObjectiveSmartRow(objective: objective) {
+                                measureObjective = objective
+                            }
+                            .swipeActions(edge: .trailing) {
+                                Button(role: .destructive) {
+                                    Task { await vm.delete(id: objective.id) }
+                                } label: {
+                                    Label("Eliminar", systemImage: "trash")
                                 }
+                            }
                         }
                     }
                     .listStyle(.plain)
@@ -50,7 +89,16 @@ struct ObjectivesView: View {
             }
             .withProfileButton()
             .sheet(isPresented: $showingAdd) {
-                addObjectiveSheet
+                SMARTObjectiveFormView {
+                    showingAdd = false
+                    Task { await vm.fetchObjectives() }
+                }
+            }
+            .sheet(item: $measureObjective) { obj in
+                KPIMeasurementSheet(objective: obj) {
+                    measureObjective = nil
+                    Task { await vm.fetchObjectives() }
+                }
             }
             .task { await vm.fetchObjectives() }
             .alert("Error", isPresented: .constant(vm.errorMessage != nil)) {
@@ -61,48 +109,126 @@ struct ObjectivesView: View {
         }
     }
 
-    private var addObjectiveSheet: some View {
-        NavigationStack {
-            Form {
-                Section("Objetivo") {
-                    TextField("Título", text: $newTitle)
-                    TextField("Resultado clave", text: $newKeyResult)
-                }
-                Section("Clasificación") {
-                    Picker("Área", selection: $newArea) {
-                        ForEach(areas, id: \.self) { Text($0) }
-                    }
-                    Picker("Horizonte", selection: $newHorizon) {
-                        ForEach(horizons, id: \.self) { Text($0) }
-                    }
+    private func areaTab(_ value: String, _ label: String, _ icon: String) -> some View {
+        Button {
+            withAnimation { selectedArea = value }
+        } label: {
+            HStack(spacing: 4) {
+                Image(systemName: icon)
+                    .font(.caption2)
+                Text(label)
+                    .font(.caption)
+            }
+            .padding(.horizontal, 10)
+            .padding(.vertical, 6)
+            .background(selectedArea == value ? Color.ctrlPurple : Color(.systemGray5))
+            .foregroundStyle(selectedArea == value ? .white : .primary)
+            .clipShape(Capsule())
+        }
+    }
+}
+
+// MARK: - Objective Row with SMART/KPI
+
+private struct ObjectiveSmartRow: View {
+    let objective: Objective
+    var onMeasure: () -> Void
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            HStack {
+                Text(objective.title)
+                    .font(.headline)
+                    .lineLimit(1)
+                Spacer()
+
+                // Status badge
+                if let status = objective.status, status != "activo" {
+                    Text(status.capitalized)
+                        .font(.caption2)
+                        .padding(.horizontal, 6)
+                        .padding(.vertical, 2)
+                        .background(statusColor(status).opacity(0.15))
+                        .foregroundStyle(statusColor(status))
+                        .clipShape(Capsule())
                 }
             }
-            .navigationTitle("Nuevo objetivo")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancelar") { showingAdd = false }
+
+            // Area + horizon
+            HStack(spacing: 8) {
+                if let area = objective.area,
+                   let areaEnum = ObjectiveArea(rawValue: area) {
+                    Label(areaEnum.label, systemImage: areaEnum.icon)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
                 }
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("Guardar") {
-                        let body = CreateObjectiveBody(
-                            title: newTitle,
-                            keyResult: newKeyResult.isEmpty ? nil : newKeyResult,
-                            area: newArea,
-                            horizon: newHorizon
-                        )
-                        Task {
-                            await vm.create(body)
-                            showingAdd = false
-                            newTitle = ""
-                            newKeyResult = ""
-                        }
+                if let horizon = objective.horizon {
+                    Text(horizon.capitalized)
+                        .font(.caption)
+                        .foregroundStyle(.tertiary)
+                }
+            }
+
+            // Progress bar
+            let pct = objective.effectiveProgress
+            HStack(spacing: 8) {
+                GeometryReader { geo in
+                    ZStack(alignment: .leading) {
+                        RoundedRectangle(cornerRadius: 3)
+                            .fill(Color.gray.opacity(0.2))
+                        RoundedRectangle(cornerRadius: 3)
+                            .fill(progressColor(pct))
+                            .frame(width: geo.size.width * CGFloat(pct) / 100)
                     }
-                    .disabled(newTitle.isEmpty)
+                }
+                .frame(height: 6)
+
+                Text("\(pct)%")
+                    .font(.caption.bold())
+                    .foregroundStyle(progressColor(pct))
+                    .frame(width: 36, alignment: .trailing)
+            }
+
+            // KPI display
+            if let kpiDisplay = objective.kpiDisplay {
+                HStack {
+                    Text(kpiDisplay)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                    Spacer()
+                    if objective.hasKpi {
+                        Button {
+                            onMeasure()
+                        } label: {
+                            Text("Medir")
+                                .font(.caption2)
+                                .padding(.horizontal, 8)
+                                .padding(.vertical, 3)
+                                .background(Color.ctrlPurple.opacity(0.15))
+                                .foregroundStyle(Color.ctrlPurple)
+                                .clipShape(Capsule())
+                        }
+                        .buttonStyle(.plain)
+                    }
                 }
             }
         }
-        .presentationDetents([.medium, .large])
+        .padding(.vertical, 4)
+    }
+
+    private func progressColor(_ pct: Int) -> Color {
+        if pct >= 70 { return .green }
+        if pct >= 30 { return .yellow }
+        return .red
+    }
+
+    private func statusColor(_ status: String) -> Color {
+        switch status {
+        case "completado": return .green
+        case "pausado":    return .orange
+        case "cancelado":  return .red
+        default:           return .blue
+        }
     }
 }
 
