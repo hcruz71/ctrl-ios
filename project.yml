@@ -3,6 +3,7 @@ options:
   bundleIdPrefix: com.hector
   deploymentTarget:
     iOS: "16.0"
+    watchOS: "10.0"
   xcodeVersion: "16.0"
   generateEmptyDirectories: true
 
@@ -43,3 +44,35 @@ targets:
         CODE_SIGN_STYLE: Automatic
     resources:
       - path: CTRL/Resources/Assets.xcassets
+    dependencies:
+      - target: CTRLWatch
+        embed: true
+
+  CTRLWatch:
+    type: application
+    platform: watchOS
+    sources:
+      - path: CTRLWatch
+        excludes:
+          - "**/.DS_Store"
+    info:
+      path: CTRLWatch/Info.plist
+      properties:
+        CFBundleDisplayName: CTRL
+        WKApplication: true
+        WKCompanionAppBundleIdentifier: com.hector.ctrl
+        NSMicrophoneUsageDescription: "CTRL necesita el microfono para comandos de voz"
+        NSSpeechRecognitionUsageDescription: "CTRL necesita reconocimiento de voz para el asistente en tu Apple Watch"
+    entitlements:
+      path: CTRLWatch/CTRLWatch.entitlements
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.hector.ctrl.watchkitapp
+        CURRENT_PROJECT_VERSION: 1
+        MARKETING_VERSION: "1.0.0"
+        CODE_SIGN_STYLE: Automatic
+        SDKROOT: watchos
+        TARGETED_DEVICE_FAMILY: 4
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+    resources:
+      - path: CTRLWatch/Assets.xcassets

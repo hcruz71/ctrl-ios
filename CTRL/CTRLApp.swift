@@ -8,6 +8,11 @@ struct CTRLApp: App {
     @StateObject private var lang = LanguageManager.shared
     @StateObject private var store = StoreManager.shared
 
+    init() {
+        // Initialize Watch bridge for WatchConnectivity
+        WatchBridge.shared.setup()
+    }
+
     var body: some Scene {
         WindowGroup {
             ContentView()
