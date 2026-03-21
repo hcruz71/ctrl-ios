@@ -7,7 +7,6 @@ struct TasksView: View {
     @State private var expandedB = true
     @State private var expandedC = true
     @State private var expandedInbox = true
-    @State private var dropTargetLevel: String?
 
     var body: some View {
         NavigationStack {
@@ -102,8 +101,6 @@ struct TasksView: View {
                     Task { await vm.reorder(level: level, ids: ids) }
                 }
 
-                // Drop zone at the bottom of each section
-                dropZone(level: level, color: color)
             }
         } header: {
             sectionHeader(title: title, icon: icon, color: color, tasks: tasks, expanded: expanded, level: level)
@@ -148,22 +145,15 @@ struct TasksView: View {
         level: String
     ) -> some View {
         let pendingCount = tasks.filter { !$0.done }.count
-        let isTargeted = dropTargetLevel == level
         Button {
             withAnimation { expanded.wrappedValue.toggle() }
         } label: {
             HStack(spacing: 6) {
                 Image(systemName: icon)
                     .foregroundStyle(color)
-                if isTargeted {
-                    Text("Soltar aqui")
-                        .fontWeight(.semibold)
-                        .foregroundStyle(color)
-                } else {
-                    Text(title)
-                        .fontWeight(.semibold)
-                        .foregroundStyle(.primary)
-                }
+                Text(title)
+                    .fontWeight(.semibold)
+                    .foregroundStyle(.primary)
                 Spacer()
                 Text("\(pendingCount)")
                     .font(.caption)
@@ -176,56 +166,13 @@ struct TasksView: View {
                     .font(.caption2)
                     .foregroundStyle(.secondary)
             }
-            .padding(.vertical, isTargeted ? 4 : 0)
-            .background(
-                isTargeted
-                    ? RoundedRectangle(cornerRadius: 6).fill(color.opacity(0.12))
-                    : RoundedRectangle(cornerRadius: 6).fill(Color.clear)
-            )
         }
         .dropDestination(for: String.self) { droppedIds, _ in
             guard let taskIdStr = droppedIds.first,
                   let taskId = UUID(uuidString: taskIdStr) else { return false }
             Task { await vm.changePriorityById(taskId, newLevel: level) }
-            dropTargetLevel = nil
             return true
-        } isTargeted: { targeted in
-            withAnimation(.easeInOut(duration: 0.2)) {
-                dropTargetLevel = targeted ? level : nil
-            }
-        }
-    }
-
-    @ViewBuilder
-    private func dropZone(level: String, color: Color) -> some View {
-        let isTargeted = dropTargetLevel == level
-        RoundedRectangle(cornerRadius: 8)
-            .fill(isTargeted ? color.opacity(0.1) : Color.clear)
-            .frame(height: isTargeted ? 44 : 8)
-            .overlay {
-                if isTargeted {
-                    HStack(spacing: 4) {
-                        Image(systemName: "arrow.down.circle")
-                            .font(.caption)
-                        Text("Soltar aqui")
-                            .font(.caption)
-                    }
-                    .foregroundStyle(color)
-                }
-            }
-            .listRowInsets(EdgeInsets())
-            .listRowSeparator(.hidden)
-            .dropDestination(for: String.self) { droppedIds, _ in
-                guard let taskIdStr = droppedIds.first,
-                      let taskId = UUID(uuidString: taskIdStr) else { return false }
-                Task { await vm.changePriorityById(taskId, newLevel: level) }
-                dropTargetLevel = nil
-                return true
-            } isTargeted: { targeted in
-                withAnimation(.easeInOut(duration: 0.2)) {
-                    dropTargetLevel = targeted ? level : nil
-                }
-            }
+        } isTargeted: { _ in }
     }
 
     // MARK: - Inbox Section
