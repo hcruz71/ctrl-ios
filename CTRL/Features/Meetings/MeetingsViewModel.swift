@@ -12,12 +12,31 @@ final class MeetingsViewModel: ObservableObject {
     @Published var todayMeetings: [Meeting] = []
     @Published var upcomingMeetings: [Meeting] = []
     @Published var productivity: MeetingProductivity?
+    @Published var attendeeContacts: [String: Contact] = [:]
+
+    func matchAttendeesWithContacts(attendees: [MeetingAttendee]) async {
+        // Fetch all user contacts once
+        if attendeeContacts.isEmpty {
+            do {
+                let contacts: [Contact] = try await APIClient.shared.request(.contacts)
+                for c in contacts {
+                    if let email = c.email?.lowercased(), !email.isEmpty {
+                        attendeeContacts[email] = c
+                    }
+                }
+            } catch { }
+        }
+    }
 
     func fetchMeetings() async {
         isLoading = true
         errorMessage = nil
         do {
             meetings = try await APIClient.shared.request(.meetings)
+            // DEBUG: log attendees
+            for m in meetings.prefix(5) {
+                print("[MeetingsVM] \(m.title) — attendees: \(m.attendees?.count ?? -1), organizer: \(m.organizer ?? "nil")")
+            }
         } catch {
             errorMessage = error.localizedDescription
         }
