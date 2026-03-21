@@ -20,8 +20,8 @@ struct ObjectiveRowView: View {
                 }
 
                 HStack(spacing: 6) {
-                    BadgeView(text: objective.area, color: .ctrlTeal)
-                    BadgeView(text: objective.horizon, color: .ctrlPurple)
+                    BadgeView(text: objective.area ?? "laboral", color: .ctrlTeal)
+                    BadgeView(text: objective.horizon ?? "mes", color: .ctrlPurple)
                 }
             }
 
