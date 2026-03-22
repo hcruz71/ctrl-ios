@@ -216,17 +216,17 @@ struct MeetingAnalysisView: View {
         // Count linked/unlinked from already-loaded meetings
         let allMeetings = vm.todayMeetings + vm.upcomingMeetings
         let total = max(allMeetings.count, 1)
-        let linked = allMeetings.filter { $0.objectiveId != nil || $0.projectId != nil }.count
+        let linked = allMeetings.filter { $0.projectId != nil }.count
         let unlinked = total - linked
 
         var msg = ""
         if unlinked > 0 {
             msg += "De tus \(total) reuniones:\n"
-            msg += "\(linked) vinculadas a objetivos o proyectos\n"
-            msg += "\(unlinked) sin vincular\n\n"
-            msg += "Las reuniones sin vinculo reducen la precision del analisis.\n\n"
+            msg += "\(linked) vinculadas a proyectos\n"
+            msg += "\(unlinked) sin vincular a ningun proyecto\n\n"
+            msg += "Te recomendamos vincularlas a un proyecto antes de analizar para obtener mejores resultados.\n\n"
         } else {
-            msg += "Tus \(total) reuniones estan vinculadas a objetivos o proyectos.\n\n"
+            msg += "Todas tus \(total) reuniones estan vinculadas a proyectos.\n\n"
         }
 
         msg += "Este analisis usara aproximadamente 3-5 interacciones.\n"
