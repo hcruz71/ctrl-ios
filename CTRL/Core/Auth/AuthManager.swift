@@ -73,6 +73,11 @@ final class AuthManager: ObservableObject {
         do {
             currentUser = try await APIClient.shared.request(.me)
             isAuthenticated = true
+            // Sync StoreManager with the backend plan so all views agree
+            if let planStr = currentUser?.plan,
+               let plan = SubscriptionPlan(rawValue: planStr) {
+                StoreManager.shared.currentPlan = plan
+            }
         } catch {
             if let apiError = error as? APIError, apiError.isUnauthorized {
                 logout()

@@ -92,7 +92,7 @@ struct ProfileView: View {
                             NavigationLink {
                                 SubscriptionView()
                             } label: {
-                                Text(StoreManager.shared.currentPlan.label.uppercased())
+                                Text(currentPlanEnum.label.uppercased())
                                     .font(.caption.bold())
                                     .padding(.horizontal, 8)
                                     .padding(.vertical, 4)
@@ -480,6 +480,7 @@ struct ProfileView: View {
                 }
             }
             .task {
+                await authManager.fetchProfile()
                 await pushManager.refreshPermissionStatus()
                 loadAssistantSettings()
                 await loadGoogleAccounts()
@@ -661,8 +662,13 @@ struct ProfileView: View {
         }
     }
 
+    private var currentPlanEnum: SubscriptionPlan {
+        guard let planStr = authManager.currentUser?.plan else { return .free }
+        return SubscriptionPlan(rawValue: planStr) ?? .free
+    }
+
     private var planBadgeColor: Color {
-        switch StoreManager.shared.currentPlan {
+        switch currentPlanEnum {
         case .free: return .gray
         case .pro: return Color.ctrlPurple
         case .team: return .orange

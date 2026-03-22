@@ -5,6 +5,7 @@ struct User: Codable, Identifiable {
     let email: String
     let name: String
     let role: String?
+    let plan: String?
     var assistantName: String?
     var assistantPersonality: String?
     var assistantVoice: String?
