@@ -3,6 +3,7 @@ import SwiftUI
 struct ProjectsView: View {
     @StateObject private var vm = ProjectsViewModel()
     @State private var showingAdd = false
+    @State private var projectToEdit: Project?
     @State private var newName = ""
     @State private var newDescription = ""
     @State private var newPriority = "B"
@@ -42,6 +43,14 @@ struct ProjectsView: View {
                             } label: {
                                 ProjectRowView(project: project)
                             }
+                            .swipeActions(edge: .leading) {
+                                Button {
+                                    projectToEdit = project
+                                } label: {
+                                    Label("Editar", systemImage: "pencil")
+                                }
+                                .tint(.blue)
+                            }
                             .swipeActions(edge: .trailing) {
                                 Button(role: .destructive) {
                                     Task { await vm.delete(id: project.id) }
@@ -66,6 +75,12 @@ struct ProjectsView: View {
             .withProfileButton()
             .sheet(isPresented: $showingAdd) {
                 addProjectSheet
+            }
+            .sheet(item: $projectToEdit) { project in
+                EditProjectSheet(vm: vm, project: project) {
+                    projectToEdit = nil
+                    Task { await vm.fetchProjects() }
+                }
             }
             .task { await vm.fetchProjects() }
             .alert("Error", isPresented: .constant(vm.errorMessage != nil)) {
@@ -237,6 +252,142 @@ private struct ProjectRowView: View {
         case "B": return .orange
         default:  return .blue
         }
+    }
+}
+
+// MARK: - Edit Project Sheet
+
+private struct EditProjectSheet: View {
+    @ObservedObject var vm: ProjectsViewModel
+    let project: Project
+    var onSave: () -> Void
+    @Environment(\.dismiss) private var dismiss
+    @StateObject private var objectivesVM = ObjectivesViewModel()
+
+    @State private var name = ""
+    @State private var desc = ""
+    @State private var priorityLevel = "B"
+    @State private var status = "activo"
+    @State private var hasStartDate = false
+    @State private var startDate = Date()
+    @State private var hasEndDate = false
+    @State private var endDate = Date()
+    @State private var selectedObjectiveId: UUID?
+    @State private var isSaving = false
+
+    private let statuses = ["activo", "pausado", "completado", "cancelado"]
+    private let df: DateFormatter = {
+        let f = DateFormatter()
+        f.dateFormat = "yyyy-MM-dd"
+        return f
+    }()
+
+    var body: some View {
+        NavigationStack {
+            Form {
+                Section("Proyecto") {
+                    TextField("Nombre", text: $name)
+                    TextField("Descripcion", text: $desc, axis: .vertical)
+                        .lineLimit(2...4)
+                }
+
+                Section("Prioridad") {
+                    Picker("Prioridad", selection: $priorityLevel) {
+                        Text("A — Urgente").tag("A")
+                        Text("B — Importante").tag("B")
+                        Text("C — Pendiente").tag("C")
+                    }
+                    .pickerStyle(.segmented)
+                }
+
+                Section("Status") {
+                    Picker("Status", selection: $status) {
+                        ForEach(statuses, id: \.self) { s in
+                            Text(s.capitalized).tag(s)
+                        }
+                    }
+                    .pickerStyle(.segmented)
+                }
+
+                Section("Objetivo vinculado") {
+                    Picker("Objetivo", selection: $selectedObjectiveId) {
+                        Text("Ninguno").tag(UUID?.none)
+                        ForEach(objectivesVM.objectives) { obj in
+                            Text(obj.title).tag(Optional(obj.id))
+                        }
+                    }
+                }
+
+                Section("Fechas") {
+                    Toggle("Fecha de inicio", isOn: $hasStartDate)
+                    if hasStartDate {
+                        DatePicker("Inicio", selection: $startDate, displayedComponents: .date)
+                    }
+                    Toggle("Fecha de fin", isOn: $hasEndDate)
+                    if hasEndDate {
+                        DatePicker("Fin", selection: $endDate, displayedComponents: .date)
+                    }
+                }
+            }
+            .toolbar {
+                ToolbarItemGroup(placement: .keyboard) {
+                    Spacer()
+                    Button("Listo") {
+                        UIApplication.shared.sendAction(
+                            #selector(UIResponder.resignFirstResponder),
+                            to: nil, from: nil, for: nil)
+                    }
+                }
+            }
+            .navigationTitle("Editar proyecto")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancelar") { dismiss() }
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Guardar") {
+                        Task { await save() }
+                    }
+                    .disabled(name.isEmpty || isSaving)
+                }
+            }
+        }
+        .task { await objectivesVM.fetchObjectives() }
+        .onAppear { loadProject() }
+        .presentationDetents([.medium, .large])
+    }
+
+    private func loadProject() {
+        name = project.name
+        desc = project.description ?? ""
+        priorityLevel = project.priorityLevel
+        status = project.status
+        selectedObjectiveId = project.objectiveId
+        if let sd = project.startDate, let d = df.date(from: sd) {
+            hasStartDate = true
+            startDate = d
+        }
+        if let ed = project.endDate, let d = df.date(from: ed) {
+            hasEndDate = true
+            endDate = d
+        }
+    }
+
+    private func save() async {
+        isSaving = true
+        let body = UpdateProjectBody(
+            name: name,
+            description: desc.isEmpty ? nil : desc,
+            objectiveId: selectedObjectiveId?.uuidString,
+            status: status,
+            priorityLevel: priorityLevel,
+            startDate: hasStartDate ? df.string(from: startDate) : nil,
+            endDate: hasEndDate ? df.string(from: endDate) : nil
+        )
+        await vm.update(id: project.id, body: body)
+        onSave()
+        dismiss()
     }
 }
 
