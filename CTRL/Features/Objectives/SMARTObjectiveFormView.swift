@@ -101,7 +101,7 @@ struct SMARTObjectiveFormView: View {
                 LazyVGrid(columns: [GridItem(.adaptive(minimum: 100))], spacing: 12) {
                     ForEach(ObjectiveArea.allCases) { a in
                         Button {
-                            area = a
+                            withAnimation { area = a }
                         } label: {
                             VStack(spacing: 6) {
                                 Text(a.emoji)
@@ -114,7 +114,12 @@ struct SMARTObjectiveFormView: View {
                             .background(area == a ? Color.ctrlPurple.opacity(0.15) : Color(.systemGray6))
                             .foregroundStyle(area == a ? Color.ctrlPurple : .primary)
                             .clipShape(RoundedRectangle(cornerRadius: 10))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 10)
+                                    .stroke(area == a ? Color.ctrlPurple : .clear, lineWidth: 2)
+                            )
                         }
+                        .buttonStyle(.plain)
                     }
                 }
                 .padding(.vertical, 4)
