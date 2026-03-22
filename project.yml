@@ -42,6 +42,7 @@ targets:
         CURRENT_PROJECT_VERSION: 1
         MARKETING_VERSION: "1.0.0"
         CODE_SIGN_STYLE: Automatic
+        CODE_SIGN_ALLOW_ENTITLEMENTS_MODIFICATION: YES
     resources:
       - path: CTRL/Resources/Assets.xcassets
     dependencies:
