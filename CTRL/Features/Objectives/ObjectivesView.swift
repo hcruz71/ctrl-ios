@@ -8,7 +8,6 @@ struct ObjectivesView: View {
     @State private var selectedStatus = "activo"
     @State private var measureObjective: Objective?
     @State private var objectiveToEdit: Objective?
-    @State private var showingProjects = false
 
     private var filteredObjectives: [Objective] {
         var list = vm.objectives
@@ -92,11 +91,6 @@ struct ObjectivesView: View {
             }
             .navigationTitle(lang.t("objectives.title"))
             .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button { showingProjects = true } label: {
-                        Image(systemName: "folder")
-                    }
-                }
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button { showingAdd = true } label: {
                         Image(systemName: "plus")
@@ -121,9 +115,6 @@ struct ObjectivesView: View {
                     measureObjective = nil
                     Task { await vm.fetchObjectives() }
                 }
-            }
-            .sheet(isPresented: $showingProjects) {
-                ProjectsView()
             }
             .task { await vm.fetchObjectives() }
             .alert("Error", isPresented: .constant(vm.errorMessage != nil)) {

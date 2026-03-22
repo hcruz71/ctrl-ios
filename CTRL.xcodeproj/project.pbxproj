@@ -47,6 +47,7 @@
 		6DCA646E48A1B9155B28E114 /* ObjectivesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8AF4F6CAFCC1575F17737F0 /* ObjectivesView.swift */; };
 		72986BA3F8B50BAB16A86E37 /* SMARTObjectiveFormView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54C1D5858E694B4488BB269C /* SMARTObjectiveFormView.swift */; };
 		74FCF73D7D3A960E3BDD5190 /* CTRLTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7920049ADD15D7CF391353FC /* CTRLTabView.swift */; };
+		7BB1C488E3AD9171D86B24BE /* DayPlanView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11CA8E9114FCAE6191BF807B /* DayPlanView.swift */; };
 		7F5B03204C43214112D74C99 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E35A5A425EDD5E673AC495B /* ContentView.swift */; };
 		80168B1C2B1A02CAE06680AA /* Objective.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD42369D15A9D66A16BE4468 /* Objective.swift */; };
 		81B50579F75774F603AEF383 /* NavigationState.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF8C8DB862AB78703FF596CC /* NavigationState.swift */; };
@@ -81,6 +82,7 @@
 		D5DD6A7BEB126C9BC25ADC56 /* AssistantView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54AFD9AA8053E5283F3F50C3 /* AssistantView.swift */; };
 		D83E452881C7A11FA3E02D80 /* KeychainHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = C635AE199357CAAC50E92DB1 /* KeychainHelper.swift */; };
 		DC38472C2EF3903029E57AFE /* WatchMainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC3E5D28A1672242FE7E0723 /* WatchMainView.swift */; };
+		DCA9C109AAE1D33F1A322B3C /* TasksDelegationsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4337005FF074AD5FE85843D9 /* TasksDelegationsView.swift */; };
 		DE2A321B082C6C317DD3C2F8 /* DelegationsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B24F1A613ECD6D4FCA90F290 /* DelegationsView.swift */; };
 		DE59C250AF0CDEA115938FB2 /* APIEndpoints.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80B0F44B02257D8251AAF414 /* APIEndpoints.swift */; };
 		DFF494EA834BDB55D0CAF59D /* WatchModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1AFFAD78AA73169F145CE08 /* WatchModels.swift */; };
@@ -130,6 +132,7 @@
 		0CD51DF9DC658F3AE13A3FA7 /* MeetingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeetingsViewModel.swift; sourceTree = "<group>"; };
 		0FA2D79F2012B7F07363AF3C /* CTRLWatch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CTRLWatch.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		10DF027E47C9DECD467A86A0 /* ObjectiveRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjectiveRowView.swift; sourceTree = "<group>"; };
+		11CA8E9114FCAE6191BF807B /* DayPlanView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DayPlanView.swift; sourceTree = "<group>"; };
 		1D1DEBF2E1339735151F9F96 /* PeopleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PeopleView.swift; sourceTree = "<group>"; };
 		1D8B659839744F71E726D771 /* SubscriptionPlan.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionPlan.swift; sourceTree = "<group>"; };
 		1E893A92F4812A42E4DE54FB /* MinutasView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MinutasView.swift; sourceTree = "<group>"; };
@@ -140,6 +143,7 @@
 		3A1CF888F823BB03C5B99460 /* ProfileToolbarModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileToolbarModifier.swift; sourceTree = "<group>"; };
 		3C81AEFBFE006FF4A32BFB0C /* ProjectDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectDetailView.swift; sourceTree = "<group>"; };
 		3FBC851CDC4F1352747B1800 /* ContactsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactsView.swift; sourceTree = "<group>"; };
+		4337005FF074AD5FE85843D9 /* TasksDelegationsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TasksDelegationsView.swift; sourceTree = "<group>"; };
 		439FF87DA6A3179EBFC1AD63 /* AssistantViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssistantViewModel.swift; sourceTree = "<group>"; };
 		46D2313733E4F034245B93D1 /* ContactsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactsViewModel.swift; sourceTree = "<group>"; };
 		498DF89075DEA18FF03D827E /* GoogleCalendarAccount.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoogleCalendarAccount.swift; sourceTree = "<group>"; };
@@ -187,7 +191,7 @@
 		ADFDB41BC7D103108536BCB4 /* PushManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushManager.swift; sourceTree = "<group>"; };
 		AFC8CD8F102E1D7A8108D211 /* MeetingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeetingsView.swift; sourceTree = "<group>"; };
 		B24F1A613ECD6D4FCA90F290 /* DelegationsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DelegationsView.swift; sourceTree = "<group>"; };
-		BCB7B72F8005F0E28D01D868 /* CTRL.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CTRL.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		BCB7B72F8005F0E28D01D868 /* CTRL.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = CTRL.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C3AEEFB479CFA8230643A843 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		C635AE199357CAAC50E92DB1 /* KeychainHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainHelper.swift; sourceTree = "<group>"; };
 		C664F04BDFE1DC00F09F61F0 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -334,6 +338,7 @@
 				0A506986E53390A2DEA73CFB /* MyDayView.swift */,
 				9B1DA4DE1AB14C8D4DAE080D /* QuickCaptureView.swift */,
 				622F7A4D76C2F5FA8DCED64E /* TaskRowView.swift */,
+				4337005FF074AD5FE85843D9 /* TasksDelegationsView.swift */,
 				DEC10A3922719C59B9D9C719 /* TasksView.swift */,
 				A00E7AE65E31C73949B99BEC /* TasksViewModel.swift */,
 			);
@@ -482,6 +487,7 @@
 		E8CA7F268C55041B0ECCD1FF /* Meetings */ = {
 			isa = PBXGroup;
 			children = (
+				11CA8E9114FCAE6191BF807B /* DayPlanView.swift */,
 				848A23D629BA52E622D6307E /* DelegateMeetingSheet.swift */,
 				2BDE28EC8D4BE52841802BBD /* ICSImportView.swift */,
 				F95DC4AB30B52BC0EB622CDA /* ICSParser.swift */,
@@ -557,9 +563,11 @@
 				LastUpgradeCheck = 1600;
 				TargetAttributes = {
 					09159ADE5BA5373811DC53BE = {
+						DevelopmentTeam = "";
 						ProvisioningStyle = Automatic;
 					};
 					449051C4D4F3A5384442DD25 = {
+						DevelopmentTeam = "";
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -631,6 +639,7 @@
 				4410F3F2F5012E0C51BE7596 /* ContactsViewModel.swift in Sources */,
 				7F5B03204C43214112D74C99 /* ContentView.swift in Sources */,
 				BB95A81039825708B436A14E /* Date+Formatting.swift in Sources */,
+				7BB1C488E3AD9171D86B24BE /* DayPlanView.swift in Sources */,
 				F79BABF4C3C5D3691067B0D4 /* DelegateMeetingSheet.swift in Sources */,
 				A32269CA08F74A74DA8F827B /* Delegation.swift in Sources */,
 				53A0D0933813E3EB05C5E0AA /* DelegationEmailSheet.swift in Sources */,
@@ -679,6 +688,7 @@
 				8CE750DCC6BF6B34120C9F42 /* SubscriptionPlan.swift in Sources */,
 				01735031421D4B5CDD7A0EBA /* SubscriptionView.swift in Sources */,
 				35369D4C9AB74D97481A3588 /* TaskRowView.swift in Sources */,
+				DCA9C109AAE1D33F1A322B3C /* TasksDelegationsView.swift in Sources */,
 				31D95A21FDB11944E06EA4E4 /* TasksView.swift in Sources */,
 				249F41BC741203A70092F09C /* TasksViewModel.swift in Sources */,
 				5581F1731D53BAB03DAD60F5 /* UsageView.swift in Sources */,
@@ -717,11 +727,9 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_ENTITLEMENTS = CTRL/CTRL.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 679TR4ZAZB;
 				INFOPLIST_FILE = CTRL/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -738,11 +746,9 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_ENTITLEMENTS = CTRL/CTRL.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 679TR4ZAZB;
 				INFOPLIST_FILE = CTRL/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -762,7 +768,6 @@
 				CODE_SIGN_ENTITLEMENTS = CTRLWatch/CTRLWatch.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 679TR4ZAZB;
 				INFOPLIST_FILE = CTRLWatch/Info.plist;
 				MARKETING_VERSION = 1.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.hector.ctrl.watchkitapp;
@@ -843,7 +848,6 @@
 				CODE_SIGN_ENTITLEMENTS = CTRLWatch/CTRLWatch.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 679TR4ZAZB;
 				INFOPLIST_FILE = CTRLWatch/Info.plist;
 				MARKETING_VERSION = 1.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.hector.ctrl.watchkitapp;

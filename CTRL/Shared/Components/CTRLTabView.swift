@@ -3,7 +3,6 @@ import SwiftUI
 struct CTRLTabView: View {
     @Binding var selectedTab: Int
     @EnvironmentObject var lang: LanguageManager
-    @StateObject private var delegationsVM = DelegationsViewModel()
     @StateObject private var tasksVM = TasksViewModel()
     @State private var showingQuickCapture = false
 
@@ -16,9 +15,9 @@ struct CTRLTabView: View {
                     }
                     .tag(0)
 
-                MeetingsView()
+                ProjectsView()
                     .tabItem {
-                        Label(lang.t("tab.meetings"), systemImage: "calendar")
+                        Label("Proyectos", systemImage: "folder.fill")
                     }
                     .tag(1)
 
@@ -28,17 +27,16 @@ struct CTRLTabView: View {
                     }
                     .tag(2)
 
-                TasksView()
+                TasksDelegationsView()
                     .tabItem {
-                        Label(lang.t("tab.tasks"), systemImage: "checkmark.circle")
+                        Label(lang.t("tab.tasks"), systemImage: "checkmark.circle.fill")
                     }
                     .tag(3)
 
-                PeopleView()
+                DayPlanView()
                     .tabItem {
-                        Label(lang.t("tab.people"), systemImage: "person.2")
+                        Label("Plan del Dia", systemImage: "calendar.badge.clock")
                     }
-                    .badge(delegationsVM.pendingCount)
                     .tag(4)
             }
             .tint(Color.ctrlPurple)
@@ -63,7 +61,7 @@ struct CTRLTabView: View {
                 Task { await tasksVM.create(body) }
             }
         }
-        .task { await delegationsVM.fetchDelegations() }
+        .task { await tasksVM.fetchTasks() }
     }
 }
 
