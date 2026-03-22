@@ -10,7 +10,7 @@ struct MeetingsView: View {
     @State private var isSyncing = false
     @State private var selectedTab = 0
     @State private var deletedCount = 0
-    @AppStorage("meetings.calendarMode") private var calendarMode = false
+    @AppStorage("meetings.calendarMode") private var calendarMode = true
 
     @State private var newTitle = ""
     @State private var newDate = Date()
