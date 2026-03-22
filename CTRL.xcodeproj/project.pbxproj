@@ -45,6 +45,7 @@
 		5AA6CE487D249D530218CDA8 /* CTRLWatchApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCE3E8AEA128453664C6AEC6 /* CTRLWatchApp.swift */; };
 		64FE2EB4B8F4FB42B1F111DF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C664F04BDFE1DC00F09F61F0 /* Assets.xcassets */; };
 		6565E8001B8A0717019CC40C /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDCDAAF0697BF9291877BEFC /* ProfileView.swift */; };
+		6699253D96817A7E598FCC44 /* EditTaskSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 139B5D4EA83727E9A9D09EC7 /* EditTaskSheet.swift */; };
 		6869DEDBDF5DA881B586B3CA /* MeetingAnalysisView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFB1C9C38F1FD20B1AE1E7AE /* MeetingAnalysisView.swift */; };
 		6AE6759224BEACEDF0238E7A /* ProgressRingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F73627F64906A12A6F0383B2 /* ProgressRingView.swift */; };
 		6DCA646E48A1B9155B28E114 /* ObjectivesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8AF4F6CAFCC1575F17737F0 /* ObjectivesView.swift */; };
@@ -139,6 +140,7 @@
 		0FA2D79F2012B7F07363AF3C /* CTRLWatch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CTRLWatch.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		10DF027E47C9DECD467A86A0 /* ObjectiveRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjectiveRowView.swift; sourceTree = "<group>"; };
 		11CA8E9114FCAE6191BF807B /* DayPlanView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DayPlanView.swift; sourceTree = "<group>"; };
+		139B5D4EA83727E9A9D09EC7 /* EditTaskSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditTaskSheet.swift; sourceTree = "<group>"; };
 		188D10DF623892FE64EC2E1B /* AIUsageAlert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIUsageAlert.swift; sourceTree = "<group>"; };
 		1D1DEBF2E1339735151F9F96 /* PeopleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PeopleView.swift; sourceTree = "<group>"; };
 		1D8B659839744F71E726D771 /* SubscriptionPlan.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionPlan.swift; sourceTree = "<group>"; };
@@ -349,6 +351,7 @@
 		6621F2E404E4C03E1397C056 /* Tasks */ = {
 			isa = PBXGroup;
 			children = (
+				139B5D4EA83727E9A9D09EC7 /* EditTaskSheet.swift */,
 				0A506986E53390A2DEA73CFB /* MyDayView.swift */,
 				9B1DA4DE1AB14C8D4DAE080D /* QuickCaptureView.swift */,
 				23E54F172D8AB9679C2BB144 /* TaskFormView.swift */,
@@ -668,6 +671,7 @@
 				54B55069FBE975A98AA71279 /* DelegationsContentView.swift in Sources */,
 				DE2A321B082C6C317DD3C2F8 /* DelegationsView.swift in Sources */,
 				B60589455F8842F4E0B5673C /* DelegationsViewModel.swift in Sources */,
+				6699253D96817A7E598FCC44 /* EditTaskSheet.swift in Sources */,
 				BB1BE756C32ECB01497ADBED /* EmptyStateView.swift in Sources */,
 				FD2C001D785C094318222D44 /* GanttChartView.swift in Sources */,
 				FD8F460F80B4E0436D8F2E42 /* GoogleCalendarAccount.swift in Sources */,

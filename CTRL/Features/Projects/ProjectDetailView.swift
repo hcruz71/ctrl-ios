@@ -9,6 +9,21 @@ struct ProjectDetailView: View {
     @State private var projectTasks: [CTRLTask] = []
     @State private var showGantt = false
     @State private var showAddTask = false
+    @State private var taskToEdit: CTRLTask?
+    @StateObject private var tasksVM = TasksViewModel()
+
+    private var urgentTasks: [CTRLTask] {
+        projectTasks.filter { $0.priorityLevel == "A" && $0.isDelegated != true }
+    }
+    private var importantTasks: [CTRLTask] {
+        projectTasks.filter { $0.priorityLevel == "B" && $0.isDelegated != true }
+    }
+    private var pendingTasks: [CTRLTask] {
+        projectTasks.filter { $0.priorityLevel == "C" && $0.isDelegated != true }
+    }
+    private var delegatedTasks: [CTRLTask] {
+        projectTasks.filter { $0.isDelegated == true }
+    }
 
     var body: some View {
         VStack(spacing: 0) {
@@ -192,66 +207,114 @@ struct ProjectDetailView: View {
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
                 List {
-                    ForEach(projectTasks) { task in
-                        HStack(spacing: 10) {
-                            // Priority badge
-                            if let level = task.priorityLevel {
-                                Text(task.priorityLabel ?? level)
-                                    .font(.caption2.bold())
-                                    .padding(.horizontal, 5)
-                                    .padding(.vertical, 2)
-                                    .background(taskLevelColor(level).opacity(0.15))
-                                    .foregroundStyle(taskLevelColor(level))
-                                    .clipShape(Capsule())
-                            }
-
-                            VStack(alignment: .leading, spacing: 2) {
-                                Text(task.title)
-                                    .font(.subheadline)
-                                    .strikethrough(task.done)
-                                    .foregroundStyle(task.done ? .secondary : .primary)
-
-                                HStack(spacing: 6) {
-                                    if let start = task.startDate {
-                                        Text(start)
-                                            .font(.caption2)
-                                            .foregroundStyle(.secondary)
-                                    }
-                                    if task.startDate != nil && task.dueDate != nil {
-                                        Image(systemName: "arrow.right")
-                                            .font(.caption2)
-                                            .foregroundStyle(.tertiary)
-                                    }
-                                    if let end = task.dueDate {
-                                        Text(end)
-                                            .font(.caption2)
-                                            .foregroundStyle(.secondary)
-                                    }
-                                    if let dur = task.duration {
-                                        Text("(\(dur))")
-                                            .font(.caption2)
-                                            .foregroundStyle(.tertiary)
-                                    }
-                                }
-                            }
-
-                            Spacer()
-
-                            if task.isDelegated == true {
-                                Image(systemName: "person.fill")
-                                    .font(.caption)
-                                    .foregroundStyle(.blue)
-                            }
-
-                            Image(systemName: task.done ? "checkmark.circle.fill" : "circle")
-                                .foregroundStyle(task.done ? .green : .secondary)
-                        }
-                        .padding(.vertical, 2)
-                    }
+                    taskPrioritySection("Urgentes (A)", icon: "flame.fill", color: .red, tasks: urgentTasks)
+                    taskPrioritySection("Importantes (B)", icon: "star.fill", color: .orange, tasks: importantTasks)
+                    taskPrioritySection("Pendientes (C)", icon: "clock.fill", color: .blue, tasks: pendingTasks)
+                    taskPrioritySection("Delegadas", icon: "person.2.fill", color: .blue, tasks: delegatedTasks)
                 }
-                .listStyle(.plain)
+                .listStyle(.sidebar)
             }
         }
+        .sheet(item: $taskToEdit) { task in
+            EditTaskSheet(task: task) {
+                Task { await loadProjectTasks() }
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func taskPrioritySection(_ title: String, icon: String, color: Color, tasks: [CTRLTask]) -> some View {
+        if !tasks.isEmpty {
+            Section {
+                ForEach(tasks) { task in
+                    taskRow(task)
+                        .swipeActions(edge: .leading) {
+                            Button { taskToEdit = task } label: {
+                                Label("Editar", systemImage: "pencil")
+                            }
+                            .tint(.blue)
+                        }
+                        .swipeActions(edge: .trailing) {
+                            Button {
+                                Task { await tasksVM.toggleDone(task: task); await loadProjectTasks() }
+                            } label: {
+                                Label(task.done ? "Pendiente" : "Completar", systemImage: task.done ? "arrow.uturn.backward" : "checkmark")
+                            }
+                            .tint(task.done ? .orange : .green)
+                        }
+                }
+            } header: {
+                HStack(spacing: 6) {
+                    Image(systemName: icon)
+                        .foregroundStyle(color)
+                    Text(title)
+                        .fontWeight(.semibold)
+                    Spacer()
+                    Text("\(tasks.filter { !$0.done }.count)")
+                        .font(.caption.bold())
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 2)
+                        .background(color.opacity(0.15), in: Capsule())
+                        .foregroundStyle(color)
+                }
+            }
+        }
+    }
+
+    private func taskRow(_ task: CTRLTask) -> some View {
+        HStack(spacing: 10) {
+            if let level = task.priorityLevel {
+                Text(task.priorityLabel ?? level)
+                    .font(.caption2.bold())
+                    .padding(.horizontal, 5)
+                    .padding(.vertical, 2)
+                    .background(taskLevelColor(level).opacity(0.15))
+                    .foregroundStyle(taskLevelColor(level))
+                    .clipShape(Capsule())
+            }
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text(task.title)
+                    .font(.subheadline)
+                    .strikethrough(task.done)
+                    .foregroundStyle(task.done ? .secondary : .primary)
+
+                HStack(spacing: 6) {
+                    if let start = task.startDate {
+                        Text(start)
+                            .font(.caption2)
+                            .foregroundStyle(.secondary)
+                    }
+                    if task.startDate != nil && task.dueDate != nil {
+                        Image(systemName: "arrow.right")
+                            .font(.caption2)
+                            .foregroundStyle(.tertiary)
+                    }
+                    if let end = task.dueDate {
+                        Text(end)
+                            .font(.caption2)
+                            .foregroundStyle(.secondary)
+                    }
+                    if let dur = task.duration {
+                        Text("(\(dur))")
+                            .font(.caption2)
+                            .foregroundStyle(.tertiary)
+                    }
+                }
+
+                if task.isDelegated == true, let assignee = task.assignee {
+                    Label(assignee, systemImage: "person.fill")
+                        .font(.caption2)
+                        .foregroundStyle(.blue)
+                }
+            }
+
+            Spacer()
+
+            Image(systemName: task.done ? "checkmark.circle.fill" : "circle")
+                .foregroundStyle(task.done ? .green : .secondary)
+        }
+        .padding(.vertical, 2)
     }
 
     private func taskLevelColor(_ level: String) -> Color {
@@ -260,6 +323,11 @@ struct ProjectDetailView: View {
         case "B": return .orange
         default: return .blue
         }
+    }
+
+    private func loadProjectTasks() async {
+        projectTasks = await vm.fetchProjectTasks(id: project.id)
+        await loadSummary()
     }
 
     private var meetingsTab: some View {
