@@ -75,6 +75,7 @@
 		A7C17EED98CE02D9EEC440FC /* ObjectivesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E8AA15000B0BF7981C24182 /* ObjectivesViewModel.swift */; };
 		A9564A98AEC45DD83039CC26 /* APIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8FABDF842457B4F00BD05B5 /* APIClient.swift */; };
 		AA9B670F7CB1B488B12FDA8D /* AbsenceDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDFBF773AC465660D16E454B /* AbsenceDetailView.swift */; };
+		B2EB2320118BF13EC2B97295 /* TaskFormView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23E54F172D8AB9679C2BB144 /* TaskFormView.swift */; };
 		B429929FD1B4F04707F6590E /* BadgeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADFCA71CA86F7F5B4ADB27B6 /* BadgeView.swift */; };
 		B60589455F8842F4E0B5673C /* DelegationsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1063F17C6BC9D67D616FF26 /* DelegationsViewModel.swift */; };
 		BB1BE756C32ECB01497ADBED /* EmptyStateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC1E7A0DF4D448B002898EFC /* EmptyStateView.swift */; };
@@ -142,6 +143,7 @@
 		1D1DEBF2E1339735151F9F96 /* PeopleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PeopleView.swift; sourceTree = "<group>"; };
 		1D8B659839744F71E726D771 /* SubscriptionPlan.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionPlan.swift; sourceTree = "<group>"; };
 		1E893A92F4812A42E4DE54FB /* MinutasView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MinutasView.swift; sourceTree = "<group>"; };
+		23E54F172D8AB9679C2BB144 /* TaskFormView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskFormView.swift; sourceTree = "<group>"; };
 		26478DA3C3E578A320A89B58 /* DelegationsContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DelegationsContentView.swift; sourceTree = "<group>"; };
 		2BDE28EC8D4BE52841802BBD /* ICSImportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICSImportView.swift; sourceTree = "<group>"; };
 		2D81CDC5B5F4B39A2386B86C /* AddTaskToProjectSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddTaskToProjectSheet.swift; sourceTree = "<group>"; };
@@ -349,6 +351,7 @@
 			children = (
 				0A506986E53390A2DEA73CFB /* MyDayView.swift */,
 				9B1DA4DE1AB14C8D4DAE080D /* QuickCaptureView.swift */,
+				23E54F172D8AB9679C2BB144 /* TaskFormView.swift */,
 				622F7A4D76C2F5FA8DCED64E /* TaskRowView.swift */,
 				4337005FF074AD5FE85843D9 /* TasksDelegationsView.swift */,
 				DEC10A3922719C59B9D9C719 /* TasksView.swift */,
@@ -707,6 +710,7 @@
 				26698FE315AE6F5E29DDAD04 /* StoreManager.swift in Sources */,
 				8CE750DCC6BF6B34120C9F42 /* SubscriptionPlan.swift in Sources */,
 				01735031421D4B5CDD7A0EBA /* SubscriptionView.swift in Sources */,
+				B2EB2320118BF13EC2B97295 /* TaskFormView.swift in Sources */,
 				35369D4C9AB74D97481A3588 /* TaskRowView.swift in Sources */,
 				DCA9C109AAE1D33F1A322B3C /* TasksDelegationsView.swift in Sources */,
 				31D95A21FDB11944E06EA4E4 /* TasksView.swift in Sources */,

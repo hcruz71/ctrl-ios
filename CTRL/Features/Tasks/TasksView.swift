@@ -327,130 +327,34 @@ private struct AddTaskSheet: View {
 
     @State private var title = ""
     @State private var selectedLevel: String?
-    @State private var newDueDate = Date()
-    @State private var hasDueDate = false
-    @State private var selectedContactIds: Set<UUID> = []
-    @State private var showingContactPicker = false
-    @State private var selectedProjectId: UUID?
-    @State private var showingProjectPicker = false
+    @State private var startDate = Date()
+    @State private var hasStartDate = false
+    @State private var endDate = Calendar.current.date(byAdding: .day, value: 7, to: Date()) ?? Date()
+    @State private var hasEndDate = false
     @State private var isDelegated = false
     @State private var assignee = ""
     @State private var assigneeContactId: UUID?
-    @State private var showingDelegateContactPicker = false
     @State private var delegationNotes = ""
-
-    private let levels: [(label: String, value: String, color: Color, icon: String)] = [
-        ("A", "A", .red, "flame.fill"),
-        ("B", "B", .orange, "star.fill"),
-        ("C", "C", .blue, "clock.fill"),
-    ]
+    @State private var selectedProjectId: UUID?
+    @State private var selectedContactIds: Set<UUID> = []
 
     var body: some View {
         NavigationStack {
             Form {
-                Section("Tarea") {
-                    TextField("Título", text: $title)
-                    Button {
-                        showingProjectPicker = true
-                    } label: {
-                        HStack {
-                            Text("Proyecto")
-                                .foregroundStyle(.primary)
-                            Spacer()
-                            Text(selectedProjectId != nil ? "Seleccionado" : "Ninguno")
-                                .foregroundStyle(.secondary)
-                        }
-                    }
-                }
-
-                Section("Prioridad") {
-                    HStack(spacing: 12) {
-                        ForEach(levels, id: \.value) { level in
-                            Button {
-                                withAnimation {
-                                    selectedLevel = selectedLevel == level.value ? nil : level.value
-                                }
-                            } label: {
-                                VStack(spacing: 4) {
-                                    Image(systemName: level.icon)
-                                        .font(.title3)
-                                    Text(level.label)
-                                        .font(.headline)
-                                }
-                                .frame(maxWidth: .infinity)
-                                .padding(.vertical, 12)
-                                .background(
-                                    selectedLevel == level.value
-                                        ? level.color.opacity(0.15)
-                                        : Color(.systemGray6)
-                                )
-                                .clipShape(RoundedRectangle(cornerRadius: 10))
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 10)
-                                        .stroke(
-                                            selectedLevel == level.value ? level.color : .clear,
-                                            lineWidth: 2
-                                        )
-                                )
-                            }
-                            .buttonStyle(.plain)
-                            .foregroundStyle(
-                                selectedLevel == level.value ? level.color : .secondary
-                            )
-                        }
-                    }
-                    .padding(.vertical, 4)
-
-                    if selectedLevel == nil {
-                        Label("Sin prioridad = va al Inbox", systemImage: "tray")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    }
-                }
-
-                Section("Fecha límite") {
-                    Toggle("Agregar fecha", isOn: $hasDueDate)
-                    if hasDueDate {
-                        DatePicker("Fecha", selection: $newDueDate, displayedComponents: .date)
-                    }
-                }
-
-                Section("Delegacion") {
-                    Toggle("Delegar a alguien", isOn: $isDelegated)
-
-                    if isDelegated {
-                        TextField("Nombre del responsable", text: $assignee)
-                        Button {
-                            showingDelegateContactPicker = true
-                        } label: {
-                            HStack {
-                                Text("Contacto responsable")
-                                    .foregroundStyle(.primary)
-                                Spacer()
-                                Text(assigneeContactId != nil ? "Seleccionado" : "Ninguno")
-                                    .foregroundStyle(.secondary)
-                            }
-                        }
-                        TextField("Notas de delegacion...", text: $delegationNotes, axis: .vertical)
-                            .lineLimit(2...4)
-                    }
-                }
-
-                Section("Contactos") {
-                    Button {
-                        showingContactPicker = true
-                    } label: {
-                        HStack {
-                            Text("Asociar contactos")
-                                .foregroundStyle(.primary)
-                            Spacer()
-                            Text(selectedContactIds.isEmpty
-                                 ? "Ninguno"
-                                 : "\(selectedContactIds.count) seleccionados")
-                                .foregroundStyle(.secondary)
-                        }
-                    }
-                }
+                TaskFormView(
+                    title: $title,
+                    selectedLevel: $selectedLevel,
+                    startDate: $startDate,
+                    hasStartDate: $hasStartDate,
+                    endDate: $endDate,
+                    hasEndDate: $hasEndDate,
+                    isDelegated: $isDelegated,
+                    assignee: $assignee,
+                    assigneeContactId: $assigneeContactId,
+                    delegationNotes: $delegationNotes,
+                    selectedProjectId: $selectedProjectId,
+                    selectedContactIds: $selectedContactIds
+                )
             }
             .toolbar {
                 ToolbarItemGroup(placement: .keyboard) {
@@ -475,18 +379,6 @@ private struct AddTaskSheet: View {
                     .disabled(title.isEmpty)
                 }
             }
-            .sheet(isPresented: $showingContactPicker) {
-                ContactPickerView(selectedIds: $selectedContactIds)
-            }
-            .sheet(isPresented: $showingProjectPicker) {
-                ProjectPickerView(selectedProjectId: $selectedProjectId)
-            }
-            .sheet(isPresented: $showingDelegateContactPicker) {
-                ContactPickerView(selectedIds: Binding(
-                    get: { assigneeContactId.map { [$0] } ?? [] },
-                    set: { ids in assigneeContactId = ids.first }
-                ), singleSelection: true)
-            }
         }
         .presentationDetents([.medium, .large])
     }
@@ -499,7 +391,8 @@ private struct AddTaskSheet: View {
             title: title,
             priorityLevel: selectedLevel,
             projectId: selectedProjectId?.uuidString,
-            dueDate: hasDueDate ? df.string(from: newDueDate) : nil,
+            dueDate: hasEndDate ? df.string(from: endDate) : nil,
+            startDate: hasStartDate ? df.string(from: startDate) : nil,
             inbox: selectedLevel == nil ? true : false,
             contactIds: selectedContactIds.isEmpty
                 ? nil
