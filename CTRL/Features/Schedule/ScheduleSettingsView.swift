@@ -9,6 +9,8 @@ struct ScheduleSettingsView: View {
     @State private var isSaving = false
     @State private var isLoading = true
     @State private var currentMode: WorkMode = .work
+    @State private var showSaved = false
+    @State private var saveError: String?
 
     private let dayNames = [
         (1, "Lu"), (2, "Ma"), (3, "Mi"), (4, "Ju"), (5, "Vi"), (6, "Sa"), (7, "Do"),
@@ -78,6 +80,10 @@ struct ScheduleSettingsView: View {
                         Spacer()
                         if isSaving {
                             ProgressView()
+                        } else if showSaved {
+                            Label("Horario guardado", systemImage: "checkmark.circle.fill")
+                                .fontWeight(.semibold)
+                                .foregroundStyle(.green)
                         } else {
                             Text("Guardar horario")
                                 .fontWeight(.semibold)
@@ -86,6 +92,12 @@ struct ScheduleSettingsView: View {
                     }
                 }
                 .disabled(isSaving)
+
+                if let error = saveError {
+                    Text(error)
+                        .font(.caption)
+                        .foregroundStyle(.red)
+                }
             }
         }
         .toolbar {
@@ -136,6 +148,8 @@ struct ScheduleSettingsView: View {
 
     private func saveSchedule() async {
         isSaving = true
+        saveError = nil
+        showSaved = false
         let tf = DateFormatter()
         tf.dateFormat = "HH:mm"
 
@@ -157,11 +171,21 @@ struct ScheduleSettingsView: View {
             restMessage: restMessage
         )
 
+        print("[Schedule] Saving: \(Array(workDays).sorted()), \(tf.string(from: workStart))-\(tf.string(from: workEnd))")
+
         do {
             let _: UserSchedule = try await APIClient.shared.request(
                 .schedule, method: "PUT", body: body
             )
-        } catch { }
+            showSaved = true
+            Task {
+                try? await Task.sleep(nanoseconds: 2_000_000_000)
+                showSaved = false
+            }
+        } catch {
+            print("[Schedule] Save error: \(error)")
+            saveError = error.localizedDescription
+        }
         await loadMode()
         isSaving = false
     }

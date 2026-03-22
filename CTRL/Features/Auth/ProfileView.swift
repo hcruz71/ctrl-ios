@@ -33,12 +33,12 @@ struct ProfileView: View {
     @State private var currentMode: WorkMode?
 
     // MARK: Collapsible section state
-    @AppStorage("profile.section.assistant") private var expandedAssistant = true
+    @AppStorage("profile.section.assistant") private var expandedAssistant = false
     @AppStorage("profile.section.voice") private var expandedVoice = false
-    @AppStorage("profile.section.gcal") private var expandedGCal = true
+    @AppStorage("profile.section.gcal") private var expandedGCal = false
     @AppStorage("profile.section.schedule") private var expandedSchedule = false
     @AppStorage("profile.section.notifications") private var expandedNotifications = false
-    @AppStorage("profile.section.language") private var expandedLanguage = true
+    @AppStorage("profile.section.language") private var expandedLanguage = false
     @AppStorage("profile.section.byok") private var expandedByok = false
     @State private var selectedLanguage: String = LanguageManager.shared.currentLanguage
     @State private var showLanguageRestart = false
@@ -156,7 +156,34 @@ struct ProfileView: View {
                     .disabled(isSaving)
                 }
 
-                // 3. Voz del Asistente — only voices for selected language
+                // 3. Idioma
+                collapsibleSection(title: lang.t("profile.language"), icon: "globe", expanded: $expandedLanguage) {
+                    ForEach(LanguageManager.supportedLanguages, id: \.code) { lang in
+                        Button {
+                            selectedLanguage = lang.code
+                            onLanguageChanged(to: lang.code)
+                        } label: {
+                            HStack(spacing: 12) {
+                                Text(lang.flag)
+                                    .font(.title3)
+                                Text(lang.label)
+                                    .foregroundStyle(.primary)
+                                Spacer()
+                                if selectedLanguage == lang.code {
+                                    Image(systemName: "checkmark.circle.fill")
+                                        .foregroundStyle(Color.ctrlPurple)
+                                }
+                            }
+                        }
+                    }
+                    if showLanguageRestart {
+                        Label("Reinicia la app para aplicar el idioma", systemImage: "arrow.clockwise")
+                            .font(.caption)
+                            .foregroundStyle(.orange)
+                    }
+                }
+
+                // 4. Voz del Asistente
                 collapsibleSection(title: lang.t("profile.voice"), icon: "waveform", expanded: $expandedVoice) {
                     ForEach(voicesForSelectedLanguage) { vc in
                         let available = isVoiceAvailable(vc)
@@ -192,33 +219,6 @@ struct ProfileView: View {
                                 }
                             }
                         }
-                    }
-                }
-
-                // 4. Idioma — collapsible, default expanded (NEW)
-                collapsibleSection(title: lang.t("profile.language"), icon: "globe", expanded: $expandedLanguage) {
-                    ForEach(LanguageManager.supportedLanguages, id: \.code) { lang in
-                        Button {
-                            selectedLanguage = lang.code
-                            onLanguageChanged(to: lang.code)
-                        } label: {
-                            HStack(spacing: 12) {
-                                Text(lang.flag)
-                                    .font(.title3)
-                                Text(lang.label)
-                                    .foregroundStyle(.primary)
-                                Spacer()
-                                if selectedLanguage == lang.code {
-                                    Image(systemName: "checkmark.circle.fill")
-                                        .foregroundStyle(Color.ctrlPurple)
-                                }
-                            }
-                        }
-                    }
-                    if showLanguageRestart {
-                        Label("Reinicia la app para aplicar el idioma", systemImage: "arrow.clockwise")
-                            .font(.caption)
-                            .foregroundStyle(.orange)
                     }
                 }
 
