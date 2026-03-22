@@ -6,7 +6,8 @@ struct MeetingDetailView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var showingMinutes = false
     @State private var showMinutesConfirm = false
-    @State private var selectedObjectiveId: UUID?
+    @State private var selectedProjectId: UUID?
+    @State private var showingProjectPicker = false
     @State private var showAllAttendees = false
     @State private var addContactAttendee: MeetingAttendee?
 
@@ -96,16 +97,41 @@ struct MeetingDetailView: View {
                 }
             }
 
-            Section("Objetivo asociado") {
-                Picker("Objetivo", selection: $selectedObjectiveId) {
-                    Text("Ninguno").tag(nil as UUID?)
-                    ForEach(vm.objectives) { obj in
-                        Text(obj.title).tag(obj.id as UUID?)
+            Section("Proyecto vinculado") {
+                if let projId = selectedProjectId {
+                    HStack {
+                        Image(systemName: "folder.fill")
+                            .foregroundStyle(.blue)
+                        if let obj = meeting.objective {
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text("Proyecto vinculado")
+                                    .font(.subheadline)
+                                Text(obj.title)
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
+                        } else {
+                            Text("Proyecto vinculado")
+                        }
+                        Spacer()
                     }
-                }
-                .onChange(of: selectedObjectiveId) { newValue in
-                    Task {
-                        await vm.setObjective(meetingId: meeting.id, objectiveId: newValue)
+
+                    Button("Cambiar proyecto") {
+                        showingProjectPicker = true
+                    }
+
+                    Button("Desvincular", role: .destructive) {
+                        selectedProjectId = nil
+                        Task {
+                            await vm.update(id: meeting.id, body: UpdateMeetingBody(projectId: ""))
+                        }
+                    }
+                    .font(.caption)
+                } else {
+                    Button {
+                        showingProjectPicker = true
+                    } label: {
+                        Label("Vincular a proyecto", systemImage: "folder.badge.plus")
                     }
                 }
             }
@@ -146,9 +172,19 @@ struct MeetingDetailView: View {
                 Task { await vm.matchAttendeesWithContacts(attendees: allAttendees) }
             }
         }
+        .sheet(isPresented: $showingProjectPicker) {
+            ProjectPickerView(selectedProjectId: $selectedProjectId)
+        }
+        .onChange(of: selectedProjectId) { newValue in
+            Task {
+                await vm.update(
+                    id: meeting.id,
+                    body: UpdateMeetingBody(projectId: newValue?.uuidString)
+                )
+            }
+        }
         .task {
-            await vm.fetchObjectives()
-            selectedObjectiveId = meeting.objectiveId
+            selectedProjectId = meeting.projectId
             await vm.matchAttendeesWithContacts(attendees: allAttendees)
         }
     }
