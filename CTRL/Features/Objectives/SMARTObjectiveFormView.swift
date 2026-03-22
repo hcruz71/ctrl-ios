@@ -13,7 +13,7 @@ struct SMARTObjectiveFormView: View {
 
     // Step 1 — Basics
     @State private var title = ""
-    @State private var area: ObjectiveArea = .personal
+    @State private var area: ObjectiveArea = .salud
     @State private var horizon = "mes"
 
     // Step 2 — SMART

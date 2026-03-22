@@ -1,4 +1,5 @@
 import Foundation
+import SwiftUI
 
 struct Objective: Codable, Identifiable {
     let id: UUID
@@ -67,45 +68,45 @@ struct Objective: Codable, Identifiable {
 }
 
 enum ObjectiveArea: String, CaseIterable, Identifiable {
-    case personal
-    case laboral
-    case espiritual
-    case financiero
-    case familiar
-    case negocio
+    case salud = "salud"
+    case profesional = "profesional"
+    case financiero = "financiero"
+    case familia = "familia"
+    case crecimiento = "crecimiento"
+    case espiritual = "espiritual"
 
     var id: String { rawValue }
 
     var label: String {
         switch self {
-        case .personal:    return "Personal"
-        case .laboral:     return "Laboral"
-        case .espiritual:  return "Espiritual"
-        case .financiero:  return "Financiero"
-        case .familiar:    return "Familiar"
-        case .negocio:     return "Negocio"
-        }
-    }
-
-    var icon: String {
-        switch self {
-        case .personal:    return "figure.mind.and.body"
-        case .laboral:     return "briefcase.fill"
-        case .espiritual:  return "hands.sparkles"
-        case .financiero:  return "dollarsign.circle"
-        case .familiar:    return "figure.2.and.child.holdinghands"
-        case .negocio:     return "building.2"
+        case .salud:        return "Salud & Bienestar"
+        case .profesional:  return "Profesional & Negocios"
+        case .financiero:   return "Financiero"
+        case .familia:      return "Familia & Relaciones"
+        case .crecimiento:  return "Crecimiento Personal"
+        case .espiritual:   return "Espiritual & Recreación"
         }
     }
 
     var emoji: String {
         switch self {
-        case .personal:    return "🧘"
-        case .laboral:     return "💼"
-        case .espiritual:  return "🙏"
-        case .financiero:  return "💰"
-        case .familiar:    return "👨‍👩‍👧"
-        case .negocio:     return "🏢"
+        case .salud:        return "💪"
+        case .profesional:  return "💼"
+        case .financiero:   return "💰"
+        case .familia:      return "👨‍👩‍👧"
+        case .crecimiento:  return "🌱"
+        case .espiritual:   return "✨"
+        }
+    }
+
+    var color: Color {
+        switch self {
+        case .salud:        return .green
+        case .profesional:  return .blue
+        case .financiero:   return Color(hex: "#FFD700")
+        case .familia:      return .orange
+        case .crecimiento:  return .purple
+        case .espiritual:   return .cyan
         }
     }
 }
