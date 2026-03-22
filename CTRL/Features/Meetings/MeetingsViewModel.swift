@@ -70,6 +70,15 @@ final class MeetingsViewModel: ObservableObject {
         }
     }
 
+    func fetchAnalysis(period: String = "week") async -> MeetingAnalysis? {
+        do {
+            return try await APIClient.shared.request(.meetingsAnalysis(period: period))
+        } catch {
+            errorMessage = error.localizedDescription
+            return nil
+        }
+    }
+
     func fetchProductivity() async {
         do {
             productivity = try await APIClient.shared.request(.meetingsProductivity)

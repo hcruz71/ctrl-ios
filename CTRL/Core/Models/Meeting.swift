@@ -130,3 +130,21 @@ struct ConfirmTasksResult: Codable {
     var tasksCreated: Int
     var delegationsCreated: Int
 }
+
+struct MeetingAnalysis: Codable {
+    var rawData: MeetingAnalysisRawData?
+    var aiAnalysis: String
+    var meetingsCount: Int?
+}
+
+struct MeetingAnalysisRawData: Codable {
+    var period: String?
+    var startDate: String?
+    var endDate: String?
+    var total: Int?
+    var hoursEstimated: Int?
+    var withObjective: Int?
+    var withoutObjective: Int?
+    var asOrganizer: Int?
+    var asParticipant: Int?
+}

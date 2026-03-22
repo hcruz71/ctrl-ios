@@ -6,6 +6,7 @@ struct MeetingsView: View {
     @State private var showingAdd = false
     @State private var showingICSImport = false
     @State private var showingProductivity = false
+    @State private var showingAnalysis = false
     @State private var showingDeletePast = false
     @State private var isSyncing = false
     @State private var selectedTab = 0
@@ -114,6 +115,13 @@ struct MeetingsView: View {
                             Image(systemName: calendarMode ? "list.bullet" : "calendar")
                         }
 
+                        // AI Analysis
+                        Button {
+                            showingAnalysis = true
+                        } label: {
+                            Image(systemName: "sparkles")
+                        }
+
                         // Productivity dashboard
                         Button {
                             showingProductivity = true
@@ -163,6 +171,7 @@ struct MeetingsView: View {
             .sheet(isPresented: $showingAdd) { addMeetingSheet }
             .sheet(isPresented: $showingICSImport) { ICSImportView(vm: vm) }
             .sheet(isPresented: $showingProductivity) { ProductivityDashboardView(vm: vm) }
+            .sheet(isPresented: $showingAnalysis) { MeetingAnalysisView(vm: vm) }
             .alert("Limpiar reuniones pasadas", isPresented: $showingDeletePast) {
                 Button("Cancelar", role: .cancel) {}
                 Button("Eliminar", role: .destructive) {
