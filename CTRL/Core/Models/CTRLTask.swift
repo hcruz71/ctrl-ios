@@ -9,10 +9,20 @@ struct CTRLTask: Codable, Identifiable {
     var project: String?
     var projectId: UUID?
     var dueDate: String?
+    var startDate: String?
+    var durationDays: Int?
     var done: Bool
     var inbox: Bool?
     var capturedAt: Date?
     var contacts: [Contact]?
+
+    var duration: String? {
+        guard let days = durationDays else { return nil }
+        if days == 1 { return "1 dia" }
+        if days < 7 { return "\(days) dias" }
+        if days < 30 { return "\(days / 7) semanas" }
+        return "\(days / 30) meses"
+    }
 
     // Delegation fields
     var isDelegated: Bool?
@@ -39,6 +49,7 @@ struct CreateTaskBody: Encodable {
     var project: String?
     var projectId: String?
     var dueDate: String?
+    var startDate: String?
     var done: Bool = false
     var inbox: Bool?
     var contactIds: [String]?
@@ -55,6 +66,7 @@ struct UpdateTaskBody: Encodable {
     var project: String?
     var projectId: String?
     var dueDate: String?
+    var startDate: String?
     var done: Bool?
     var inbox: Bool?
     var contactIds: [String]?

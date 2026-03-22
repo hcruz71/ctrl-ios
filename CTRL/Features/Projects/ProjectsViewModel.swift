@@ -46,6 +46,15 @@ final class ProjectsViewModel: ObservableObject {
         }
     }
 
+    func fetchProjectTasks(id: UUID) async -> [CTRLTask] {
+        do {
+            return try await APIClient.shared.request(.projectTasks(id: id))
+        } catch {
+            errorMessage = error.localizedDescription
+            return []
+        }
+    }
+
     func getSummary(id: UUID) async -> ProjectSummary? {
         do {
             return try await APIClient.shared.request(.projectSummary(id: id))

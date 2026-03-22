@@ -6,6 +6,9 @@ struct ProjectDetailView: View {
     @State private var selectedTab = 0
     @State private var summary: ProjectSummary?
     @State private var isLoadingSummary = false
+    @State private var projectTasks: [CTRLTask] = []
+    @State private var showGantt = false
+    @State private var showAddTask = false
 
     var body: some View {
         VStack(spacing: 0) {
@@ -37,7 +40,10 @@ struct ProjectDetailView: View {
         .navigationTitle(project.name)
         .navigationBarTitleDisplayMode(.inline)
         .task {
-            await loadSummary()
+            async let s: () = loadSummary()
+            async let t = vm.fetchProjectTasks(id: project.id)
+            _ = await s
+            projectTasks = await t
         }
     }
 
@@ -130,54 +136,129 @@ struct ProjectDetailView: View {
     // MARK: - Tabs
 
     private var tasksTab: some View {
-        Group {
-            if let s = summary {
-                VStack(spacing: 0) {
-                    // Stats row
-                    HStack(spacing: 16) {
-                        statBadge("Pendientes", "\(s.tasks.total - s.tasks.completed)", .orange)
-                        statBadge("Completadas", "\(s.tasks.completed)", .green)
-                        statBadge("Total", "\(s.tasks.total)", .blue)
-                    }
-                    .padding()
+        VStack(spacing: 0) {
+            // Header with toggle + add button
+            HStack {
+                Button {
+                    withAnimation { showGantt.toggle() }
+                } label: {
+                    Image(systemName: showGantt ? "list.bullet" : "chart.gantt")
+                        .font(.subheadline)
+                }
+                Text(showGantt ? "Gantt" : "Lista")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                Spacer()
+                if let s = summary {
+                    Text("\(s.tasks.completed)/\(s.tasks.total) completadas")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+                Button { showAddTask = true } label: {
+                    Image(systemName: "plus.circle.fill")
+                        .foregroundStyle(Color.ctrlPurple)
+                }
+            }
+            .padding(.horizontal)
+            .padding(.vertical, 6)
 
-                    if s.tasks.total == 0 {
-                        Spacer()
-                        VStack(spacing: 8) {
-                            Image(systemName: "checkmark.circle")
-                                .font(.system(size: 36))
-                                .foregroundStyle(.secondary)
-                            Text("Sin tareas en este proyecto")
-                                .font(.subheadline)
-                                .foregroundStyle(.secondary)
-                        }
-                        Spacer()
-                    } else {
-                        // Priority breakdown
-                        List {
-                            if let byPriority = s.tasks.byPriority {
-                                ForEach(["A", "B", "C"], id: \.self) { level in
-                                    if let count = byPriority[level], count > 0 {
-                                        HStack {
-                                            priorityIcon(level)
-                                            Text("Prioridad \(level)")
-                                                .font(.subheadline)
-                                            Spacer()
-                                            Text("\(count)")
-                                                .font(.subheadline.bold())
-                                                .foregroundStyle(.secondary)
-                                        }
+            if showGantt {
+                GanttChartView(tasks: projectTasks)
+            } else {
+                taskListView
+            }
+        }
+        .sheet(isPresented: $showAddTask) {
+            AddTaskToProjectSheet(projectId: project.id) {
+                Task {
+                    projectTasks = await vm.fetchProjectTasks(id: project.id)
+                    await loadSummary()
+                }
+            }
+        }
+    }
+
+    private var taskListView: some View {
+        Group {
+            if projectTasks.isEmpty {
+                VStack(spacing: 8) {
+                    Image(systemName: "checkmark.circle")
+                        .font(.system(size: 36))
+                        .foregroundStyle(.secondary)
+                    Text("Sin tareas en este proyecto")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+            } else {
+                List {
+                    ForEach(projectTasks) { task in
+                        HStack(spacing: 10) {
+                            // Priority badge
+                            if let level = task.priorityLevel {
+                                Text(task.priorityLabel ?? level)
+                                    .font(.caption2.bold())
+                                    .padding(.horizontal, 5)
+                                    .padding(.vertical, 2)
+                                    .background(taskLevelColor(level).opacity(0.15))
+                                    .foregroundStyle(taskLevelColor(level))
+                                    .clipShape(Capsule())
+                            }
+
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(task.title)
+                                    .font(.subheadline)
+                                    .strikethrough(task.done)
+                                    .foregroundStyle(task.done ? .secondary : .primary)
+
+                                HStack(spacing: 6) {
+                                    if let start = task.startDate {
+                                        Text(start)
+                                            .font(.caption2)
+                                            .foregroundStyle(.secondary)
+                                    }
+                                    if task.startDate != nil && task.dueDate != nil {
+                                        Image(systemName: "arrow.right")
+                                            .font(.caption2)
+                                            .foregroundStyle(.tertiary)
+                                    }
+                                    if let end = task.dueDate {
+                                        Text(end)
+                                            .font(.caption2)
+                                            .foregroundStyle(.secondary)
+                                    }
+                                    if let dur = task.duration {
+                                        Text("(\(dur))")
+                                            .font(.caption2)
+                                            .foregroundStyle(.tertiary)
                                     }
                                 }
                             }
+
+                            Spacer()
+
+                            if task.isDelegated == true {
+                                Image(systemName: "person.fill")
+                                    .font(.caption)
+                                    .foregroundStyle(.blue)
+                            }
+
+                            Image(systemName: task.done ? "checkmark.circle.fill" : "circle")
+                                .foregroundStyle(task.done ? .green : .secondary)
                         }
-                        .listStyle(.plain)
+                        .padding(.vertical, 2)
                     }
                 }
-            } else {
-                ProgressView()
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .listStyle(.plain)
             }
+        }
+    }
+
+    private func taskLevelColor(_ level: String) -> Color {
+        switch level {
+        case "A": return .red
+        case "B": return .orange
+        default: return .blue
         }
     }
 

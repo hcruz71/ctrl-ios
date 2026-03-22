@@ -11,6 +11,7 @@
 		02BF89257469B2ED707DE5FB /* CTRLWatch.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 0FA2D79F2012B7F07363AF3C /* CTRLWatch.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		04388FA1B50E3F0FACDF3B89 /* MinutasView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E893A92F4812A42E4DE54FB /* MinutasView.swift */; };
 		04AABF8526DBC32FAC7B1630 /* MeetingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFC8CD8F102E1D7A8108D211 /* MeetingsView.swift */; };
+		0AB359E0C02998C88CA4D07E /* AddTaskToProjectSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D81CDC5B5F4B39A2386B86C /* AddTaskToProjectSheet.swift */; };
 		0C50D5C3ACBF22F2E42291D3 /* Meeting.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA55BCCF6F7843807C220466 /* Meeting.swift */; };
 		0C770997CCB984B6E626E963 /* NetworkInsightView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6223F1DED857FA60FB7ABC84 /* NetworkInsightView.swift */; };
 		0CC7C83FCE028FFC0A1E7C3E /* APIError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70D8DBCD3BE31DD2352D1222 /* APIError.swift */; };
@@ -98,6 +99,7 @@
 		F79BABF4C3C5D3691067B0D4 /* DelegateMeetingSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848A23D629BA52E622D6307E /* DelegateMeetingSheet.swift */; };
 		FA335682AC85D581642F83D4 /* ProfileToolbarModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A1CF888F823BB03C5B99460 /* ProfileToolbarModifier.swift */; };
 		FCEDC0FCBFE371BE8DF49BAC /* QuickCaptureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B1DA4DE1AB14C8D4DAE080D /* QuickCaptureView.swift */; };
+		FD2C001D785C094318222D44 /* GanttChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEACD5A05491F1D2FEE69A76 /* GanttChartView.swift */; };
 		FD8F460F80B4E0436D8F2E42 /* GoogleCalendarAccount.swift in Sources */ = {isa = PBXBuildFile; fileRef = 498DF89075DEA18FF03D827E /* GoogleCalendarAccount.swift */; };
 /* End PBXBuildFile section */
 
@@ -142,6 +144,7 @@
 		1E893A92F4812A42E4DE54FB /* MinutasView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MinutasView.swift; sourceTree = "<group>"; };
 		26478DA3C3E578A320A89B58 /* DelegationsContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DelegationsContentView.swift; sourceTree = "<group>"; };
 		2BDE28EC8D4BE52841802BBD /* ICSImportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICSImportView.swift; sourceTree = "<group>"; };
+		2D81CDC5B5F4B39A2386B86C /* AddTaskToProjectSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddTaskToProjectSheet.swift; sourceTree = "<group>"; };
 		2E8AA15000B0BF7981C24182 /* ObjectivesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjectivesViewModel.swift; sourceTree = "<group>"; };
 		3617F069BB9E3B6F50B30776 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		3A1CF888F823BB03C5B99460 /* ProfileToolbarModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileToolbarModifier.swift; sourceTree = "<group>"; };
@@ -196,7 +199,7 @@
 		ADFDB41BC7D103108536BCB4 /* PushManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushManager.swift; sourceTree = "<group>"; };
 		AFC8CD8F102E1D7A8108D211 /* MeetingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeetingsView.swift; sourceTree = "<group>"; };
 		B24F1A613ECD6D4FCA90F290 /* DelegationsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DelegationsView.swift; sourceTree = "<group>"; };
-		BCB7B72F8005F0E28D01D868 /* CTRL.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CTRL.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		BCB7B72F8005F0E28D01D868 /* CTRL.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = CTRL.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C3AEEFB479CFA8230643A843 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		C635AE199357CAAC50E92DB1 /* KeychainHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainHelper.swift; sourceTree = "<group>"; };
 		C664F04BDFE1DC00F09F61F0 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -223,6 +226,7 @@
 		FA55BCCF6F7843807C220466 /* Meeting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Meeting.swift; sourceTree = "<group>"; };
 		FC1E7A0DF4D448B002898EFC /* EmptyStateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyStateView.swift; sourceTree = "<group>"; };
 		FCE3E8AEA128453664C6AEC6 /* CTRLWatchApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CTRLWatchApp.swift; sourceTree = "<group>"; };
+		FEACD5A05491F1D2FEE69A76 /* GanttChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GanttChartView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -330,6 +334,8 @@
 		61FE7AE913D112B7AA12C0AC /* Projects */ = {
 			isa = PBXGroup;
 			children = (
+				2D81CDC5B5F4B39A2386B86C /* AddTaskToProjectSheet.swift */,
+				FEACD5A05491F1D2FEE69A76 /* GanttChartView.swift */,
 				3C81AEFBFE006FF4A32BFB0C /* ProjectDetailView.swift */,
 				4CDCF5E45A6145365A5CC164 /* ProjectPickerView.swift */,
 				987CA912DF1B641C00F2695A /* ProjectsView.swift */,
@@ -572,9 +578,11 @@
 				LastUpgradeCheck = 1600;
 				TargetAttributes = {
 					09159ADE5BA5373811DC53BE = {
+						DevelopmentTeam = "";
 						ProvisioningStyle = Automatic;
 					};
 					449051C4D4F3A5384442DD25 = {
+						DevelopmentTeam = "";
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -630,6 +638,7 @@
 				AA9B670F7CB1B488B12FDA8D /* AbsenceDetailView.swift in Sources */,
 				12367AFE806819A9C575FE67 /* AbsenceFormView.swift in Sources */,
 				99C7E337BBB538E7E6FF3E0C /* AbsencesListView.swift in Sources */,
+				0AB359E0C02998C88CA4D07E /* AddTaskToProjectSheet.swift in Sources */,
 				9F3DB3A768CEE1232E41C9E0 /* AppDelegate.swift in Sources */,
 				D5DD6A7BEB126C9BC25ADC56 /* AssistantView.swift in Sources */,
 				5674285CE8C94000AB7E3FD6 /* AssistantViewModel.swift in Sources */,
@@ -657,6 +666,7 @@
 				DE2A321B082C6C317DD3C2F8 /* DelegationsView.swift in Sources */,
 				B60589455F8842F4E0B5673C /* DelegationsViewModel.swift in Sources */,
 				BB1BE756C32ECB01497ADBED /* EmptyStateView.swift in Sources */,
+				FD2C001D785C094318222D44 /* GanttChartView.swift in Sources */,
 				FD8F460F80B4E0436D8F2E42 /* GoogleCalendarAccount.swift in Sources */,
 				901F43A3C05C793E253F9EE1 /* ICSImportView.swift in Sources */,
 				E66672160A7D169A7CC45F4D /* ICSParser.swift in Sources */,
@@ -738,11 +748,9 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ALLOW_ENTITLEMENTS_MODIFICATION = YES;
-				CODE_SIGN_ENTITLEMENTS = CTRL/CTRL.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 679TR4ZAZB;
 				INFOPLIST_FILE = CTRL/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -760,11 +768,9 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ALLOW_ENTITLEMENTS_MODIFICATION = YES;
-				CODE_SIGN_ENTITLEMENTS = CTRL/CTRL.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 679TR4ZAZB;
 				INFOPLIST_FILE = CTRL/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -784,7 +790,6 @@
 				CODE_SIGN_ENTITLEMENTS = CTRLWatch/CTRLWatch.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 679TR4ZAZB;
 				INFOPLIST_FILE = CTRLWatch/Info.plist;
 				MARKETING_VERSION = 1.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.hector.ctrl.watchkitapp;
@@ -865,7 +870,6 @@
 				CODE_SIGN_ENTITLEMENTS = CTRLWatch/CTRLWatch.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 679TR4ZAZB;
 				INFOPLIST_FILE = CTRLWatch/Info.plist;
 				MARKETING_VERSION = 1.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.hector.ctrl.watchkitapp;
