@@ -8,7 +8,7 @@ struct SMARTObjectiveFormView: View {
 
     // Step 1 — Basics
     @State private var title = ""
-    @State private var area: ObjectiveArea = .laboral
+    @State private var area: ObjectiveArea = .personal
     @State private var horizon = "mes"
 
     // Step 2 — SMART
@@ -104,7 +104,7 @@ struct SMARTObjectiveFormView: View {
                             area = a
                         } label: {
                             VStack(spacing: 6) {
-                                Image(systemName: a.icon)
+                                Text(a.emoji)
                                     .font(.title3)
                                 Text(a.label)
                                     .font(.caption)
@@ -232,9 +232,8 @@ struct SMARTObjectiveFormView: View {
             VStack(alignment: .leading, spacing: 16) {
                 // Header
                 HStack {
-                    Image(systemName: area.icon)
+                    Text(area.emoji)
                         .font(.title2)
-                        .foregroundStyle(Color.ctrlPurple)
                     VStack(alignment: .leading) {
                         Text(title)
                             .font(.headline)

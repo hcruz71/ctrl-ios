@@ -97,6 +97,17 @@ enum ObjectiveArea: String, CaseIterable, Identifiable {
         case .negocio:     return "building.2"
         }
     }
+
+    var emoji: String {
+        switch self {
+        case .personal:    return "🧘"
+        case .laboral:     return "💼"
+        case .espiritual:  return "🙏"
+        case .financiero:  return "💰"
+        case .familiar:    return "👨‍👩‍👧"
+        case .negocio:     return "🏢"
+        }
+    }
 }
 
 enum ObjectiveStatus: String, CaseIterable, Identifiable {

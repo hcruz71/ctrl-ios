@@ -26,9 +26,9 @@ struct ObjectivesView: View {
                 // Area filter tabs
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 8) {
-                        areaTab("all", "Todos", "square.grid.2x2")
+                        areaTab("all", "Todos", "📋")
                         ForEach(ObjectiveArea.allCases) { a in
-                            areaTab(a.rawValue, a.label, a.icon)
+                            areaTab(a.rawValue, a.label, a.emoji)
                         }
                     }
                     .padding(.horizontal)
@@ -119,12 +119,12 @@ struct ObjectivesView: View {
         }
     }
 
-    private func areaTab(_ value: String, _ label: String, _ icon: String) -> some View {
+    private func areaTab(_ value: String, _ label: String, _ emoji: String) -> some View {
         Button {
             withAnimation { selectedArea = value }
         } label: {
             HStack(spacing: 4) {
-                Image(systemName: icon)
+                Text(emoji)
                     .font(.caption2)
                 Text(label)
                     .font(.caption)
@@ -168,9 +168,13 @@ private struct ObjectiveSmartRow: View {
             HStack(spacing: 8) {
                 if let area = objective.area,
                    let areaEnum = ObjectiveArea(rawValue: area) {
-                    Label(areaEnum.label, systemImage: areaEnum.icon)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+                    HStack(spacing: 3) {
+                        Text(areaEnum.emoji)
+                            .font(.caption)
+                        Text(areaEnum.label)
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
                 }
                 if let horizon = objective.horizon {
                     Text(horizon.capitalized)
