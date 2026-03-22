@@ -10,9 +10,12 @@ final class TasksViewModel: ObservableObject {
 
     // MARK: - Computed sections
 
-    var tasksA: [CTRLTask] { todayTasks.filter { $0.priorityLevel == "A" } }
-    var tasksB: [CTRLTask] { todayTasks.filter { $0.priorityLevel == "B" } }
-    var tasksC: [CTRLTask] { todayTasks.filter { $0.priorityLevel == "C" } }
+    var ownTasks: [CTRLTask] { todayTasks.filter { $0.isDelegated != true } }
+    var delegatedTasks: [CTRLTask] { todayTasks.filter { $0.isDelegated == true } }
+
+    var tasksA: [CTRLTask] { ownTasks.filter { $0.priorityLevel == "A" } }
+    var tasksB: [CTRLTask] { ownTasks.filter { $0.priorityLevel == "B" } }
+    var tasksC: [CTRLTask] { ownTasks.filter { $0.priorityLevel == "C" } }
 
     var completedACount: Int { tasksA.filter(\.done).count }
     var totalACount: Int { tasksA.count }
@@ -133,6 +136,54 @@ final class TasksViewModel: ObservableObject {
             todayTasks.removeAll { $0.id == id }
             inboxTasks.removeAll { $0.id == id }
             tasks = todayTasks + inboxTasks
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+    }
+
+    // MARK: - Delegation
+
+    func delegate(task: CTRLTask, assignee: String, contactId: UUID?) async {
+        do {
+            let body = UpdateTaskBody(
+                isDelegated: true,
+                assignee: assignee,
+                assigneeContactId: contactId?.uuidString,
+                delegationStatus: "pendiente"
+            )
+            let updated: CTRLTask = try await APIClient.shared.request(
+                .task(id: task.id), body: body
+            )
+            replaceTask(updated)
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+    }
+
+    func recover(task: CTRLTask) async {
+        do {
+            let body = UpdateTaskBody(
+                isDelegated: false,
+                assignee: nil,
+                assigneeContactId: nil,
+                delegationStatus: nil
+            )
+            let updated: CTRLTask = try await APIClient.shared.request(
+                .task(id: task.id), body: body
+            )
+            replaceTask(updated)
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+    }
+
+    func updateDelegationStatus(task: CTRLTask, status: String) async {
+        do {
+            let body = UpdateTaskBody(delegationStatus: status)
+            let updated: CTRLTask = try await APIClient.shared.request(
+                .task(id: task.id), body: body
+            )
+            replaceTask(updated)
         } catch {
             errorMessage = error.localizedDescription
         }

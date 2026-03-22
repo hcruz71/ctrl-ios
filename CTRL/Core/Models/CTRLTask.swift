@@ -13,6 +13,15 @@ struct CTRLTask: Codable, Identifiable {
     var inbox: Bool?
     var capturedAt: Date?
     var contacts: [Contact]?
+
+    // Delegation fields
+    var isDelegated: Bool?
+    var assignee: String?
+    var assigneeContactId: UUID?
+    var delegationStatus: String?
+    var delegationNotes: String?
+    var emailSentAt: Date?
+
     let createdAt: Date?
     let updatedAt: Date?
 
@@ -33,6 +42,10 @@ struct CreateTaskBody: Encodable {
     var done: Bool = false
     var inbox: Bool?
     var contactIds: [String]?
+    var isDelegated: Bool?
+    var assignee: String?
+    var assigneeContactId: String?
+    var delegationNotes: String?
 }
 
 struct UpdateTaskBody: Encodable {
@@ -45,6 +58,11 @@ struct UpdateTaskBody: Encodable {
     var done: Bool?
     var inbox: Bool?
     var contactIds: [String]?
+    var isDelegated: Bool?
+    var assignee: String?
+    var assigneeContactId: String?
+    var delegationStatus: String?
+    var delegationNotes: String?
 }
 
 struct ReorderTasksBody: Encodable {

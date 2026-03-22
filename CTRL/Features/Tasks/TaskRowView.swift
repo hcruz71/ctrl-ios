@@ -8,9 +8,13 @@ struct TaskRowView: View {
     var body: some View {
         HStack(spacing: 12) {
             Button(action: onToggle) {
-                Image(systemName: task.done ? "checkmark.circle.fill" : "circle")
+                Image(systemName: task.isDelegated == true
+                      ? (task.done ? "person.fill.checkmark" : "person.fill")
+                      : (task.done ? "checkmark.circle.fill" : "circle"))
                     .font(.title3)
-                    .foregroundStyle(task.done ? Color.ctrlCoral : .secondary)
+                    .foregroundStyle(task.isDelegated == true
+                                    ? .blue
+                                    : (task.done ? Color.ctrlCoral : .secondary))
             }
             .buttonStyle(.plain)
 
@@ -55,6 +59,12 @@ struct TaskRowView: View {
                     if let project = task.project, !project.isEmpty {
                         BadgeView(text: project, color: .ctrlPurple)
                     }
+                }
+
+                if task.isDelegated == true, let assignee = task.assignee {
+                    Label(assignee, systemImage: "person.fill")
+                        .font(.caption2)
+                        .foregroundStyle(.blue)
                 }
 
                 if let dueDate = task.dueDate, !dueDate.isEmpty {

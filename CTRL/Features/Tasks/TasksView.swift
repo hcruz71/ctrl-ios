@@ -7,6 +7,7 @@ struct TasksView: View {
     @State private var expandedA = true
     @State private var expandedB = true
     @State private var expandedC = true
+    @State private var expandedDelegated = true
     @State private var expandedInbox = true
 
     var body: some View {
@@ -47,6 +48,7 @@ struct TasksView: View {
                             expanded: $expandedC,
                             level: "C"
                         )
+                        delegatedSection
                         inboxSection
                     }
                     .listStyle(.sidebar)
@@ -176,6 +178,78 @@ struct TasksView: View {
         } isTargeted: { _ in }
     }
 
+    // MARK: - Delegated Section
+
+    private var delegatedSection: some View {
+        Section {
+            if expandedDelegated {
+                ForEach(vm.delegatedTasks) { task in
+                    TaskRowView(task: task, onToggle: {
+                        Task { await vm.toggleDone(task: task) }
+                    })
+                    .swipeActions(edge: .leading) {
+                        Button {
+                            Task { await vm.recover(task: task) }
+                        } label: {
+                            Label("Recuperar", systemImage: "arrow.uturn.backward")
+                        }
+                        .tint(.green)
+                    }
+                    .swipeActions(edge: .trailing) {
+                        Button(role: .destructive) {
+                            Task { await vm.delete(id: task.id) }
+                        } label: {
+                            Label("Eliminar", systemImage: "trash")
+                        }
+                    }
+                    .contextMenu {
+                        Menu("Status") {
+                            Button { Task { await vm.updateDelegationStatus(task: task, status: "pendiente") } } label: {
+                                Label("Pendiente", systemImage: "clock")
+                            }
+                            Button { Task { await vm.updateDelegationStatus(task: task, status: "en_proceso") } } label: {
+                                Label("En proceso", systemImage: "arrow.forward")
+                            }
+                            Button { Task { await vm.updateDelegationStatus(task: task, status: "completada") } } label: {
+                                Label("Completada", systemImage: "checkmark")
+                            }
+                        }
+                        Button {
+                            Task { await vm.recover(task: task) }
+                        } label: {
+                            Label("Recuperar para mi", systemImage: "arrow.uturn.backward")
+                        }
+                    }
+                }
+            }
+        } header: {
+            Button {
+                withAnimation { expandedDelegated.toggle() }
+            } label: {
+                HStack(spacing: 6) {
+                    Image(systemName: "person.2.fill")
+                        .foregroundStyle(.blue)
+                    Text("DELEGADAS")
+                        .fontWeight(.semibold)
+                        .foregroundStyle(.primary)
+                    Spacer()
+                    if !vm.delegatedTasks.isEmpty {
+                        Text("\(vm.delegatedTasks.filter { !$0.done }.count)")
+                            .font(.caption)
+                            .fontWeight(.bold)
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 2)
+                            .background(Color.blue.opacity(0.15), in: Capsule())
+                            .foregroundStyle(.blue)
+                    }
+                    Image(systemName: expandedDelegated ? "chevron.up" : "chevron.down")
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                }
+            }
+        }
+    }
+
     // MARK: - Inbox Section
 
     private var inboxSection: some View {
@@ -259,6 +333,11 @@ private struct AddTaskSheet: View {
     @State private var showingContactPicker = false
     @State private var selectedProjectId: UUID?
     @State private var showingProjectPicker = false
+    @State private var isDelegated = false
+    @State private var assignee = ""
+    @State private var assigneeContactId: UUID?
+    @State private var showingDelegateContactPicker = false
+    @State private var delegationNotes = ""
 
     private let levels: [(label: String, value: String, color: Color, icon: String)] = [
         ("A", "A", .red, "flame.fill"),
@@ -336,6 +415,27 @@ private struct AddTaskSheet: View {
                     }
                 }
 
+                Section("Delegacion") {
+                    Toggle("Delegar a alguien", isOn: $isDelegated)
+
+                    if isDelegated {
+                        TextField("Nombre del responsable", text: $assignee)
+                        Button {
+                            showingDelegateContactPicker = true
+                        } label: {
+                            HStack {
+                                Text("Contacto responsable")
+                                    .foregroundStyle(.primary)
+                                Spacer()
+                                Text(assigneeContactId != nil ? "Seleccionado" : "Ninguno")
+                                    .foregroundStyle(.secondary)
+                            }
+                        }
+                        TextField("Notas de delegacion...", text: $delegationNotes, axis: .vertical)
+                            .lineLimit(2...4)
+                    }
+                }
+
                 Section("Contactos") {
                     Button {
                         showingContactPicker = true
@@ -381,6 +481,12 @@ private struct AddTaskSheet: View {
             .sheet(isPresented: $showingProjectPicker) {
                 ProjectPickerView(selectedProjectId: $selectedProjectId)
             }
+            .sheet(isPresented: $showingDelegateContactPicker) {
+                ContactPickerView(selectedIds: Binding(
+                    get: { assigneeContactId.map { [$0] } ?? [] },
+                    set: { ids in assigneeContactId = ids.first }
+                ), singleSelection: true)
+            }
         }
         .presentationDetents([.medium, .large])
     }
@@ -397,7 +503,11 @@ private struct AddTaskSheet: View {
             inbox: selectedLevel == nil ? true : false,
             contactIds: selectedContactIds.isEmpty
                 ? nil
-                : selectedContactIds.map { $0.uuidString }
+                : selectedContactIds.map { $0.uuidString },
+            isDelegated: isDelegated ? true : nil,
+            assignee: isDelegated && !assignee.isEmpty ? assignee : nil,
+            assigneeContactId: isDelegated ? assigneeContactId?.uuidString : nil,
+            delegationNotes: isDelegated && !delegationNotes.isEmpty ? delegationNotes : nil
         )
         Task {
             await vm.create(body)
