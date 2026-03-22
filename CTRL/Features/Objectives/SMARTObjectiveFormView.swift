@@ -38,6 +38,7 @@ struct SMARTObjectiveFormView: View {
                 step3KPI.tag(2)
                 step4Summary.tag(3)
             }
+            .keyboardDismissable()
             .tabViewStyle(.page(indexDisplayMode: .never))
             .animation(.easeInOut, value: step)
             .navigationTitle(stepTitle)
@@ -343,7 +344,9 @@ struct SMARTObjectiveFormView: View {
             let _: Objective = try await APIClient.shared.request(.objectives, body: body)
             onSave()
             dismiss()
-        } catch { }
+        } catch {
+            print("[SMARTForm] Create objective error: \(error)")
+        }
         isSaving = false
     }
 }

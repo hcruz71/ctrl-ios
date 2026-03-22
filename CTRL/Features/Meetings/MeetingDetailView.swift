@@ -121,6 +121,7 @@ struct MeetingDetailView: View {
                 }
             }
         }
+        .keyboardDismissable()
         .navigationTitle("Reunion")
         .navigationBarTitleDisplayMode(.inline)
         .sheet(isPresented: $showingMinutes) {
@@ -272,6 +273,7 @@ private struct AddContactFromAttendeeSheet: View {
                     .pickerStyle(.segmented)
                 }
             }
+            .keyboardDismissable()
             .navigationTitle("Agregar contacto")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

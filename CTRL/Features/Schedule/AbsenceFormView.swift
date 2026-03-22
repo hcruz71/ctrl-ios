@@ -64,6 +64,7 @@ struct AbsenceFormView: View {
                     .disabled(isSaving)
                 }
             }
+            .keyboardDismissable()
             .navigationTitle("Nueva ausencia")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

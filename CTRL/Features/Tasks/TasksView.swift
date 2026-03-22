@@ -352,6 +352,7 @@ private struct AddTaskSheet: View {
                     }
                 }
             }
+            .keyboardDismissable()
             .navigationTitle(LanguageManager.shared.t("tasks.add"))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

@@ -197,6 +197,7 @@ struct MeetingsView: View {
                         .lineLimit(3...6)
                 }
             }
+            .keyboardDismissable()
             .navigationTitle(lang.t("meetings.new"))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

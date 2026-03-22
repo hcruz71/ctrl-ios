@@ -41,6 +41,7 @@ struct ICSImportView: View {
                 case .done:        doneView
                 }
             }
+            .keyboardDismissable()
             .navigationTitle("Importar .ics")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

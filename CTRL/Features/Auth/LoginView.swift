@@ -149,6 +149,7 @@ struct LoginView: View {
             }
             .padding(.horizontal, 24)
         }
+        .keyboardDismissable()
         .ignoresSafeArea(.keyboard)
     }
 

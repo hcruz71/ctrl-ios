@@ -116,6 +116,7 @@ struct DelegationsContentView: View {
                     }
                 }
             }
+            .keyboardDismissable()
             .navigationTitle("Nueva delegacion")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

@@ -22,6 +22,7 @@ final class ObjectivesViewModel: ObservableObject {
             let created: Objective = try await APIClient.shared.request(.objectives, body: body)
             objectives.insert(created, at: 0)
         } catch {
+            print("[ObjectivesVM] Create decode error: \(error)")
             errorMessage = error.localizedDescription
         }
     }
@@ -34,6 +35,7 @@ final class ObjectivesViewModel: ObservableObject {
                 objectives[idx] = updated
             }
         } catch {
+            print("[ObjectivesVM] Update decode error: \(error)")
             errorMessage = error.localizedDescription
         }
     }

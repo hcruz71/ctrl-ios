@@ -196,6 +196,7 @@ struct ContactsContentView: View {
                     .font(.title3)
                 }
             }
+            .keyboardDismissable()
             .navigationTitle("Nuevo contacto")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

@@ -48,6 +48,7 @@ struct DelegationEmailSheet: View {
                     sentConfirmation
                 }
             }
+            .keyboardDismissable()
             .navigationTitle(navigationTitle)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

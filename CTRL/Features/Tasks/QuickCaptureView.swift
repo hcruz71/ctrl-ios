@@ -74,6 +74,7 @@ struct QuickCaptureView: View {
                 Spacer()
             }
             .padding()
+            .keyboardDismissable()
             .navigationTitle("Captura rápida")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

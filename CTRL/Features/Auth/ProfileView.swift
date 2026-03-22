@@ -473,6 +473,7 @@ struct ProfileView: View {
                     }
                 }
             }
+            .keyboardDismissable()
             .navigationTitle(lang.t("profile.title"))
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {

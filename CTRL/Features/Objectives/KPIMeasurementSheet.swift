@@ -65,6 +65,7 @@ struct KPIMeasurementSheet: View {
                     .disabled(valueText.isEmpty || isSaving)
                 }
             }
+            .keyboardDismissable()
             .navigationTitle("Registrar KPI")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -94,7 +95,9 @@ struct KPIMeasurementSheet: View {
             )
             onSave()
             dismiss()
-        } catch { }
+        } catch {
+            print("[KPISheet] Save measurement error: \(error)")
+        }
         isSaving = false
     }
 }

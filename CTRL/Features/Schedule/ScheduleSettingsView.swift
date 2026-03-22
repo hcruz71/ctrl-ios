@@ -88,6 +88,7 @@ struct ScheduleSettingsView: View {
                 .disabled(isSaving)
             }
         }
+        .keyboardDismissable()
         .navigationTitle("Horario")
         .navigationBarTitleDisplayMode(.inline)
         .task {

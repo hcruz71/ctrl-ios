@@ -113,6 +113,7 @@ struct ProjectsView: View {
                     }
                 }
             }
+            .keyboardDismissable()
             .navigationTitle("Nuevo proyecto")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
