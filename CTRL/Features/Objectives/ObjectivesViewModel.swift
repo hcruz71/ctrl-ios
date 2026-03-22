@@ -40,6 +40,18 @@ final class ObjectivesViewModel: ObservableObject {
         }
     }
 
+    func update(id: UUID, body: UpdateObjectiveBody) async {
+        do {
+            let updated: Objective = try await APIClient.shared.request(.objective(id: id), body: body)
+            if let idx = objectives.firstIndex(where: { $0.id == id }) {
+                objectives[idx] = updated
+            }
+        } catch {
+            print("[ObjectivesVM] Update error: \(error)")
+            errorMessage = error.localizedDescription
+        }
+    }
+
     func delete(id: UUID) async {
         do {
             try await APIClient.shared.requestVoid(.objective(id: id))

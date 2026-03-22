@@ -7,6 +7,7 @@ struct ObjectivesView: View {
     @State private var selectedArea = "all"
     @State private var selectedStatus = "activo"
     @State private var measureObjective: Objective?
+    @State private var objectiveToEdit: Objective?
     @State private var showingProjects = false
 
     private var filteredObjectives: [Objective] {
@@ -68,6 +69,14 @@ struct ObjectivesView: View {
                             ObjectiveSmartRow(objective: objective) {
                                 measureObjective = objective
                             }
+                            .swipeActions(edge: .leading) {
+                                Button {
+                                    objectiveToEdit = objective
+                                } label: {
+                                    Label("Editar", systemImage: "pencil")
+                                }
+                                .tint(.blue)
+                            }
                             .swipeActions(edge: .trailing) {
                                 Button(role: .destructive) {
                                     Task { await vm.delete(id: objective.id) }
@@ -96,8 +105,14 @@ struct ObjectivesView: View {
             }
             .withProfileButton()
             .sheet(isPresented: $showingAdd) {
-                SMARTObjectiveFormView {
+                SMARTObjectiveFormView(vm: vm) {
                     showingAdd = false
+                    Task { await vm.fetchObjectives() }
+                }
+            }
+            .sheet(item: $objectiveToEdit) { objective in
+                SMARTObjectiveFormView(vm: vm, objectiveToEdit: objective) {
+                    objectiveToEdit = nil
                     Task { await vm.fetchObjectives() }
                 }
             }

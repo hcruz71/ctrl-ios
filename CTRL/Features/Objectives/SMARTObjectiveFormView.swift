@@ -1,10 +1,15 @@
 import SwiftUI
 
 struct SMARTObjectiveFormView: View {
+    @ObservedObject var vm: ObjectivesViewModel
+    var objectiveToEdit: Objective? = nil
     var onSave: () -> Void
     @Environment(\.dismiss) private var dismiss
     @State private var step = 0
     @State private var isSaving = false
+    @State private var didLoadEdit = false
+
+    private var isEditing: Bool { objectiveToEdit != nil }
 
     // Step 1 — Basics
     @State private var title = ""
@@ -76,7 +81,34 @@ struct SMARTObjectiveFormView: View {
                     }
                 }
             }
+            .onAppear { loadObjectiveForEdit() }
         }
+    }
+
+    private func loadObjectiveForEdit() {
+        guard let obj = objectiveToEdit, !didLoadEdit else { return }
+        didLoadEdit = true
+        title = obj.title
+        if let a = obj.area, let aEnum = ObjectiveArea(rawValue: a) { area = aEnum }
+        horizon = obj.horizon ?? "mes"
+        specific = obj.smartSpecific ?? ""
+        measurable = obj.smartMeasurable ?? ""
+        achievable = obj.smartAchievable ?? ""
+        relevant = obj.smartRelevant ?? ""
+        if let tb = obj.smartTimeBound {
+            let df = DateFormatter()
+            df.dateFormat = "yyyy-MM-dd"
+            if let d = df.date(from: tb) { timeBound = d }
+        }
+        if obj.kpiName != nil {
+            hasKpi = true
+            kpiName = obj.kpiName ?? ""
+            kpiBaseline = obj.kpiBaseline.map { String(Int($0)) } ?? ""
+            kpiTarget = obj.kpiTarget.map { String(Int($0)) } ?? ""
+            kpiUnit = obj.kpiUnit ?? ""
+            kpiFrequency = obj.kpiFrequency ?? "mensual"
+        }
+        completionCriteria = obj.completionCriteria ?? ""
     }
 
     private var stepTitle: String {
@@ -286,15 +318,15 @@ struct SMARTObjectiveFormView: View {
                     .clipShape(RoundedRectangle(cornerRadius: 12))
                 }
 
-                // Create button
+                // Save button
                 Button {
-                    Task { await createObjective() }
+                    Task { await saveObjective() }
                 } label: {
                     HStack {
                         if isSaving {
                             ProgressView().tint(.white)
                         }
-                        Text("Crear objetivo")
+                        Text(isEditing ? "Guardar cambios" : "Crear objetivo")
                             .fontWeight(.semibold)
                     }
                     .frame(maxWidth: .infinity)
@@ -326,38 +358,54 @@ struct SMARTObjectiveFormView: View {
         return df.string(from: date)
     }
 
-    // MARK: - Create
+    // MARK: - Save (create or update)
 
-    private func createObjective() async {
+    private func saveObjective() async {
         isSaving = true
         let df = DateFormatter()
         df.dateFormat = "yyyy-MM-dd"
 
-        let body = CreateObjectiveBody(
-            title: title,
-            area: area.rawValue,
-            horizon: horizon,
-            smartSpecific: specific.isEmpty ? nil : specific,
-            smartMeasurable: measurable.isEmpty ? nil : measurable,
-            smartAchievable: achievable.isEmpty ? nil : achievable,
-            smartRelevant: relevant.isEmpty ? nil : relevant,
-            smartTimeBound: df.string(from: timeBound),
-            kpiName: hasKpi && !kpiName.isEmpty ? kpiName : nil,
-            kpiTarget: hasKpi ? Double(kpiTarget) : nil,
-            kpiCurrent: hasKpi ? Double(kpiBaseline) : nil,
-            kpiUnit: hasKpi && !kpiUnit.isEmpty ? kpiUnit : nil,
-            kpiBaseline: hasKpi ? Double(kpiBaseline) : nil,
-            kpiFrequency: hasKpi ? kpiFrequency : nil,
-            completionCriteria: completionCriteria.isEmpty ? nil : completionCriteria
-        )
-
-        do {
-            let _: Objective = try await APIClient.shared.request(.objectives, body: body)
-            onSave()
-            dismiss()
-        } catch {
-            print("[SMARTForm] Create objective error: \(error)")
+        if let existing = objectiveToEdit {
+            let body = UpdateObjectiveBody(
+                title: title,
+                area: area.rawValue,
+                horizon: horizon,
+                smartSpecific: specific.isEmpty ? nil : specific,
+                smartMeasurable: measurable.isEmpty ? nil : measurable,
+                smartAchievable: achievable.isEmpty ? nil : achievable,
+                smartRelevant: relevant.isEmpty ? nil : relevant,
+                smartTimeBound: df.string(from: timeBound),
+                kpiName: hasKpi && !kpiName.isEmpty ? kpiName : nil,
+                kpiTarget: hasKpi ? Double(kpiTarget) : nil,
+                kpiCurrent: hasKpi ? Double(kpiBaseline) : nil,
+                kpiUnit: hasKpi && !kpiUnit.isEmpty ? kpiUnit : nil,
+                kpiBaseline: hasKpi ? Double(kpiBaseline) : nil,
+                kpiFrequency: hasKpi ? kpiFrequency : nil,
+                completionCriteria: completionCriteria.isEmpty ? nil : completionCriteria
+            )
+            await vm.update(id: existing.id, body: body)
+        } else {
+            let body = CreateObjectiveBody(
+                title: title,
+                area: area.rawValue,
+                horizon: horizon,
+                smartSpecific: specific.isEmpty ? nil : specific,
+                smartMeasurable: measurable.isEmpty ? nil : measurable,
+                smartAchievable: achievable.isEmpty ? nil : achievable,
+                smartRelevant: relevant.isEmpty ? nil : relevant,
+                smartTimeBound: df.string(from: timeBound),
+                kpiName: hasKpi && !kpiName.isEmpty ? kpiName : nil,
+                kpiTarget: hasKpi ? Double(kpiTarget) : nil,
+                kpiCurrent: hasKpi ? Double(kpiBaseline) : nil,
+                kpiUnit: hasKpi && !kpiUnit.isEmpty ? kpiUnit : nil,
+                kpiBaseline: hasKpi ? Double(kpiBaseline) : nil,
+                kpiFrequency: hasKpi ? kpiFrequency : nil,
+                completionCriteria: completionCriteria.isEmpty ? nil : completionCriteria
+            )
+            await vm.create(body)
         }
+        onSave()
+        dismiss()
         isSaving = false
     }
 }
