@@ -143,33 +143,125 @@ struct CalendarDayView: View {
         }
     }
 
+    // MARK: - Meeting Layout (overlap distribution)
+
+    private struct MeetingLayout: Identifiable {
+        let meeting: Meeting
+        let columnIndex: Int
+        let totalColumns: Int
+        var id: UUID { meeting.id }
+    }
+
+    private func parseMinutes(_ timeStr: String) -> Int {
+        let parts = timeStr.split(separator: ":")
+        guard parts.count >= 2, let h = Int(parts[0]), let m = Int(parts[1]) else { return 0 }
+        return h * 60 + m
+    }
+
+    private func layoutMeetings(_ meetings: [Meeting]) -> [MeetingLayout] {
+        let timed = meetings
+            .filter { $0.meetingTime != nil && !($0.meetingTime?.isEmpty ?? true) }
+            .sorted { parseMinutes($0.meetingTime ?? "0") < parseMinutes($1.meetingTime ?? "0") }
+
+        guard !timed.isEmpty else { return [] }
+
+        let defaultDuration = 60 // minutes
+        struct Span { let id: UUID; let start: Int; let end: Int }
+        let spans = timed.map { m -> Span in
+            let s = parseMinutes(m.meetingTime ?? "0")
+            return Span(id: m.id, start: s, end: s + defaultDuration)
+        }
+
+        // Greedy column assignment
+        var columns: [[Span]] = []
+        var assignment: [UUID: Int] = [:]
+
+        for span in spans {
+            var placed = false
+            for (colIdx, col) in columns.enumerated() {
+                if let last = col.last, last.end <= span.start {
+                    columns[colIdx].append(span)
+                    assignment[span.id] = colIdx
+                    placed = true
+                    break
+                }
+            }
+            if !placed {
+                assignment[span.id] = columns.count
+                columns.append([span])
+            }
+        }
+
+        // Build overlap groups to determine totalColumns per meeting
+        // A group shares at least one overlapping span chain
+        var groupOf: [UUID: Int] = [:]
+        var groups: [[UUID]] = []
+
+        for (i, spanA) in spans.enumerated() {
+            if groupOf[spanA.id] == nil {
+                let gIdx = groups.count
+                groups.append([spanA.id])
+                groupOf[spanA.id] = gIdx
+            }
+            let gIdx = groupOf[spanA.id]!
+            for j in (i + 1)..<spans.count {
+                let spanB = spans[j]
+                if spanB.start >= spanA.end { break } // sorted, no more overlaps
+                if groupOf[spanB.id] == nil {
+                    groups[gIdx].append(spanB.id)
+                    groupOf[spanB.id] = gIdx
+                }
+            }
+        }
+
+        // Max columns per group
+        var groupMaxCols: [Int: Int] = [:]
+        for (gIdx, members) in groups.enumerated() {
+            let maxCol = members.compactMap { assignment[$0] }.max() ?? 0
+            groupMaxCols[gIdx] = maxCol + 1
+        }
+
+        return timed.map { m in
+            let col = assignment[m.id] ?? 0
+            let gIdx = groupOf[m.id] ?? 0
+            let total = groupMaxCols[gIdx] ?? 1
+            return MeetingLayout(meeting: m, columnIndex: col, totalColumns: total)
+        }
+    }
+
     // MARK: - Meeting Blocks
 
     private var meetingBlocks: some View {
-        ForEach(meetings.filter { $0.meetingTime != nil && !($0.meetingTime?.isEmpty ?? true) }) { meeting in
+        let gridWidth = UIScreen.main.bounds.width - 16
+        let contentWidth = gridWidth - labelWidth - 4
+        let layouts = layoutMeetings(meetings)
+
+        return ForEach(layouts) { layout in
+            let colWidth = contentWidth / CGFloat(layout.totalColumns)
+            let blockWidth = colWidth - 4
+            let blockHeight = max(hourHeight - 4, 44)
+            let xOrigin = labelWidth + 4 + CGFloat(layout.columnIndex) * colWidth + colWidth / 2
+
             NavigationLink {
-                MeetingDetailView(vm: vm, meeting: meeting)
+                MeetingDetailView(vm: vm, meeting: layout.meeting)
             } label: {
-                meetingBlock(meeting)
+                meetingBlock(layout.meeting, width: blockWidth, height: blockHeight)
             }
             .buttonStyle(.plain)
             .position(
-                x: labelWidth + 4 + (UIScreen.main.bounds.width - labelWidth - 4 - 16) / 2,
-                y: yOffset(for: meeting.meetingTime ?? "00:00") + max(44, hourHeight) / 2
+                x: xOrigin,
+                y: yOffset(for: layout.meeting.meetingTime ?? "00:00") + blockHeight / 2
             )
         }
     }
 
-    private func meetingBlock(_ meeting: Meeting) -> some View {
-        let blockWidth = UIScreen.main.bounds.width - labelWidth - 4 - 16
-        let blockHeight = max(hourHeight - 4, 44)
-
-        return HStack(spacing: 6) {
+    private func meetingBlock(_ meeting: Meeting, width: CGFloat, height: CGFloat) -> some View {
+        HStack(spacing: 4) {
             RoundedRectangle(cornerRadius: 2)
                 .fill(meetingColor(meeting))
-                .frame(width: 4)
+                .frame(width: 3)
 
-            VStack(alignment: .leading, spacing: 2) {
+            VStack(alignment: .leading, spacing: 1) {
                 Text(meeting.title)
                     .font(.caption.bold())
                     .lineLimit(1)
@@ -189,13 +281,13 @@ struct CalendarDayView: View {
                 }
             }
 
-            Spacer()
+            Spacer(minLength: 0)
 
             attendanceBadge(meeting)
         }
-        .padding(.horizontal, 8)
-        .padding(.vertical, 4)
-        .frame(width: blockWidth, height: blockHeight, alignment: .leading)
+        .padding(.horizontal, 6)
+        .padding(.vertical, 3)
+        .frame(width: width, height: height, alignment: .leading)
         .background(meetingColor(meeting).opacity(0.12))
         .clipShape(RoundedRectangle(cornerRadius: 6))
         .overlay(
