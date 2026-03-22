@@ -10,6 +10,7 @@ struct MeetingsView: View {
     @State private var isSyncing = false
     @State private var selectedTab = 0
     @State private var deletedCount = 0
+    @AppStorage("meetings.calendarMode") private var calendarMode = false
 
     @State private var newTitle = ""
     @State private var newDate = Date()
@@ -31,6 +32,10 @@ struct MeetingsView: View {
 
     var body: some View {
         NavigationStack {
+            Group {
+            if calendarMode {
+                CalendarDayView(vm: vm)
+            } else {
             VStack(spacing: 0) {
                 // Tab selector
                 Picker("Vista", selection: $selectedTab) {
@@ -96,10 +101,19 @@ struct MeetingsView: View {
                     .refreshable { await refreshCurrentTab() }
                 }
             }
+            }
+            } // Group
             .navigationTitle(lang.t("meetings.title"))
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     HStack(spacing: 12) {
+                        // Calendar/List toggle
+                        Button {
+                            withAnimation { calendarMode.toggle() }
+                        } label: {
+                            Image(systemName: calendarMode ? "list.bullet" : "calendar")
+                        }
+
                         // Productivity dashboard
                         Button {
                             showingProductivity = true

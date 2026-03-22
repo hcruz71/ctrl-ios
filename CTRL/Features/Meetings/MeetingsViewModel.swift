@@ -59,6 +59,17 @@ final class MeetingsViewModel: ObservableObject {
         }
     }
 
+    func fetchByDate(_ date: Date) async -> [Meeting] {
+        let df = DateFormatter()
+        df.dateFormat = "yyyy-MM-dd"
+        do {
+            return try await APIClient.shared.request(.meetingsByDate(date: df.string(from: date)))
+        } catch {
+            errorMessage = error.localizedDescription
+            return []
+        }
+    }
+
     func fetchProductivity() async {
         do {
             productivity = try await APIClient.shared.request(.meetingsProductivity)

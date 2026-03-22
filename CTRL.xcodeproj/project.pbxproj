@@ -24,6 +24,7 @@
 		26698FE315AE6F5E29DDAD04 /* StoreManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9804B8BF25D1A2DB97F9F01F /* StoreManager.swift */; };
 		31D95A21FDB11944E06EA4E4 /* TasksView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEC10A3922719C59B9D9C719 /* TasksView.swift */; };
 		35369D4C9AB74D97481A3588 /* TaskRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 622F7A4D76C2F5FA8DCED64E /* TaskRowView.swift */; };
+		3CC2767A913404E45BCFDCF0 /* CalendarDayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ABB59F8FD0105A395681A72 /* CalendarDayView.swift */; };
 		3D800444EF79ED74CD655F1C /* MeetingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CD51DF9DC658F3AE13A3FA7 /* MeetingsViewModel.swift */; };
 		3F35DCAC89657348E919B50B /* ScheduleSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ECE709E82631F9D7341FAB1 /* ScheduleSettingsView.swift */; };
 		4410F3F2F5012E0C51BE7596 /* ContactsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46D2313733E4F034245B93D1 /* ContactsViewModel.swift */; };
@@ -152,6 +153,7 @@
 		54AFD9AA8053E5283F3F50C3 /* AssistantView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssistantView.swift; sourceTree = "<group>"; };
 		54C1D5858E694B4488BB269C /* SMARTObjectiveFormView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SMARTObjectiveFormView.swift; sourceTree = "<group>"; };
 		55320EF82D3336C30CC30424 /* CTRLWatch.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = CTRLWatch.entitlements; sourceTree = "<group>"; };
+		5ABB59F8FD0105A395681A72 /* CalendarDayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarDayView.swift; sourceTree = "<group>"; };
 		5EBA67F8D2B73CBDE6A78384 /* Contact.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Contact.swift; sourceTree = "<group>"; };
 		5ECE709E82631F9D7341FAB1 /* ScheduleSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleSettingsView.swift; sourceTree = "<group>"; };
 		61BEB5DEEEEB32A38882CE10 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -487,6 +489,7 @@
 		E8CA7F268C55041B0ECCD1FF /* Meetings */ = {
 			isa = PBXGroup;
 			children = (
+				5ABB59F8FD0105A395681A72 /* CalendarDayView.swift */,
 				11CA8E9114FCAE6191BF807B /* DayPlanView.swift */,
 				848A23D629BA52E622D6307E /* DelegateMeetingSheet.swift */,
 				2BDE28EC8D4BE52841802BBD /* ICSImportView.swift */,
@@ -630,6 +633,7 @@
 				E78750EB942D8496644FAB3A /* CTRLApp.swift in Sources */,
 				74FCF73D7D3A960E3BDD5190 /* CTRLTabView.swift in Sources */,
 				F4BE43FC0243CE9E39D64C2C /* CTRLTask.swift in Sources */,
+				3CC2767A913404E45BCFDCF0 /* CalendarDayView.swift in Sources */,
 				1E19D9FD3E0C46EFE26B345B /* Color+CTRL.swift in Sources */,
 				9B1DDC4FBC57C357E0821FE0 /* Contact.swift in Sources */,
 				8C5FD08BCE5A9187F713D471 /* ContactPickerView.swift in Sources */,
