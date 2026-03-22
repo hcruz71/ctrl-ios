@@ -284,7 +284,7 @@ private struct AddTaskSheet: View {
                     }
                 }
 
-                Section("Prioridad Franklin Covey") {
+                Section("Prioridad") {
                     HStack(spacing: 12) {
                         ForEach(levels, id: \.value) { level in
                             Button {
