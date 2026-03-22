@@ -33,7 +33,7 @@ enum APIEndpoint {
     case meetingScore(id: UUID)
     case meetingDelegate(id: UUID)
     case meetingsByDate(date: String)
-    case meetingsAnalysis(period: String)
+    case meetingsAnalysis(period: String, startDate: String? = nil, endDate: String? = nil)
 
     // MARK: - Tasks
     case tasks
@@ -118,7 +118,11 @@ enum APIEndpoint {
         case .meetingScore(let id):      return "/meetings/\(id)/score"
         case .meetingDelegate(let id):   return "/meetings/\(id)/delegate"
         case .meetingsByDate(let date):  return "/meetings/date?date=\(date)"
-        case .meetingsAnalysis(let p):   return "/meetings/analysis?period=\(p)"
+        case .meetingsAnalysis(let p, let s, let e):
+            var path = "/meetings/analysis?period=\(p)"
+            if let s { path += "&startDate=\(s)" }
+            if let e { path += "&endDate=\(e)" }
+            return path
         case .tasks:              return "/tasks"
         case .task(let id):       return "/tasks/\(id)"
         case .tasksToday:         return "/tasks/today"

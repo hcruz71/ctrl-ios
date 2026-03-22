@@ -2,11 +2,19 @@ import SwiftUI
 
 struct MeetingAnalysisView: View {
     @ObservedObject var vm: MeetingsViewModel
+    @EnvironmentObject var authManager: AuthManager
     @Environment(\.dismiss) private var dismiss
     @State private var analysis: MeetingAnalysis?
-    @State private var isLoading = true
+    @State private var isLoading = false
+    @State private var hasLoaded = false
     @State private var selectedPeriod = "week"
     @State private var expandedRawData = false
+    @State private var usageSummary: UsageSummary?
+
+    // Custom date range
+    @State private var showCustomDates = false
+    @State private var customStart = Calendar.current.date(byAdding: .day, value: -7, to: Date()) ?? Date()
+    @State private var customEnd = Date()
 
     private let periods = [
         ("day", "Hoy"),
@@ -14,18 +22,55 @@ struct MeetingAnalysisView: View {
         ("month", "Mes"),
     ]
 
+    private var interactionsRemaining: Int {
+        usageSummary?.interactionsRemaining ?? 0
+    }
+
+    private var userPlan: String {
+        authManager.currentUser?.plan ?? "free"
+    }
+
     var body: some View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: 16) {
                     // Period picker
-                    Picker("Periodo", selection: $selectedPeriod) {
-                        ForEach(periods, id: \.0) { p in
-                            Text(p.1).tag(p.0)
+                    HStack {
+                        Picker("Periodo", selection: $selectedPeriod) {
+                            ForEach(periods, id: \.0) { p in
+                                Text(p.1).tag(p.0)
+                            }
+                            if showCustomDates {
+                                Text("Personalizado").tag("custom")
+                            }
+                        }
+                        .pickerStyle(.segmented)
+
+                        Button {
+                            withAnimation { showCustomDates.toggle() }
+                        } label: {
+                            Image(systemName: "calendar.badge.plus")
+                                .foregroundStyle(showCustomDates ? Color.ctrlPurple : .secondary)
                         }
                     }
-                    .pickerStyle(.segmented)
                     .padding(.horizontal)
+
+                    if showCustomDates {
+                        VStack(spacing: 8) {
+                            DatePicker("Inicio", selection: $customStart, displayedComponents: .date)
+                            DatePicker("Fin", selection: $customEnd, displayedComponents: .date)
+                            Button("Analizar periodo") {
+                                selectedPeriod = "custom"
+                                Task { await loadAnalysis() }
+                            }
+                            .font(.subheadline.bold())
+                            .foregroundStyle(Color.ctrlPurple)
+                        }
+                        .padding(.horizontal)
+                    }
+
+                    // Usage warning banners
+                    usageBanner
 
                     if isLoading {
                         VStack(spacing: 12) {
@@ -86,7 +131,7 @@ struct MeetingAnalysisView: View {
                             .clipShape(RoundedRectangle(cornerRadius: 12))
                             .padding(.horizontal)
                         }
-                    } else {
+                    } else if hasLoaded {
                         Text("No se pudo generar el analisis")
                             .foregroundStyle(.secondary)
                             .padding(.vertical, 40)
@@ -110,16 +155,88 @@ struct MeetingAnalysisView: View {
                 }
             }
         }
-        .task { await loadAnalysis() }
-        .onChange(of: selectedPeriod) { _ in
-            Task { await loadAnalysis() }
+        .task { await loadUsage() }
+        .onChange(of: selectedPeriod) { newValue in
+            if newValue != "custom" {
+                Task { await loadAnalysis() }
+            }
         }
     }
 
+    // MARK: - Usage Banner
+
+    @ViewBuilder
+    private var usageBanner: some View {
+        if userPlan == "free" {
+            HStack(spacing: 8) {
+                Image(systemName: "lock.fill")
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Plan Pro requerido")
+                        .font(.caption.bold())
+                    Text("El analisis con IA requiere plan Pro")
+                        .font(.caption2)
+                }
+                Spacer()
+                NavigationLink("Ver planes") {
+                    SubscriptionView()
+                }
+                .font(.caption.bold())
+            }
+            .foregroundStyle(.white)
+            .padding(12)
+            .background(.red)
+            .clipShape(RoundedRectangle(cornerRadius: 10))
+            .padding(.horizontal)
+        } else if interactionsRemaining < 20 && interactionsRemaining > 0 {
+            HStack(spacing: 8) {
+                Image(systemName: "exclamationmark.triangle.fill")
+                Text("Pocas interacciones disponibles (\(interactionsRemaining) restantes)")
+                    .font(.caption)
+            }
+            .foregroundStyle(.white)
+            .padding(10)
+            .background(.orange)
+            .clipShape(RoundedRectangle(cornerRadius: 10))
+            .padding(.horizontal)
+        } else if interactionsRemaining > 0 {
+            HStack(spacing: 8) {
+                Image(systemName: "info.circle")
+                Text("Este analisis usa aproximadamente 1 interaccion de IA (\(interactionsRemaining) restantes)")
+                    .font(.caption)
+            }
+            .foregroundStyle(.secondary)
+            .padding(10)
+            .background(Color(.systemGray6))
+            .clipShape(RoundedRectangle(cornerRadius: 10))
+            .padding(.horizontal)
+        }
+    }
+
+    // MARK: - Actions
+
+    private func loadUsage() async {
+        do {
+            usageSummary = try await APIClient.shared.request(.usageSummary)
+        } catch { }
+    }
+
     private func loadAnalysis() async {
+        guard userPlan != "free" else { return }
         isLoading = true
-        analysis = await vm.fetchAnalysis(period: selectedPeriod)
+        if selectedPeriod == "custom" {
+            let df = DateFormatter()
+            df.dateFormat = "yyyy-MM-dd"
+            analysis = await vm.fetchAnalysis(
+                period: "custom",
+                startDate: df.string(from: customStart),
+                endDate: df.string(from: customEnd)
+            )
+        } else {
+            analysis = await vm.fetchAnalysis(period: selectedPeriod)
+        }
+        hasLoaded = true
         isLoading = false
+        await loadUsage()
     }
 
     private func dataRow(_ label: String, _ value: String) -> some View {
