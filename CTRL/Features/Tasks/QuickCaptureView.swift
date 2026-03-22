@@ -74,12 +74,19 @@ struct QuickCaptureView: View {
                 Spacer()
             }
             .padding()
-            .keyboardDismissable()
             .navigationTitle("Captura rápida")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cerrar") { dismiss() }
+                }
+                ToolbarItemGroup(placement: .keyboard) {
+                    Spacer()
+                    Button("Listo") {
+                        UIApplication.shared.sendAction(
+                            #selector(UIResponder.resignFirstResponder),
+                            to: nil, from: nil, for: nil)
+                    }
                 }
             }
         }

@@ -38,7 +38,6 @@ struct SMARTObjectiveFormView: View {
                 step3KPI.tag(2)
                 step4Summary.tag(3)
             }
-            .keyboardDismissable()
             .tabViewStyle(.page(indexDisplayMode: .never))
             .animation(.easeInOut, value: step)
             .navigationTitle(stepTitle)
@@ -46,6 +45,14 @@ struct SMARTObjectiveFormView: View {
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancelar") { dismiss() }
+                }
+                ToolbarItemGroup(placement: .keyboard) {
+                    Spacer()
+                    Button("Listo") {
+                        UIApplication.shared.sendAction(
+                            #selector(UIResponder.resignFirstResponder),
+                            to: nil, from: nil, for: nil)
+                    }
                 }
                 ToolbarItem(placement: .bottomBar) {
                     HStack {

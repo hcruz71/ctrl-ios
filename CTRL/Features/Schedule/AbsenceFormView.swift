@@ -64,7 +64,16 @@ struct AbsenceFormView: View {
                     .disabled(isSaving)
                 }
             }
-            .keyboardDismissable()
+            .toolbar {
+                ToolbarItemGroup(placement: .keyboard) {
+                    Spacer()
+                    Button("Listo") {
+                        UIApplication.shared.sendAction(
+                            #selector(UIResponder.resignFirstResponder),
+                            to: nil, from: nil, for: nil)
+                    }
+                }
+            }
             .navigationTitle("Nueva ausencia")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

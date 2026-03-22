@@ -146,8 +146,17 @@ struct DelegationsContentView: View {
             .sheet(isPresented: $showingContactPicker) {
                 ContactPickerView(selectedIds: $selectedContactIds, singleSelection: true)
             }
+            .toolbar {
+                ToolbarItemGroup(placement: .keyboard) {
+                    Spacer()
+                    Button("Listo") {
+                        UIApplication.shared.sendAction(
+                            #selector(UIResponder.resignFirstResponder),
+                            to: nil, from: nil, for: nil)
+                    }
+                }
+            }
         }
-        .keyboardDismissable()
         .presentationDetents([.medium, .large])
     }
 }

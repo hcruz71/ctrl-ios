@@ -88,7 +88,16 @@ struct ScheduleSettingsView: View {
                 .disabled(isSaving)
             }
         }
-        .keyboardDismissable()
+        .toolbar {
+            ToolbarItemGroup(placement: .keyboard) {
+                Spacer()
+                Button("Listo") {
+                    UIApplication.shared.sendAction(
+                        #selector(UIResponder.resignFirstResponder),
+                        to: nil, from: nil, for: nil)
+                }
+            }
+        }
         .navigationTitle("Horario")
         .navigationBarTitleDisplayMode(.inline)
         .task {

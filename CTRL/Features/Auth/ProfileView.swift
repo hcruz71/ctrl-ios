@@ -473,7 +473,16 @@ struct ProfileView: View {
                     }
                 }
             }
-            .keyboardDismissable()
+            .toolbar {
+                ToolbarItemGroup(placement: .keyboard) {
+                    Spacer()
+                    Button("Listo") {
+                        UIApplication.shared.sendAction(
+                            #selector(UIResponder.resignFirstResponder),
+                            to: nil, from: nil, for: nil)
+                    }
+                }
+            }
             .navigationTitle(lang.t("profile.title"))
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {

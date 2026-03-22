@@ -113,7 +113,16 @@ struct ProjectsView: View {
                     }
                 }
             }
-            .keyboardDismissable()
+            .toolbar {
+                ToolbarItemGroup(placement: .keyboard) {
+                    Spacer()
+                    Button("Listo") {
+                        UIApplication.shared.sendAction(
+                            #selector(UIResponder.resignFirstResponder),
+                            to: nil, from: nil, for: nil)
+                    }
+                }
+            }
             .navigationTitle("Nuevo proyecto")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

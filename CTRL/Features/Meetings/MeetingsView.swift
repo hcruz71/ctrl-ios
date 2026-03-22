@@ -197,7 +197,16 @@ struct MeetingsView: View {
                         .lineLimit(3...6)
                 }
             }
-            .keyboardDismissable()
+            .toolbar {
+                ToolbarItemGroup(placement: .keyboard) {
+                    Spacer()
+                    Button("Listo") {
+                        UIApplication.shared.sendAction(
+                            #selector(UIResponder.resignFirstResponder),
+                            to: nil, from: nil, for: nil)
+                    }
+                }
+            }
             .navigationTitle(lang.t("meetings.new"))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

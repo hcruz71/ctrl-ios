@@ -41,7 +41,16 @@ struct ICSImportView: View {
                 case .done:        doneView
                 }
             }
-            .keyboardDismissable()
+            .toolbar {
+                ToolbarItemGroup(placement: .keyboard) {
+                    Spacer()
+                    Button("Listo") {
+                        UIApplication.shared.sendAction(
+                            #selector(UIResponder.resignFirstResponder),
+                            to: nil, from: nil, for: nil)
+                    }
+                }
+            }
             .navigationTitle("Importar .ics")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

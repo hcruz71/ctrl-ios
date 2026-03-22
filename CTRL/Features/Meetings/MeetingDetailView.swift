@@ -121,7 +121,16 @@ struct MeetingDetailView: View {
                 }
             }
         }
-        .keyboardDismissable()
+        .toolbar {
+            ToolbarItemGroup(placement: .keyboard) {
+                Spacer()
+                Button("Listo") {
+                    UIApplication.shared.sendAction(
+                        #selector(UIResponder.resignFirstResponder),
+                        to: nil, from: nil, for: nil)
+                }
+            }
+        }
         .navigationTitle("Reunion")
         .navigationBarTitleDisplayMode(.inline)
         .sheet(isPresented: $showingMinutes) {
@@ -273,7 +282,16 @@ private struct AddContactFromAttendeeSheet: View {
                     .pickerStyle(.segmented)
                 }
             }
-            .keyboardDismissable()
+            .toolbar {
+                ToolbarItemGroup(placement: .keyboard) {
+                    Spacer()
+                    Button("Listo") {
+                        UIApplication.shared.sendAction(
+                            #selector(UIResponder.resignFirstResponder),
+                            to: nil, from: nil, for: nil)
+                    }
+                }
+            }
             .navigationTitle("Agregar contacto")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
