@@ -116,7 +116,6 @@ struct DelegationsContentView: View {
                     }
                 }
             }
-            .keyboardDismissable()
             .navigationTitle("Nueva delegacion")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -148,6 +147,7 @@ struct DelegationsContentView: View {
                 ContactPickerView(selectedIds: $selectedContactIds, singleSelection: true)
             }
         }
+        .keyboardDismissable()
         .presentationDetents([.medium, .large])
     }
 }
