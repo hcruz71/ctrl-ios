@@ -8,6 +8,7 @@ struct DelegationEmailSheet: View {
     // Step tracking
     enum Step { case context, generating, preview, sent }
     @State private var step: Step = .context
+    @State private var showAIConfirm = false
 
     // Context form fields
     @State private var objetivoVinculado = ""
@@ -63,6 +64,9 @@ struct DelegationEmailSheet: View {
                     }
                 }
             }
+        }
+        .aiUsageAlert(isPresented: $showAIConfirm, title: "Generar correo con IA") {
+            Task { await generateEmail() }
         }
     }
 
@@ -176,7 +180,7 @@ struct DelegationEmailSheet: View {
 
             Section {
                 Button {
-                    Task { await generateEmail() }
+                    showAIConfirm = true
                 } label: {
                     HStack {
                         Spacer()

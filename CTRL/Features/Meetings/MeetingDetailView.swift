@@ -5,6 +5,7 @@ struct MeetingDetailView: View {
     let meeting: Meeting
     @Environment(\.dismiss) private var dismiss
     @State private var showingMinutes = false
+    @State private var showMinutesConfirm = false
     @State private var selectedObjectiveId: UUID?
     @State private var showAllAttendees = false
     @State private var addContactAttendee: MeetingAttendee?
@@ -115,7 +116,7 @@ struct MeetingDetailView: View {
                         .foregroundStyle(.green)
                 }
                 Button {
-                    showingMinutes = true
+                    showMinutesConfirm = true
                 } label: {
                     Label("Procesar minuta", systemImage: "doc.text.magnifyingglass")
                 }
@@ -133,6 +134,9 @@ struct MeetingDetailView: View {
         }
         .navigationTitle("Reunion")
         .navigationBarTitleDisplayMode(.inline)
+        .aiUsageAlert(isPresented: $showMinutesConfirm, title: "Procesar minuta con IA") {
+            showingMinutes = true
+        }
         .sheet(isPresented: $showingMinutes) {
             MinutasView(vm: vm, meetingId: meeting.id)
         }

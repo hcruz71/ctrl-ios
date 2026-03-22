@@ -65,6 +65,7 @@
 		99C7E337BBB538E7E6FF3E0C /* AbsencesListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7A39DFFC304E1CBC642BC0A /* AbsencesListView.swift */; };
 		9B1DDC4FBC57C357E0821FE0 /* Contact.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EBA67F8D2B73CBDE6A78384 /* Contact.swift */; };
 		9C33ADEA4FCB44BE75203E7E /* WatchMeetingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85797C8FBAD7198BD0121DCF /* WatchMeetingsView.swift */; };
+		9CA98CCED72B1EBE9429AE24 /* AIUsageAlert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 188D10DF623892FE64EC2E1B /* AIUsageAlert.swift */; };
 		9D56F40DDBABEDE53FE23886 /* WorkMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA6F58A745597745EDCF35F0 /* WorkMode.swift */; };
 		9F3DB3A768CEE1232E41C9E0 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3617F069BB9E3B6F50B30776 /* AppDelegate.swift */; };
 		A10B7C1924CE34E1CF9CDAB8 /* KPIMeasurementSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A332BD070E3FC2B977122D67 /* KPIMeasurementSheet.swift */; };
@@ -135,6 +136,7 @@
 		0FA2D79F2012B7F07363AF3C /* CTRLWatch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CTRLWatch.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		10DF027E47C9DECD467A86A0 /* ObjectiveRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjectiveRowView.swift; sourceTree = "<group>"; };
 		11CA8E9114FCAE6191BF807B /* DayPlanView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DayPlanView.swift; sourceTree = "<group>"; };
+		188D10DF623892FE64EC2E1B /* AIUsageAlert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIUsageAlert.swift; sourceTree = "<group>"; };
 		1D1DEBF2E1339735151F9F96 /* PeopleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PeopleView.swift; sourceTree = "<group>"; };
 		1D8B659839744F71E726D771 /* SubscriptionPlan.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionPlan.swift; sourceTree = "<group>"; };
 		1E893A92F4812A42E4DE54FB /* MinutasView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MinutasView.swift; sourceTree = "<group>"; };
@@ -371,6 +373,7 @@
 		8EFD8B452D57C8786427D9A8 /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				188D10DF623892FE64EC2E1B /* AIUsageAlert.swift */,
 				ADFCA71CA86F7F5B4ADB27B6 /* BadgeView.swift */,
 				7920049ADD15D7CF391353FC /* CTRLTabView.swift */,
 				FC1E7A0DF4D448B002898EFC /* EmptyStateView.swift */,
@@ -622,6 +625,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9CA98CCED72B1EBE9429AE24 /* AIUsageAlert.swift in Sources */,
 				A9564A98AEC45DD83039CC26 /* APIClient.swift in Sources */,
 				DE59C250AF0CDEA115938FB2 /* APIEndpoints.swift in Sources */,
 				0CC7C83FCE028FFC0A1E7C3E /* APIError.swift in Sources */,

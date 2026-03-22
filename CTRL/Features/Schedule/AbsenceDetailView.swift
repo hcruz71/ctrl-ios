@@ -7,6 +7,7 @@ struct AbsenceDetailView: View {
     @State private var isGenerating = false
     @State private var generatedAbsence: UserAbsence?
     @State private var selectedDocTab = 0
+    @State private var showAIConfirm = false
 
     private var current: UserAbsence { generatedAbsence ?? absence }
 
@@ -30,7 +31,7 @@ struct AbsenceDetailView: View {
                 // Generate button
                 if current.documentsGeneratedAt == nil {
                     Button {
-                        Task { await generateDocuments() }
+                        showAIConfirm = true
                     } label: {
                         HStack {
                             if isGenerating {
@@ -117,6 +118,9 @@ struct AbsenceDetailView: View {
         }
         .navigationTitle("Detalle de ausencia")
         .navigationBarTitleDisplayMode(.inline)
+        .aiUsageAlert(isPresented: $showAIConfirm, title: "Generar documentos con IA", estimatedUsage: "2-3") {
+            Task { await generateDocuments() }
+        }
     }
 
     private func generateDocuments() async {

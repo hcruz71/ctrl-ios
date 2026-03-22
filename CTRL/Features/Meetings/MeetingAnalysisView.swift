@@ -16,6 +16,10 @@ struct MeetingAnalysisView: View {
     @State private var customStart = Calendar.current.date(byAdding: .day, value: -7, to: Date()) ?? Date()
     @State private var customEnd = Date()
 
+    // Confirmation alert
+    @State private var showConfirmation = false
+    @State private var confirmationMessage = ""
+
     private let periods = [
         ("day", "Hoy"),
         ("week", "Semana"),
@@ -61,7 +65,7 @@ struct MeetingAnalysisView: View {
                             DatePicker("Fin", selection: $customEnd, displayedComponents: .date)
                             Button("Analizar periodo") {
                                 selectedPeriod = "custom"
-                                Task { await loadAnalysis() }
+                                requestAnalysis()
                             }
                             .font(.subheadline.bold())
                             .foregroundStyle(Color.ctrlPurple)
@@ -99,37 +103,7 @@ struct MeetingAnalysisView: View {
 
                         // Raw data (collapsible)
                         if let raw = analysis.rawData {
-                            VStack(spacing: 0) {
-                                Button {
-                                    withAnimation { expandedRawData.toggle() }
-                                } label: {
-                                    HStack {
-                                        Label("Datos", systemImage: "chart.bar")
-                                            .font(.subheadline.bold())
-                                        Spacer()
-                                        Image(systemName: expandedRawData ? "chevron.up" : "chevron.down")
-                                            .font(.caption)
-                                            .foregroundStyle(.secondary)
-                                    }
-                                    .padding()
-                                }
-
-                                if expandedRawData {
-                                    VStack(spacing: 8) {
-                                        dataRow("Total reuniones", "\(raw.total ?? 0)")
-                                        dataRow("Horas estimadas", "\(raw.hoursEstimated ?? 0)h")
-                                        dataRow("Con objetivo", "\(raw.withObjective ?? 0)")
-                                        dataRow("Sin objetivo", "\(raw.withoutObjective ?? 0)")
-                                        dataRow("Como organizador", "\(raw.asOrganizer ?? 0)")
-                                        dataRow("Como participante", "\(raw.asParticipant ?? 0)")
-                                    }
-                                    .padding(.horizontal)
-                                    .padding(.bottom)
-                                }
-                            }
-                            .background(Color(.secondarySystemGroupedBackground))
-                            .clipShape(RoundedRectangle(cornerRadius: 12))
-                            .padding(.horizontal)
+                            rawDataSection(raw)
                         }
                     } else if hasLoaded {
                         Text("No se pudo generar el analisis")
@@ -147,18 +121,26 @@ struct MeetingAnalysisView: View {
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button {
-                        Task { await loadAnalysis() }
+                        requestAnalysis()
                     } label: {
                         Image(systemName: "arrow.clockwise")
                     }
                     .disabled(isLoading)
                 }
             }
+            .alert("Analisis con IA", isPresented: $showConfirmation) {
+                Button("Analizar") {
+                    Task { await executeAnalysis() }
+                }
+                Button("Cancelar", role: .cancel) {}
+            } message: {
+                Text(confirmationMessage)
+            }
         }
         .task { await loadUsage() }
         .onChange(of: selectedPeriod) { newValue in
             if newValue != "custom" {
-                Task { await loadAnalysis() }
+                requestAnalysis()
             }
         }
     }
@@ -187,41 +169,84 @@ struct MeetingAnalysisView: View {
             .background(.red)
             .clipShape(RoundedRectangle(cornerRadius: 10))
             .padding(.horizontal)
-        } else if interactionsRemaining < 20 && interactionsRemaining > 0 {
-            HStack(spacing: 8) {
-                Image(systemName: "exclamationmark.triangle.fill")
-                Text("Pocas interacciones disponibles (\(interactionsRemaining) restantes)")
-                    .font(.caption)
-            }
-            .foregroundStyle(.white)
-            .padding(10)
-            .background(.orange)
-            .clipShape(RoundedRectangle(cornerRadius: 10))
-            .padding(.horizontal)
-        } else if interactionsRemaining > 0 {
-            HStack(spacing: 8) {
-                Image(systemName: "info.circle")
-                Text("Este analisis usa aproximadamente 1 interaccion de IA (\(interactionsRemaining) restantes)")
-                    .font(.caption)
-            }
-            .foregroundStyle(.secondary)
-            .padding(10)
-            .background(Color(.systemGray6))
-            .clipShape(RoundedRectangle(cornerRadius: 10))
-            .padding(.horizontal)
         }
+    }
+
+    // MARK: - Raw Data Section
+
+    private func rawDataSection(_ raw: MeetingAnalysisRawData) -> some View {
+        VStack(spacing: 0) {
+            Button {
+                withAnimation { expandedRawData.toggle() }
+            } label: {
+                HStack {
+                    Label("Datos", systemImage: "chart.bar")
+                        .font(.subheadline.bold())
+                    Spacer()
+                    Image(systemName: expandedRawData ? "chevron.up" : "chevron.down")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+                .padding()
+            }
+
+            if expandedRawData {
+                VStack(spacing: 8) {
+                    dataRow("Total reuniones", "\(raw.total ?? 0)")
+                    dataRow("Horas estimadas", "\(raw.hoursEstimated ?? 0)h")
+                    dataRow("Con objetivo", "\(raw.withObjective ?? 0)")
+                    dataRow("Sin objetivo", "\(raw.withoutObjective ?? 0)")
+                    dataRow("Como organizador", "\(raw.asOrganizer ?? 0)")
+                    dataRow("Como participante", "\(raw.asParticipant ?? 0)")
+                }
+                .padding(.horizontal)
+                .padding(.bottom)
+            }
+        }
+        .background(Color(.secondarySystemGroupedBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .padding(.horizontal)
+    }
+
+    // MARK: - Confirmation Logic
+
+    private func requestAnalysis() {
+        guard userPlan != "free" else { return }
+
+        // Count linked/unlinked from already-loaded meetings
+        let allMeetings = vm.todayMeetings + vm.upcomingMeetings
+        let total = max(allMeetings.count, 1)
+        let linked = allMeetings.filter { $0.objectiveId != nil || $0.projectId != nil }.count
+        let unlinked = total - linked
+
+        var msg = ""
+        if unlinked > 0 {
+            msg += "De tus \(total) reuniones:\n"
+            msg += "\(linked) vinculadas a objetivos o proyectos\n"
+            msg += "\(unlinked) sin vincular\n\n"
+            msg += "Las reuniones sin vinculo reducen la precision del analisis.\n\n"
+        } else {
+            msg += "Tus \(total) reuniones estan vinculadas a objetivos o proyectos.\n\n"
+        }
+
+        msg += "Este analisis usara aproximadamente 3-5 interacciones.\n"
+        msg += "Te quedan \(interactionsRemaining) interacciones este mes."
+
+        if interactionsRemaining < 5 {
+            msg += "\nAtencion: quedan pocas interacciones."
+        }
+
+        confirmationMessage = msg
+        showConfirmation = true
     }
 
     // MARK: - Actions
 
     private func loadUsage() async {
-        do {
-            usageSummary = try await APIClient.shared.request(.usageSummary)
-        } catch { }
+        usageSummary = try? await APIClient.shared.request(.usageSummary)
     }
 
-    private func loadAnalysis() async {
-        guard userPlan != "free" else { return }
+    private func executeAnalysis() async {
         isLoading = true
         if selectedPeriod == "custom" {
             let df = DateFormatter()
