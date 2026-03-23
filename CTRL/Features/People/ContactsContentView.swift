@@ -5,6 +5,7 @@ struct ContactsContentView: View {
     @StateObject private var vm = ContactsViewModel()
     @State private var showingAdd = false
     @State private var showingNetworkInsight = false
+    @State private var contactToEdit: Contact?
     @State private var searchText = ""
     @State private var selectedNetworkTab = 0
 
@@ -87,6 +88,12 @@ struct ContactsContentView: View {
                 List {
                     ForEach(filteredContacts) { contact in
                         ContactRowWithNetwork(contact: contact)
+                            .swipeActions(edge: .leading) {
+                                Button { contactToEdit = contact } label: {
+                                    Label("Editar", systemImage: "pencil")
+                                }
+                                .tint(.blue)
+                            }
                             .swipeActions(edge: .trailing) {
                                 Button(role: .destructive) {
                                     Task { await vm.delete(id: contact.id) }
@@ -117,6 +124,9 @@ struct ContactsContentView: View {
         }
         .withProfileButton()
         .sheet(isPresented: $showingAdd) { addContactSheet }
+        .sheet(item: $contactToEdit) { contact in
+            EditContactSheet(vm: vm, contact: contact)
+        }
         .sheet(isPresented: $showingNetworkInsight) {
             NetworkInsightView(contacts: vm.contacts)
         }
