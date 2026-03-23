@@ -1,5 +1,4 @@
 import SwiftUI
-import MessageUI
 
 struct TaskEmailSheet: View {
     let task: CTRLTask
@@ -28,8 +27,9 @@ struct TaskEmailSheet: View {
     @State private var emailDraft = ""
 
     // Mail sending
-    @State private var showMailCompose = false
     @State private var showShareSheet = false
+    @State private var shareContent = ""
+    @State private var copiedToast = false
 
     private let nivelesAutonomia = [
         ("total", "Total", "Plena autonomia"),
@@ -70,20 +70,8 @@ struct TaskEmailSheet: View {
         .aiUsageAlert(isPresented: $showAIConfirm, title: "Generar correo con IA") {
             Task { await generateEmail() }
         }
-        .sheet(isPresented: $showMailCompose) {
-            MailComposeView(
-                recipient: recipientEmail,
-                subject: emailSubject,
-                body: emailDraft
-            ) { sent in
-                showMailCompose = false
-                if sent {
-                    Task { await markAsSent() }
-                }
-            }
-        }
         .sheet(isPresented: $showShareSheet) {
-            ShareSheetView(items: ["\(emailSubject)\n\n\(emailDraft)"])
+            ShareSheetView(items: [shareContent])
         }
         .task { await loadContact() }
     }
@@ -297,9 +285,25 @@ struct TaskEmailSheet: View {
     // MARK: - Actions
 
     private func sendAction() {
-        if hasEmail && MFMailComposeViewController.canSendMail() {
-            showMailCompose = true
+        if hasEmail {
+            // Build mailto: URL — opens Gmail, Outlook, or default mail app
+            let subjectEncoded = emailSubject.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
+            let bodyEncoded = emailDraft.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
+            let mailtoString = "mailto:\(recipientEmail)?subject=\(subjectEncoded)&body=\(bodyEncoded)"
+
+            if let url = URL(string: mailtoString), UIApplication.shared.canOpenURL(url) {
+                UIApplication.shared.open(url) { success in
+                    if success {
+                        Task { await markAsSent() }
+                    }
+                }
+            } else {
+                // Fallback: share sheet
+                shareContent = "Para: \(recipientEmail)\nAsunto: \(emailSubject)\n\n\(emailDraft)"
+                showShareSheet = true
+            }
         } else {
+            shareContent = "Asunto: \(emailSubject)\n\n\(emailDraft)"
             showShareSheet = true
         }
     }
