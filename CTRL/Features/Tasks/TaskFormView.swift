@@ -21,6 +21,7 @@ struct TaskFormView: View {
     @State private var showingProjectPicker = false
     @State private var showingContactPicker = false
     @State private var showingDelegateContactPicker = false
+    @State private var delegateContacts: [Contact] = []
 
     private let levels: [(label: String, value: String, color: Color, icon: String)] = [
         ("A", "A", .red, "flame.fill"),
@@ -119,17 +120,36 @@ struct TaskFormView: View {
         Section("Delegacion") {
             Toggle("Delegar a alguien", isOn: $isDelegated)
             if isDelegated {
-                TextField("Nombre del responsable", text: $assignee)
                 Button {
                     showingDelegateContactPicker = true
                 } label: {
                     HStack {
-                        Text("Contacto responsable")
-                            .foregroundStyle(.primary)
+                        Image(systemName: "person.fill")
+                            .foregroundStyle(.blue)
+                        if let cId = assigneeContactId,
+                           let contact = delegateContacts.first(where: { $0.id == cId }) {
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(contact.name)
+                                    .font(.subheadline)
+                                    .foregroundStyle(.primary)
+                                if let email = contact.email, !email.isEmpty {
+                                    Text(email)
+                                        .font(.caption)
+                                        .foregroundStyle(.secondary)
+                                }
+                            }
+                        } else {
+                            Text("Seleccionar contacto")
+                                .foregroundStyle(.primary)
+                        }
                         Spacer()
-                        Text(assigneeContactId != nil ? "Seleccionado" : "Ninguno")
+                        Image(systemName: "chevron.right")
+                            .font(.caption)
                             .foregroundStyle(.secondary)
                     }
+                }
+                if assigneeContactId == nil {
+                    TextField("O escribe el nombre", text: $assignee)
                 }
                 TextField("Notas de delegacion...", text: $delegationNotes, axis: .vertical)
                     .lineLimit(2...4)
@@ -165,8 +185,23 @@ struct TaskFormView: View {
             .sheet(isPresented: $showingDelegateContactPicker) {
                 ContactPickerView(selectedIds: Binding(
                     get: { assigneeContactId.map { [$0] } ?? [] },
-                    set: { ids in assigneeContactId = ids.first }
+                    set: { ids in
+                        assigneeContactId = ids.first
+                        // Auto-fill assignee name from loaded contacts
+                        if let id = ids.first,
+                           let contact = delegateContacts.first(where: { $0.id == id }) {
+                            assignee = contact.name
+                        }
+                    }
                 ), singleSelection: true)
+            }
+            .task {
+                // Load contacts for name lookup
+                if delegateContacts.isEmpty {
+                    do {
+                        delegateContacts = try await APIClient.shared.request(.contacts)
+                    } catch { }
+                }
             }
     }
 }
