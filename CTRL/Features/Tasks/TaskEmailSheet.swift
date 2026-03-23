@@ -8,6 +8,12 @@ struct TaskEmailSheet: View {
     @State private var step: Step = .context
     @State private var showAIConfirm = false
 
+    // Contact info
+    @State private var contact: Contact?
+    @State private var contactLoading = true
+    @State private var recipientName = ""
+    @State private var recipientEmail = ""
+
     // Context fields
     @State private var objetivoVinculado = ""
     @State private var contextoAdicional = ""
@@ -19,6 +25,7 @@ struct TaskEmailSheet: View {
     // Generated email
     @State private var emailSubject = ""
     @State private var emailDraft = ""
+    @State private var sendViaEmail = true
 
     private let nivelesAutonomia = [
         ("total", "Total", "Plena autonomia"),
@@ -26,6 +33,8 @@ struct TaskEmailSheet: View {
         ("con_aprobacion", "Con aprobacion", "Consulta antes de decidir"),
     ]
     private let tonos = [("formal", "Formal"), ("colaborativo", "Colaborativo"), ("urgente", "Urgente")]
+
+    private var hasEmail: Bool { !recipientEmail.isEmpty }
 
     var body: some View {
         NavigationStack {
@@ -57,6 +66,7 @@ struct TaskEmailSheet: View {
         .aiUsageAlert(isPresented: $showAIConfirm, title: "Generar correo con IA") {
             Task { await generateEmail() }
         }
+        .task { await loadContact() }
     }
 
     private var navigationTitle: String {
@@ -68,6 +78,23 @@ struct TaskEmailSheet: View {
         }
     }
 
+    // MARK: - Load Contact
+
+    private func loadContact() async {
+        recipientName = task.assignee ?? ""
+        guard let contactId = task.assigneeContactId else {
+            contactLoading = false
+            return
+        }
+        do {
+            let c: Contact = try await APIClient.shared.request(.contact(id: contactId))
+            contact = c
+            recipientName = c.name
+            recipientEmail = c.email ?? ""
+        } catch { }
+        contactLoading = false
+    }
+
     // MARK: - Context Form
 
     private var contextForm: some View {
@@ -76,13 +103,33 @@ struct TaskEmailSheet: View {
                 VStack(alignment: .leading, spacing: 4) {
                     Text(task.title)
                         .font(.headline)
-                    Text("Para: \(task.assignee ?? "Sin asignar")")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
+                    HStack {
+                        Text("Para: \(recipientName.isEmpty ? "Sin asignar" : recipientName)")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                        if contactLoading {
+                            ProgressView().controlSize(.small)
+                        }
+                    }
+                    if hasEmail {
+                        Label(recipientEmail, systemImage: "envelope")
+                            .font(.caption)
+                            .foregroundStyle(.blue)
+                    }
                     if let due = task.dueDate {
                         Text("Fecha limite: \(due)")
                             .font(.caption)
                             .foregroundStyle(.secondary)
+                    }
+                }
+
+                if !contactLoading && !hasEmail {
+                    HStack(spacing: 6) {
+                        Image(systemName: "exclamationmark.triangle.fill")
+                            .foregroundStyle(.orange)
+                        Text("Sin email registrado. Agregalo en los datos del contacto para poder enviar.")
+                            .font(.caption)
+                            .foregroundStyle(.orange)
                     }
                 }
             } header: {
@@ -95,12 +142,12 @@ struct TaskEmailSheet: View {
             }
 
             Section("Contexto adicional") {
-                TextField("Antecedentes que el responsable debe conocer...", text: $contextoAdicional, axis: .vertical)
+                TextField("Antecedentes...", text: $contextoAdicional, axis: .vertical)
                     .lineLimit(3...6)
             }
 
             Section("Recursos disponibles") {
-                TextField("Herramientas, presupuesto, equipo...", text: $recursosDisponibles, axis: .vertical)
+                TextField("Herramientas, presupuesto...", text: $recursosDisponibles, axis: .vertical)
                     .lineLimit(2...4)
             }
 
@@ -154,8 +201,16 @@ struct TaskEmailSheet: View {
     private var previewView: some View {
         VStack(spacing: 0) {
             VStack(alignment: .leading, spacing: 4) {
-                Text("Asunto:").font(.caption).foregroundStyle(.secondary)
-                Text(emailSubject).font(.subheadline).fontWeight(.medium)
+                if hasEmail {
+                    HStack {
+                        Text("Para:").font(.caption).foregroundStyle(.secondary)
+                        Text(recipientEmail).font(.caption).foregroundStyle(.blue)
+                    }
+                }
+                HStack {
+                    Text("Asunto:").font(.caption).foregroundStyle(.secondary)
+                    Text(emailSubject).font(.subheadline).fontWeight(.medium)
+                }
             }
             .padding()
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -165,20 +220,40 @@ struct TaskEmailSheet: View {
             TextEditor(text: $emailDraft).font(.body).padding(.horizontal, 12).padding(.vertical, 8)
             Divider()
 
+            if hasEmail {
+                Toggle("Enviar por email", isOn: $sendViaEmail)
+                    .padding(.horizontal)
+                    .padding(.vertical, 6)
+            }
+
             HStack(spacing: 12) {
                 Button { step = .context } label: {
-                    Text("Editar contexto").font(.subheadline).frame(maxWidth: .infinity).padding(.vertical, 12)
+                    Text("Editar").font(.subheadline).frame(maxWidth: .infinity).padding(.vertical, 12)
                         .background(Color(.systemGray5)).clipShape(RoundedRectangle(cornerRadius: 10))
                 }
-                Button { showAIConfirm = true } label: {
-                    Label("Regenerar", systemImage: "arrow.counterclockwise").font(.subheadline)
+
+                Button {
+                    UIPasteboard.general.string = emailDraft
+                } label: {
+                    Label("Copiar", systemImage: "doc.on.doc").font(.subheadline)
                         .frame(maxWidth: .infinity).padding(.vertical, 12)
                         .background(Color(.systemGray5)).clipShape(RoundedRectangle(cornerRadius: 10))
                 }
-                Button { Task { await sendEmail() } } label: {
-                    Label("Enviar", systemImage: "paperplane.fill").font(.subheadline.bold())
-                        .frame(maxWidth: .infinity).padding(.vertical, 12)
-                        .background(Color.ctrlPurple).foregroundStyle(.white).clipShape(RoundedRectangle(cornerRadius: 10))
+
+                if hasEmail && sendViaEmail {
+                    Button { Task { await sendEmail(send: true) } } label: {
+                        Label("Enviar", systemImage: "paperplane.fill").font(.subheadline.bold())
+                            .frame(maxWidth: .infinity).padding(.vertical, 12)
+                            .background(Color.ctrlPurple).foregroundStyle(.white)
+                            .clipShape(RoundedRectangle(cornerRadius: 10))
+                    }
+                } else {
+                    Button { Task { await sendEmail(send: false) } } label: {
+                        Text("Marcar enviado").font(.subheadline.bold())
+                            .frame(maxWidth: .infinity).padding(.vertical, 12)
+                            .background(Color.ctrlPurple).foregroundStyle(.white)
+                            .clipShape(RoundedRectangle(cornerRadius: 10))
+                    }
                 }
             }
             .padding()
@@ -190,8 +265,13 @@ struct TaskEmailSheet: View {
     private var sentConfirmation: some View {
         VStack(spacing: 16) {
             Image(systemName: "checkmark.circle.fill").font(.system(size: 56)).foregroundStyle(.green)
-            Text("Correo marcado como enviado").font(.headline)
-            Text(task.assignee ?? "").font(.subheadline).foregroundStyle(.secondary)
+            if hasEmail && sendViaEmail {
+                Text("Correo enviado").font(.headline)
+                Text(recipientEmail).font(.subheadline).foregroundStyle(.blue)
+            } else {
+                Text("Correo marcado como enviado").font(.headline)
+                Text(recipientName).font(.subheadline).foregroundStyle(.secondary)
+            }
 
             Button {
                 UIPasteboard.general.string = emailDraft
@@ -215,11 +295,10 @@ struct TaskEmailSheet: View {
             guard let dias = Int(checkpointDias), dias > 0 else { return nil }
             let df = DateFormatter()
             df.dateFormat = "yyyy-MM-dd"
-            let date = Calendar.current.date(byAdding: .day, value: dias, to: Date())!
-            return df.string(from: date)
+            return df.string(from: Calendar.current.date(byAdding: .day, value: dias, to: Date())!)
         }()
 
-        struct EmailBody: Encodable {
+        struct Body: Encodable {
             let context: [String: String?]
             let send: Bool
         }
@@ -237,23 +316,29 @@ struct TaskEmailSheet: View {
             let result: SmartEmailResult = try await APIClient.shared.request(
                 .taskPrepareEmail(id: task.id),
                 method: "POST",
-                body: EmailBody(context: ctx, send: false)
+                body: Body(context: ctx, send: false)
             )
             emailSubject = result.emailSubject
             emailDraft = result.emailDraft
+            if let email = result.contactEmail, !email.isEmpty {
+                recipientEmail = email
+            }
+            if let name = result.contactName, !name.isEmpty {
+                recipientName = name
+            }
             step = .preview
         } catch {
             step = .context
         }
     }
 
-    private func sendEmail() async {
-        struct SendBody: Encodable { let context: [String: String?]; let send: Bool }
+    private func sendEmail(send: Bool) async {
+        struct Body: Encodable { let context: [String: String?]; let send: Bool }
         do {
             let _: SmartEmailResult = try await APIClient.shared.request(
                 .taskPrepareEmail(id: task.id),
                 method: "POST",
-                body: SendBody(context: [:], send: true)
+                body: Body(context: [:], send: true)
             )
             step = .sent
         } catch { }

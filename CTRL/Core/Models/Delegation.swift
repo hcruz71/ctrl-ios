@@ -56,4 +56,6 @@ struct SmartEmailResult: Codable {
     let emailSubject: String
     let emailDraft: String
     let emailSentAt: Date?
+    let contactEmail: String?
+    let contactName: String?
 }
