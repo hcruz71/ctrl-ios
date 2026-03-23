@@ -75,6 +75,7 @@ struct UpdateTaskBody: Encodable {
     var assigneeContactId: String?
     var delegationStatus: String?
     var delegationNotes: String?
+    var emailSentAt: String?
 }
 
 struct ReorderTasksBody: Encodable {

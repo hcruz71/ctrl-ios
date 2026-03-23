@@ -1,4 +1,5 @@
 import SwiftUI
+import MessageUI
 
 struct TaskEmailSheet: View {
     let task: CTRLTask
@@ -25,7 +26,10 @@ struct TaskEmailSheet: View {
     // Generated email
     @State private var emailSubject = ""
     @State private var emailDraft = ""
-    @State private var sendViaEmail = true
+
+    // Mail sending
+    @State private var showMailCompose = false
+    @State private var showShareSheet = false
 
     private let nivelesAutonomia = [
         ("total", "Total", "Plena autonomia"),
@@ -66,6 +70,21 @@ struct TaskEmailSheet: View {
         .aiUsageAlert(isPresented: $showAIConfirm, title: "Generar correo con IA") {
             Task { await generateEmail() }
         }
+        .sheet(isPresented: $showMailCompose) {
+            MailComposeView(
+                recipient: recipientEmail,
+                subject: emailSubject,
+                body: emailDraft
+            ) { sent in
+                showMailCompose = false
+                if sent {
+                    Task { await markAsSent() }
+                }
+            }
+        }
+        .sheet(isPresented: $showShareSheet) {
+            ShareSheetView(items: ["\(emailSubject)\n\n\(emailDraft)"])
+        }
         .task { await loadContact() }
     }
 
@@ -84,7 +103,6 @@ struct TaskEmailSheet: View {
         recipientName = task.assignee ?? ""
         print("[TaskEmail] assigneeContactId: \(task.assigneeContactId?.uuidString ?? "nil"), assignee: \(task.assignee ?? "nil")")
         guard let contactId = task.assigneeContactId else {
-            print("[TaskEmail] No contact ID linked")
             contactLoading = false
             return
         }
@@ -225,12 +243,6 @@ struct TaskEmailSheet: View {
             TextEditor(text: $emailDraft).font(.body).padding(.horizontal, 12).padding(.vertical, 8)
             Divider()
 
-            if hasEmail {
-                Toggle("Enviar por email", isOn: $sendViaEmail)
-                    .padding(.horizontal)
-                    .padding(.vertical, 6)
-            }
-
             HStack(spacing: 12) {
                 Button { step = .context } label: {
                     Text("Editar").font(.subheadline).frame(maxWidth: .infinity).padding(.vertical, 12)
@@ -245,20 +257,12 @@ struct TaskEmailSheet: View {
                         .background(Color(.systemGray5)).clipShape(RoundedRectangle(cornerRadius: 10))
                 }
 
-                if hasEmail && sendViaEmail {
-                    Button { Task { await sendEmail(send: true) } } label: {
-                        Label("Enviar", systemImage: "paperplane.fill").font(.subheadline.bold())
-                            .frame(maxWidth: .infinity).padding(.vertical, 12)
-                            .background(Color.ctrlPurple).foregroundStyle(.white)
-                            .clipShape(RoundedRectangle(cornerRadius: 10))
-                    }
-                } else {
-                    Button { Task { await sendEmail(send: false) } } label: {
-                        Text("Marcar enviado").font(.subheadline.bold())
-                            .frame(maxWidth: .infinity).padding(.vertical, 12)
-                            .background(Color.ctrlPurple).foregroundStyle(.white)
-                            .clipShape(RoundedRectangle(cornerRadius: 10))
-                    }
+                Button { sendAction() } label: {
+                    Label(hasEmail ? "Enviar" : "Compartir", systemImage: hasEmail ? "paperplane.fill" : "square.and.arrow.up")
+                        .font(.subheadline.bold())
+                        .frame(maxWidth: .infinity).padding(.vertical, 12)
+                        .background(Color.ctrlPurple).foregroundStyle(.white)
+                        .clipShape(RoundedRectangle(cornerRadius: 10))
                 }
             }
             .padding()
@@ -270,11 +274,10 @@ struct TaskEmailSheet: View {
     private var sentConfirmation: some View {
         VStack(spacing: 16) {
             Image(systemName: "checkmark.circle.fill").font(.system(size: 56)).foregroundStyle(.green)
-            if hasEmail && sendViaEmail {
-                Text("Correo enviado").font(.headline)
+            Text("Correo enviado").font(.headline)
+            if hasEmail {
                 Text(recipientEmail).font(.subheadline).foregroundStyle(.blue)
             } else {
-                Text("Correo marcado como enviado").font(.headline)
                 Text(recipientName).font(.subheadline).foregroundStyle(.secondary)
             }
 
@@ -292,6 +295,24 @@ struct TaskEmailSheet: View {
     }
 
     // MARK: - Actions
+
+    private func sendAction() {
+        if hasEmail && MFMailComposeViewController.canSendMail() {
+            showMailCompose = true
+        } else {
+            showShareSheet = true
+        }
+    }
+
+    private func markAsSent() async {
+        let body = UpdateTaskBody(emailSentAt: ISO8601DateFormatter().string(from: Date()))
+        do {
+            let _: CTRLTask = try await APIClient.shared.request(
+                .task(id: task.id), body: body
+            )
+        } catch { }
+        step = .sent
+    }
 
     private func generateEmail() async {
         step = .generating
@@ -336,16 +357,16 @@ struct TaskEmailSheet: View {
             step = .context
         }
     }
+}
 
-    private func sendEmail(send: Bool) async {
-        struct Body: Encodable { let context: [String: String?]; let send: Bool }
-        do {
-            let _: SmartEmailResult = try await APIClient.shared.request(
-                .taskPrepareEmail(id: task.id),
-                method: "POST",
-                body: Body(context: [:], send: true)
-            )
-            step = .sent
-        } catch { }
+// MARK: - Share Sheet
+
+private struct ShareSheetView: UIViewControllerRepresentable {
+    let items: [Any]
+
+    func makeUIViewController(context: Context) -> UIActivityViewController {
+        UIActivityViewController(activityItems: items, applicationActivities: nil)
     }
+
+    func updateUIViewController(_ uiViewController: UIActivityViewController, context: Context) {}
 }
