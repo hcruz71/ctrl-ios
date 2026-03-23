@@ -63,10 +63,14 @@ final class TasksViewModel: ObservableObject {
     func toggleDone(task: CTRLTask) async {
         do {
             let body = UpdateTaskBody(done: !task.done)
-            let updated: CTRLTask = try await APIClient.shared.request(
+            let _: CTRLTask = try await APIClient.shared.request(
                 .task(id: task.id), body: body
             )
-            replaceTask(updated)
+            withAnimation(.easeOut(duration: 0.3)) {
+                todayTasks.removeAll { $0.id == task.id }
+                inboxTasks.removeAll { $0.id == task.id }
+                tasks = todayTasks + inboxTasks
+            }
         } catch {
             errorMessage = error.localizedDescription
         }

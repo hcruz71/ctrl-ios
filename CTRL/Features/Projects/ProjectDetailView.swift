@@ -13,16 +13,16 @@ struct ProjectDetailView: View {
     @StateObject private var tasksVM = TasksViewModel()
 
     private var urgentTasks: [CTRLTask] {
-        projectTasks.filter { $0.priorityLevel == "A" && $0.isDelegated != true }
+        projectTasks.filter { $0.priorityLevel == "A" && $0.isDelegated != true && !$0.done }
     }
     private var importantTasks: [CTRLTask] {
-        projectTasks.filter { $0.priorityLevel == "B" && $0.isDelegated != true }
+        projectTasks.filter { $0.priorityLevel == "B" && $0.isDelegated != true && !$0.done }
     }
     private var pendingTasks: [CTRLTask] {
-        projectTasks.filter { $0.priorityLevel == "C" && $0.isDelegated != true }
+        projectTasks.filter { $0.priorityLevel == "C" && $0.isDelegated != true && !$0.done }
     }
     private var delegatedTasks: [CTRLTask] {
-        projectTasks.filter { $0.isDelegated == true }
+        projectTasks.filter { $0.isDelegated == true && !$0.done }
     }
 
     var body: some View {
@@ -236,7 +236,12 @@ struct ProjectDetailView: View {
                         }
                         .swipeActions(edge: .trailing) {
                             Button {
-                                Task { await tasksVM.toggleDone(task: task); await loadProjectTasks() }
+                                Task {
+                                    await tasksVM.toggleDone(task: task)
+                                    let updated = await vm.fetchProjectTasks(id: project.id)
+                                    withAnimation { projectTasks = updated }
+                                    await loadSummary()
+                                }
                             } label: {
                                 Label(task.done ? "Pendiente" : "Completar", systemImage: task.done ? "arrow.uturn.backward" : "checkmark")
                             }
