@@ -9,6 +9,7 @@ struct TasksView: View {
     @State private var expandedC = true
     @State private var expandedDelegated = true
     @State private var expandedInbox = true
+    @State private var taskToEdit: CTRLTask?
 
     var body: some View {
         NavigationStack {
@@ -66,6 +67,11 @@ struct TasksView: View {
             .withProfileButton()
             .sheet(isPresented: $showingAdd) {
                 AddTaskSheet(vm: vm)
+            }
+            .sheet(item: $taskToEdit) { task in
+                EditTaskSheet(task: task) {
+                    Task { await vm.fetchAll() }
+                }
             }
             .task { await vm.fetchAll() }
             .alert("Error", isPresented: .constant(vm.errorMessage != nil)) {
@@ -127,6 +133,10 @@ struct TasksView: View {
             }
         }
         .swipeActions(edge: .leading) {
+            Button { taskToEdit = task } label: {
+                Label("Editar", systemImage: "pencil")
+            }
+            .tint(.blue)
             ForEach(otherLevels, id: \.key) { lvl in
                 Button {
                     Task { await vm.changePriority(task: task, newLevel: lvl.key) }
@@ -188,6 +198,10 @@ struct TasksView: View {
                         Task { await vm.toggleDone(task: task) }
                     })
                     .swipeActions(edge: .leading) {
+                        Button { taskToEdit = task } label: {
+                            Label("Editar", systemImage: "pencil")
+                        }
+                        .tint(.blue)
                         Button {
                             Task { await vm.recover(task: task) }
                         } label: {
@@ -280,6 +294,12 @@ struct TasksView: View {
                             Image(systemName: "arrow.up.right.square")
                                 .foregroundStyle(Color.ctrlPurple)
                         }
+                    }
+                    .swipeActions(edge: .leading) {
+                        Button { taskToEdit = task } label: {
+                            Label("Editar", systemImage: "pencil")
+                        }
+                        .tint(.blue)
                     }
                     .swipeActions(edge: .trailing) {
                         Button(role: .destructive) {

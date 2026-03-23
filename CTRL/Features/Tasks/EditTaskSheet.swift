@@ -91,7 +91,6 @@ struct EditTaskSheet: View {
             hasEndDate = true
             endDate = d
         }
-
         if let contacts = task.contacts {
             selectedContactIds = Set(contacts.map(\.id))
         }
@@ -99,7 +98,6 @@ struct EditTaskSheet: View {
 
     private func save() async {
         isSaving = true
-
         let body = UpdateTaskBody(
             title: title,
             priorityLevel: selectedLevel,
@@ -115,7 +113,6 @@ struct EditTaskSheet: View {
             assigneeContactId: isDelegated ? assigneeContactId?.uuidString : nil,
             delegationNotes: isDelegated && !delegationNotes.isEmpty ? delegationNotes : nil
         )
-
         do {
             let _: CTRLTask = try await APIClient.shared.request(
                 .task(id: task.id), body: body
