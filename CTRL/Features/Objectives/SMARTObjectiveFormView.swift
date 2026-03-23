@@ -243,6 +243,28 @@ struct SMARTObjectiveFormView: View {
                             .keyboardType(.decimalPad)
                     }
                     TextField("Unidad (%, MXN, dias...)", text: $kpiUnit)
+
+                    if let b = Double(kpiBaseline), let t = Double(kpiTarget), b != t {
+                        if t < b {
+                            HStack(spacing: 4) {
+                                Text("Objetivo de reduccion")
+                                    .font(.caption)
+                                    .foregroundStyle(.orange)
+                                Text("(\(kpiBaseline) -> \(kpiTarget) \(kpiUnit))")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
+                        } else {
+                            HStack(spacing: 4) {
+                                Text("Objetivo de incremento")
+                                    .font(.caption)
+                                    .foregroundStyle(.green)
+                                Text("(\(kpiBaseline) -> \(kpiTarget) \(kpiUnit))")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
+                        }
+                    }
                 }
 
                 Section("Frecuencia de medicion") {

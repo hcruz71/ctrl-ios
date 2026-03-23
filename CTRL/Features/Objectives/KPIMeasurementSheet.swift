@@ -33,10 +33,14 @@ struct KPIMeasurementSheet: View {
                     }
 
                     if let value = Double(valueText), let target = objective.kpiTarget,
-                       let baseline = objective.kpiBaseline {
-                        let range = target - baseline
-                        let pct = range != 0 ? Int(((value - baseline) / range) * 100) : 0
-                        Text("Avance: \(max(0, min(100, pct)))%")
+                       let baseline = objective.kpiBaseline, baseline != target {
+                        let isReduction = target < baseline
+                        let raw = isReduction
+                            ? ((baseline - value) / (baseline - target)) * 100
+                            : ((value - baseline) / (target - baseline)) * 100
+                        let pct = Int(max(0, min(100, raw)))
+                        let label = isReduction ? "Reducido" : "Avance"
+                        Text("\(label): \(pct)%")
                             .font(.caption)
                             .foregroundStyle(pct >= 70 ? .green : pct >= 30 ? .orange : .red)
                     }

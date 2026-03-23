@@ -212,6 +212,9 @@ private struct ObjectiveSmartRow: View {
             // KPI display
             if let kpiDisplay = objective.kpiDisplay {
                 HStack {
+                    Image(systemName: objective.isReductionGoal ? "arrow.down.right" : "arrow.up.right")
+                        .font(.caption2)
+                        .foregroundStyle(objective.isReductionGoal ? .orange : .green)
                     Text(kpiDisplay)
                         .font(.caption)
                         .foregroundStyle(.secondary)

@@ -36,13 +36,22 @@ struct Objective: Codable, Identifiable {
         kpiName != nil && kpiTarget != nil
     }
 
+    var isReductionGoal: Bool {
+        guard let target = kpiTarget, let baseline = kpiBaseline else { return false }
+        return target < baseline
+    }
+
     var kpiProgress: Int {
         guard let target = kpiTarget, let baseline = kpiBaseline, let current = kpiCurrent else {
             return progress
         }
-        let range = target - baseline
-        guard range != 0 else { return 0 }
-        let raw = ((current - baseline) / range) * 100
+        guard baseline != target else { return 0 }
+        let raw: Double
+        if isReductionGoal {
+            raw = ((baseline - current) / (baseline - target)) * 100
+        } else {
+            raw = ((current - baseline) / (target - baseline)) * 100
+        }
         return Int(max(0, min(100, raw)))
     }
 
