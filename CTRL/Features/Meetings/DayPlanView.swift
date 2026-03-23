@@ -8,15 +8,21 @@ struct DayPlanView: View {
         VStack(spacing: 0) {
             Picker("Vista", selection: $selectedTab) {
                 Text(lang.t("tab.meetings")).tag(0)
-                Text(lang.t("contacts.title")).tag(1)
+                Text("Correos").tag(1)
+                Text(lang.t("contacts.title")).tag(2)
             }
             .pickerStyle(.segmented)
             .padding(.horizontal)
             .padding(.vertical, 8)
 
-            if selectedTab == 0 {
+            switch selectedTab {
+            case 0:
                 MeetingsView()
-            } else {
+            case 1:
+                NavigationStack {
+                    EmailAnalysisView()
+                }
+            default:
                 NavigationStack {
                     ContactsContentView()
                         .navigationTitle(lang.t("contacts.title"))
