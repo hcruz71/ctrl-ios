@@ -79,6 +79,8 @@ enum APIEndpoint {
     case googleCalendarStatus
     case googleCalendarAccounts
     case googleCalendarAccount(id: UUID)
+    case gmailAnalyze(hours: Int)
+    case gmailAnalyzeMbox
 
     // MARK: - Assistant
     case assistantChat
@@ -154,6 +156,8 @@ enum APIEndpoint {
         case .googleCalendarStatus:             return "/google-calendar/status"
         case .googleCalendarAccounts:           return "/google-calendar/accounts"
         case .googleCalendarAccount(let id):    return "/google-calendar/accounts/\(id)"
+        case .gmailAnalyze(let hours):           return "/google-calendar/gmail/analyze?hours=\(hours)"
+        case .gmailAnalyzeMbox:                  return "/google-calendar/gmail/analyze-mbox"
         case .assistantChat:           return "/assistant/chat"
         case .usageSummary:              return "/usage/summary"
         case .subscriptionVerify:        return "/subscriptions/verify"
@@ -175,7 +179,7 @@ enum APIEndpoint {
     /// Whether this endpoint targets a collection (no id) vs a single resource.
     var isCollection: Bool {
         switch self {
-        case .objectives, .meetings, .tasks, .delegations, .contacts, .login, .register, .loginApple, .loginGoogle, .registerToken, .revokeMcpToken, .assistantChat, .tasksToday, .tasksInbox, .tasksReorder, .updateMe, .processMinutes, .confirmTasks, .importICS, .meetingsToday, .meetingsUpcoming, .meetingsProductivity, .meetingsPast, .meetingAttendance, .meetingScore, .meetingDelegate, .meetingsByDate, .meetingsAnalysis, .sendDelegationEmail, .prepareDelegationEmail, .taskPrepareEmail, .googleCalendarAuth, .googleCalendarSync, .googleCalendarSyncAccount, .googleCalendarStatus, .googleCalendarAccounts, .schedule, .scheduleMode, .absences, .generateHandover, .objectiveKpi, .objectiveMeasurements, .projects, .projectSummary, .projectTasks, .usageSummary, .subscriptionVerify, .subscriptionMe, .subscriptionPlans, .subscriptionRestore:
+        case .objectives, .meetings, .tasks, .delegations, .contacts, .login, .register, .loginApple, .loginGoogle, .registerToken, .revokeMcpToken, .assistantChat, .tasksToday, .tasksInbox, .tasksReorder, .updateMe, .processMinutes, .confirmTasks, .importICS, .meetingsToday, .meetingsUpcoming, .meetingsProductivity, .meetingsPast, .meetingAttendance, .meetingScore, .meetingDelegate, .meetingsByDate, .meetingsAnalysis, .sendDelegationEmail, .prepareDelegationEmail, .taskPrepareEmail, .googleCalendarAuth, .googleCalendarSync, .googleCalendarSyncAccount, .googleCalendarStatus, .googleCalendarAccounts, .gmailAnalyze, .gmailAnalyzeMbox, .schedule, .scheduleMode, .absences, .generateHandover, .objectiveKpi, .objectiveMeasurements, .projects, .projectSummary, .projectTasks, .usageSummary, .subscriptionVerify, .subscriptionMe, .subscriptionPlans, .subscriptionRestore:
             return true
         default:
             return false

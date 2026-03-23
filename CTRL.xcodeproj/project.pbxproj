@@ -21,6 +21,7 @@
 		12367AFE806819A9C575FE67 /* AbsenceFormView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A6D0A7A60FD996865FDDA7D /* AbsenceFormView.swift */; };
 		192021404792135B6A473264 /* AuthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 947B08635E4E237675826275 /* AuthManager.swift */; };
 		19D4B0FB286696E7D3B3E0E6 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1EDC5357EAF1A0105D69B4B /* User.swift */; };
+		1B6D934AD93A159BE0245AAC /* EmailAnalysisView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ECC3F4BBC585AACB5DA4280 /* EmailAnalysisView.swift */; };
 		1E19D9FD3E0C46EFE26B345B /* Color+CTRL.swift in Sources */ = {isa = PBXBuildFile; fileRef = 036BD62DCD2DC50060A4C0C8 /* Color+CTRL.swift */; };
 		249F41BC741203A70092F09C /* TasksViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00E7AE65E31C73949B99BEC /* TasksViewModel.swift */; };
 		26698FE315AE6F5E29DDAD04 /* StoreManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9804B8BF25D1A2DB97F9F01F /* StoreManager.swift */; };
@@ -78,6 +79,7 @@
 		A7C17EED98CE02D9EEC440FC /* ObjectivesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E8AA15000B0BF7981C24182 /* ObjectivesViewModel.swift */; };
 		A9564A98AEC45DD83039CC26 /* APIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8FABDF842457B4F00BD05B5 /* APIClient.swift */; };
 		AA9B670F7CB1B488B12FDA8D /* AbsenceDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDFBF773AC465660D16E454B /* AbsenceDetailView.swift */; };
+		AE22735CC2CA4FF86AFB55CB /* EmailAnalysis.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB9457A113088E3F698F2AC2 /* EmailAnalysis.swift */; };
 		B2EB2320118BF13EC2B97295 /* TaskFormView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23E54F172D8AB9679C2BB144 /* TaskFormView.swift */; };
 		B429929FD1B4F04707F6590E /* BadgeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADFCA71CA86F7F5B4ADB27B6 /* BadgeView.swift */; };
 		B60589455F8842F4E0B5673C /* DelegationsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1063F17C6BC9D67D616FF26 /* DelegationsViewModel.swift */; };
@@ -196,11 +198,13 @@
 		9AB929CF0643B8BF98583019 /* UsageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsageView.swift; sourceTree = "<group>"; };
 		9B1DA4DE1AB14C8D4DAE080D /* QuickCaptureView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickCaptureView.swift; sourceTree = "<group>"; };
 		9B33EFFE7580C84B7AA3D4C8 /* DelegationRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DelegationRowView.swift; sourceTree = "<group>"; };
+		9ECC3F4BBC585AACB5DA4280 /* EmailAnalysisView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailAnalysisView.swift; sourceTree = "<group>"; };
 		A00E7AE65E31C73949B99BEC /* TasksViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TasksViewModel.swift; sourceTree = "<group>"; };
 		A02C96C9853FFC0F7ACF6537 /* SubscriptionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionView.swift; sourceTree = "<group>"; };
 		A332BD070E3FC2B977122D67 /* KPIMeasurementSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KPIMeasurementSheet.swift; sourceTree = "<group>"; };
 		A76BB19FBC1853B202553CA6 /* WatchNavigationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchNavigationView.swift; sourceTree = "<group>"; };
 		A7A39DFFC304E1CBC642BC0A /* AbsencesListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AbsencesListView.swift; sourceTree = "<group>"; };
+		AB9457A113088E3F698F2AC2 /* EmailAnalysis.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailAnalysis.swift; sourceTree = "<group>"; };
 		AC3E5D28A1672242FE7E0723 /* WatchMainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchMainView.swift; sourceTree = "<group>"; };
 		AD42369D15A9D66A16BE4468 /* Objective.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Objective.swift; sourceTree = "<group>"; };
 		ADFCA71CA86F7F5B4ADB27B6 /* BadgeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeView.swift; sourceTree = "<group>"; };
@@ -264,6 +268,7 @@
 				5EBA67F8D2B73CBDE6A78384 /* Contact.swift */,
 				E64BC0E4BEA4290D599549BD /* CTRLTask.swift */,
 				747152AAA74268420C1757F3 /* Delegation.swift */,
+				AB9457A113088E3F698F2AC2 /* EmailAnalysis.swift */,
 				498DF89075DEA18FF03D827E /* GoogleCalendarAccount.swift */,
 				841D966F79AD307D33C0DF8B /* LanguageManager.swift */,
 				FA55BCCF6F7843807C220466 /* Meeting.swift */,
@@ -515,6 +520,7 @@
 				5ABB59F8FD0105A395681A72 /* CalendarDayView.swift */,
 				11CA8E9114FCAE6191BF807B /* DayPlanView.swift */,
 				848A23D629BA52E622D6307E /* DelegateMeetingSheet.swift */,
+				9ECC3F4BBC585AACB5DA4280 /* EmailAnalysisView.swift */,
 				2BDE28EC8D4BE52841802BBD /* ICSImportView.swift */,
 				F95DC4AB30B52BC0EB622CDA /* ICSParser.swift */,
 				CFB1C9C38F1FD20B1AE1E7AE /* MeetingAnalysisView.swift */,
@@ -679,6 +685,8 @@
 				B60589455F8842F4E0B5673C /* DelegationsViewModel.swift in Sources */,
 				6807323A3793525ABFFF13AA /* EditContactSheet.swift in Sources */,
 				6699253D96817A7E598FCC44 /* EditTaskSheet.swift in Sources */,
+				AE22735CC2CA4FF86AFB55CB /* EmailAnalysis.swift in Sources */,
+				1B6D934AD93A159BE0245AAC /* EmailAnalysisView.swift in Sources */,
 				BB1BE756C32ECB01497ADBED /* EmptyStateView.swift in Sources */,
 				FD2C001D785C094318222D44 /* GanttChartView.swift in Sources */,
 				FD8F460F80B4E0436D8F2E42 /* GoogleCalendarAccount.swift in Sources */,
