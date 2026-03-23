@@ -68,9 +68,23 @@ final class TasksViewModel: ObservableObject {
             )
             todayTasks.removeAll { $0.id == task.id }
             inboxTasks.removeAll { $0.id == task.id }
+            renumberPriorities()
             tasks = todayTasks + inboxTasks
         } catch {
             errorMessage = error.localizedDescription
+        }
+    }
+
+    /// Recalculates priorityOrder (1, 2, 3…) within each A/B/C section after a task is removed.
+    private func renumberPriorities() {
+        for level in ["A", "B", "C"] {
+            let ids = todayTasks
+                .enumerated()
+                .filter { $0.element.priorityLevel == level && $0.element.isDelegated != true }
+                .map { $0.offset }
+            for (newOrder, idx) in ids.enumerated() {
+                todayTasks[idx].priorityOrder = newOrder + 1
+            }
         }
     }
 
