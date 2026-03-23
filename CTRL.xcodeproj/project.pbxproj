@@ -15,6 +15,7 @@
 		0C50D5C3ACBF22F2E42291D3 /* Meeting.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA55BCCF6F7843807C220466 /* Meeting.swift */; };
 		0C770997CCB984B6E626E963 /* NetworkInsightView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6223F1DED857FA60FB7ABC84 /* NetworkInsightView.swift */; };
 		0CC7C83FCE028FFC0A1E7C3E /* APIError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70D8DBCD3BE31DD2352D1222 /* APIError.swift */; };
+		0EB0A38C93D38259D157046C /* TaskEmailSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 735074BD6DA7F220F484CC8B /* TaskEmailSheet.swift */; };
 		0F2117FC145E8900456B2DB7 /* MyDayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A506986E53390A2DEA73CFB /* MyDayView.swift */; };
 		0FAB1CE9C6378B18B50CCC26 /* ProjectsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81E3C04C689D3230251E7421 /* ProjectsViewModel.swift */; };
 		12367AFE806819A9C575FE67 /* AbsenceFormView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A6D0A7A60FD996865FDDA7D /* AbsenceFormView.swift */; };
@@ -172,6 +173,7 @@
 		6A6B6FBC59EF9ED3269E8751 /* MessageBubbleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBubbleView.swift; sourceTree = "<group>"; };
 		6E35A5A425EDD5E673AC495B /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		70D8DBCD3BE31DD2352D1222 /* APIError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIError.swift; sourceTree = "<group>"; };
+		735074BD6DA7F220F484CC8B /* TaskEmailSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskEmailSheet.swift; sourceTree = "<group>"; };
 		747152AAA74268420C1757F3 /* Delegation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Delegation.swift; sourceTree = "<group>"; };
 		7576480B783D9D902039666D /* MeetingRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeetingRowView.swift; sourceTree = "<group>"; };
 		757CFD3291A5F2CC1C182E79 /* LoginViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewModel.swift; sourceTree = "<group>"; };
@@ -354,6 +356,7 @@
 				139B5D4EA83727E9A9D09EC7 /* EditTaskSheet.swift */,
 				0A506986E53390A2DEA73CFB /* MyDayView.swift */,
 				9B1DA4DE1AB14C8D4DAE080D /* QuickCaptureView.swift */,
+				735074BD6DA7F220F484CC8B /* TaskEmailSheet.swift */,
 				23E54F172D8AB9679C2BB144 /* TaskFormView.swift */,
 				622F7A4D76C2F5FA8DCED64E /* TaskRowView.swift */,
 				4337005FF074AD5FE85843D9 /* TasksDelegationsView.swift */,
@@ -714,6 +717,7 @@
 				26698FE315AE6F5E29DDAD04 /* StoreManager.swift in Sources */,
 				8CE750DCC6BF6B34120C9F42 /* SubscriptionPlan.swift in Sources */,
 				01735031421D4B5CDD7A0EBA /* SubscriptionView.swift in Sources */,
+				0EB0A38C93D38259D157046C /* TaskEmailSheet.swift in Sources */,
 				B2EB2320118BF13EC2B97295 /* TaskFormView.swift in Sources */,
 				35369D4C9AB74D97481A3588 /* TaskRowView.swift in Sources */,
 				DCA9C109AAE1D33F1A322B3C /* TasksDelegationsView.swift in Sources */,

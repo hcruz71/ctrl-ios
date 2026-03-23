@@ -10,6 +10,7 @@ struct TasksView: View {
     @State private var expandedDelegated = true
     @State private var expandedInbox = true
     @State private var taskToEdit: CTRLTask?
+    @State private var taskToEmail: CTRLTask?
 
     var body: some View {
         NavigationStack {
@@ -72,6 +73,9 @@ struct TasksView: View {
                 EditTaskSheet(task: task) {
                     Task { await vm.fetchAll() }
                 }
+            }
+            .sheet(item: $taskToEmail) { task in
+                TaskEmailSheet(task: task)
             }
             .task { await vm.fetchAll() }
             .alert("Error", isPresented: .constant(vm.errorMessage != nil)) {
@@ -210,6 +214,12 @@ struct TasksView: View {
                         .tint(.green)
                     }
                     .swipeActions(edge: .trailing) {
+                        Button {
+                            taskToEmail = task
+                        } label: {
+                            Label("Correo", systemImage: "envelope")
+                        }
+                        .tint(.orange)
                         Button(role: .destructive) {
                             Task { await vm.delete(id: task.id) }
                         } label: {
