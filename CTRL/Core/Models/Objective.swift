@@ -56,7 +56,12 @@ struct Objective: Codable, Identifiable {
     }
 
     var isCompleted: Bool {
-        status == "completado"
+        guard let current = kpiCurrent,
+              let target = kpiTarget,
+              let baseline = kpiBaseline else {
+            return status == "completado"
+        }
+        return target < baseline ? current <= target : current >= target
     }
 
     var kpiDisplay: String? {

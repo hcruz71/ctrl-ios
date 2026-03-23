@@ -39,10 +39,18 @@ struct KPIMeasurementSheet: View {
                             ? ((baseline - value) / (baseline - target)) * 100
                             : ((value - baseline) / (target - baseline)) * 100
                         let pct = Int(max(0, min(100, raw)))
+                        let completed = isReduction ? value <= target : value >= target
                         let label = isReduction ? "Reducido" : "Avance"
-                        Text("\(label): \(pct)%")
-                            .font(.caption)
-                            .foregroundStyle(pct >= 70 ? .green : pct >= 30 ? .orange : .red)
+
+                        if completed {
+                            Label("Meta alcanzada", systemImage: "checkmark.circle.fill")
+                                .font(.caption)
+                                .foregroundStyle(.green)
+                        } else {
+                            Text("\(label): \(pct)%")
+                                .font(.caption)
+                                .foregroundStyle(pct >= 70 ? .green : pct >= 30 ? .orange : .red)
+                        }
                     }
                 }
 
