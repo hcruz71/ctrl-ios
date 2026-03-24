@@ -6,6 +6,7 @@ struct CalendarDayView: View {
     @State private var meetings: [Meeting] = []
     @State private var currentTime = Date()
     @State private var isLoading = false
+    @State private var isReady = false
 
     private let hourHeight: CGFloat = 60
     private let startHour = 0
@@ -30,46 +31,57 @@ struct CalendarDayView: View {
 
             Divider()
 
-            // Meetings without time
-            let noTimeMeetings = meetings.filter { !isValidTime($0.meetingTime) }
-            if !noTimeMeetings.isEmpty {
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 8) {
-                        ForEach(noTimeMeetings) { meeting in
-                            NavigationLink {
-                                MeetingDetailView(vm: vm, meeting: meeting)
-                            } label: {
-                                noTimeBadge(meeting)
-                            }
+            if !isReady {
+                ProgressView()
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .onAppear {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
+                            isReady = true
                         }
                     }
-                    .padding(.horizontal)
-                    .padding(.vertical, 6)
-                }
-                .background(Color(.systemGroupedBackground))
-                Divider()
-            }
-
-            // HOUR GRID
-            ScrollViewReader { proxy in
-                ScrollView {
-                    GeometryReader { geo in
-                        if geo.size.width > 44 {
-                            ZStack(alignment: .topLeading) {
-                                hourGrid
-                                meetingBlocksView(gridWidth: geo.size.width)
-                                if isToday {
-                                    currentTimeIndicator
+            } else {
+                // Meetings without time
+                let noTimeMeetings = meetings.filter { !isValidTime($0.meetingTime) }
+                if !noTimeMeetings.isEmpty {
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 8) {
+                            ForEach(noTimeMeetings) { meeting in
+                                NavigationLink {
+                                    MeetingDetailView(vm: vm, meeting: meeting)
+                                } label: {
+                                    noTimeBadge(meeting)
                                 }
                             }
                         }
+                        .padding(.horizontal)
+                        .padding(.vertical, 6)
                     }
-                    .frame(height: CGFloat(endHour - startHour) * hourHeight)
+                    .background(Color(.systemGroupedBackground))
+                    Divider()
                 }
-                .onAppear {
-                    scrollToCurrentTime(proxy: proxy)
+
+                // HOUR GRID
+                ScrollViewReader { proxy in
+                    ScrollView {
+                        GeometryReader { geo in
+                            if geo.size.width > 44 {
+                                ZStack(alignment: .topLeading) {
+                                    hourGrid
+                                    meetingBlocksView(gridWidth: geo.size.width)
+                                    if isToday {
+                                        currentTimeIndicator
+                                    }
+                                }
+                            }
+                        }
+                        .frame(maxWidth: .infinity)
+                        .frame(height: CGFloat(endHour - startHour) * hourHeight)
+                    }
+                    .onAppear {
+                        scrollToCurrentTime(proxy: proxy)
+                    }
                 }
-            }
+            } // else isReady
         }
         .task { await loadMeetings() }
         .onChange(of: selectedDate) { _ in
