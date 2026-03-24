@@ -416,10 +416,17 @@ struct DocumentPickerView: UIViewControllerRepresentable {
 
         func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
             guard let url = urls.first else { return }
-            guard url.startAccessingSecurityScopedResource() else { return }
+            print("[ICSImport] File selected: \(url.lastPathComponent)")
+            guard url.startAccessingSecurityScopedResource() else {
+                print("[ICSImport] Failed to access security scoped resource")
+                return
+            }
             defer { url.stopAccessingSecurityScopedResource() }
 
-            guard let data = try? Data(contentsOf: url) else { return }
+            guard let data = try? Data(contentsOf: url) else {
+                print("[ICSImport] Failed to read file data")
+                return
+            }
             let bytes = data.count
             let sizeStr: String
             if bytes > 1_000_000 {
@@ -427,6 +434,7 @@ struct DocumentPickerView: UIViewControllerRepresentable {
             } else {
                 sizeStr = String(format: "%.0f KB", Double(bytes) / 1_000)
             }
+            print("[ICSImport] File size: \(sizeStr) (\(bytes) bytes)")
             onPick(data, sizeStr)
         }
     }
