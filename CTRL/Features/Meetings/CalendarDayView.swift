@@ -167,12 +167,11 @@ struct CalendarDayView: View {
         return true
     }
 
+    /// Expects only meetings with valid meetingTime (pre-filtered by caller).
     private func layoutMeetings(_ meetings: [Meeting]) -> [MeetingLayout] {
-        let timed = meetings
-            .filter { isValidTime($0.meetingTime) }
-            .sorted { parseMinutes($0.meetingTime ?? "0") < parseMinutes($1.meetingTime ?? "0") }
+        guard !meetings.isEmpty else { return [] }
 
-        guard !timed.isEmpty else { return [] }
+        let timed = meetings.sorted { parseMinutes($0.meetingTime ?? "0") < parseMinutes($1.meetingTime ?? "0") }
 
         let defaultDuration = 60 // minutes
         struct Span { let id: UUID; let start: Int; let end: Int }
@@ -243,24 +242,28 @@ struct CalendarDayView: View {
     @ViewBuilder
     private func meetingBlocksView(gridWidth: CGFloat) -> some View {
         let availableWidth = max(1, gridWidth - labelWidth - 8)
-        let layouts = layoutMeetings(meetings)
+        let validMeetings = meetings.filter { isValidTime($0.meetingTime) }
+        let layouts = layoutMeetings(validMeetings)
 
         ForEach(layouts) { layout in
-            let cols = CGFloat(max(1, layout.totalColumns))
-            let colWidth = max(44, availableWidth / cols)
-            let blockWidth = max(20, colWidth - 4)
-            let blockHeight: CGFloat = max(44, hourHeight - 4)
-            let xOrigin = labelWidth + 4 + CGFloat(layout.columnIndex) * colWidth + colWidth / 2
-            let yPos = max(0, yOffset(for: layout.meeting.meetingTime ?? "00:00")) + blockHeight / 2
+            let time = layout.meeting.meetingTime ?? ""
+            if isValidTime(time) {
+                let cols = CGFloat(max(1, layout.totalColumns))
+                let colWidth = max(44, availableWidth / cols)
+                let blockWidth = max(20, colWidth - 4)
+                let blockHeight: CGFloat = max(44, hourHeight - 4)
+                let xOrigin = labelWidth + 4 + CGFloat(layout.columnIndex) * colWidth + colWidth / 2
+                let yPos = max(0, yOffset(for: time)) + blockHeight / 2
 
-            if blockWidth.isFinite && blockHeight.isFinite && xOrigin.isFinite && yPos.isFinite {
-                NavigationLink {
-                    MeetingDetailView(vm: vm, meeting: layout.meeting)
-                } label: {
-                    meetingBlock(layout.meeting, width: blockWidth, height: blockHeight)
+                if blockWidth.isFinite && blockHeight.isFinite && xOrigin.isFinite && yPos.isFinite {
+                    NavigationLink {
+                        MeetingDetailView(vm: vm, meeting: layout.meeting)
+                    } label: {
+                        meetingBlock(layout.meeting, width: blockWidth, height: blockHeight)
+                    }
+                    .buttonStyle(.plain)
+                    .position(x: xOrigin, y: yPos)
                 }
-                .buttonStyle(.plain)
-                .position(x: xOrigin, y: yPos)
             }
         }
     }
