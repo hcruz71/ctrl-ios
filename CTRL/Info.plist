@@ -31,6 +31,10 @@
 	</array>
 	<key>CFBundleVersion</key>
 	<string>1</string>
+	<key>NSCalendarsUsageDescription</key>
+	<string>CTRL necesita acceso a tu calendario para crear y sincronizar reuniones</string>
+	<key>NSCalendarsWriteOnlyAccessUsageDescription</key>
+	<string>CTRL necesita acceso para agregar reuniones a tu calendario</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>CTRL usa el micrófono para que puedas organizar tus pendientes por voz</string>
 	<key>NSSpeechRecognitionUsageDescription</key>

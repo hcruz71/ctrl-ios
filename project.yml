@@ -32,6 +32,8 @@ targets:
           - UIInterfaceOrientationPortrait
         NSMicrophoneUsageDescription: "CTRL usa el micrófono para que puedas organizar tus pendientes por voz"
         NSSpeechRecognitionUsageDescription: "CTRL transcribe tu voz para crear tareas, reuniones y delegaciones"
+        NSCalendarsUsageDescription: "CTRL necesita acceso a tu calendario para crear y sincronizar reuniones"
+        NSCalendarsWriteOnlyAccessUsageDescription: "CTRL necesita acceso para agregar reuniones a tu calendario"
         CFBundleURLTypes:
           - CFBundleURLSchemes:
               - ctrl
