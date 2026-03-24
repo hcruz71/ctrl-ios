@@ -394,10 +394,15 @@ struct DocumentPickerView: UIViewControllerRepresentable {
     var onPick: (Data, String) -> Void
 
     func makeUIViewController(context: Context) -> UIDocumentPickerViewController {
-        let types = [UTType(filenameExtension: "ics") ?? .data]
+        let types: [UTType] = [
+            .calendarEvent,
+            UTType(filenameExtension: "ics") ?? .data,
+            .data,
+        ]
         let picker = UIDocumentPickerViewController(forOpeningContentTypes: types)
         picker.delegate = context.coordinator
         picker.allowsMultipleSelection = false
+        picker.shouldShowFileExtensions = true
         return picker
     }
 
