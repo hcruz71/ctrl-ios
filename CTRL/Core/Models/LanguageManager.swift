@@ -210,5 +210,74 @@ final class LanguageManager: ObservableObject {
         // Help
         "help.title":        ["es": "Ayuda",          "en": "Help",         "pt": "Ajuda",       "fr": "Aide",                "de": "Hilfe"],
         "help.coming_soon":  ["es": "Proximamente",   "en": "Coming soon",  "pt": "Em breve",    "fr": "Bientot disponible",  "de": "Demnachst"],
+
+        // Profile (new)
+        "profile.byok": ["es": "API Key propia", "en": "Own API Key", "pt": "API Key propria", "fr": "Cle API personnelle", "de": "Eigener API-Schlussel"],
+
+        // Objective Areas
+        "area.health":       ["es": "Salud & Bienestar",       "en": "Health & Wellness",       "pt": "Saude & Bem-estar",       "fr": "Sante & Bien-etre",          "de": "Gesundheit & Wohlbefinden"],
+        "area.professional": ["es": "Profesional & Negocios",  "en": "Professional & Business", "pt": "Profissional & Negocios", "fr": "Professionnel & Affaires",   "de": "Beruflich & Geschaftlich"],
+        "area.financial":    ["es": "Financiero",              "en": "Financial",               "pt": "Financeiro",              "fr": "Financier",                  "de": "Finanziell"],
+        "area.family":       ["es": "Familia & Relaciones",    "en": "Family & Relationships",  "pt": "Familia & Relacionamentos","fr": "Famille & Relations",       "de": "Familie & Beziehungen"],
+        "area.growth":       ["es": "Crecimiento Personal",    "en": "Personal Growth",         "pt": "Crescimento Pessoal",     "fr": "Croissance Personnelle",     "de": "Personliches Wachstum"],
+        "area.spiritual":    ["es": "Espiritual & Recreacion", "en": "Spiritual & Recreation",  "pt": "Espiritual & Recreacao",  "fr": "Spirituel & Loisirs",        "de": "Spirituell & Freizeit"],
+
+        // SMART steps
+        "smart.step1":          ["es": "Informacion basica",    "en": "Basic information",      "pt": "Informacoes basicas",     "fr": "Informations de base",     "de": "Grundinformationen"],
+        "smart.step2":          ["es": "Metodologia SMART",     "en": "SMART Methodology",      "pt": "Metodologia SMART",       "fr": "Methodologie SMART",       "de": "SMART-Methodik"],
+        "smart.step3":          ["es": "KPI de medicion",       "en": "Measurement KPI",        "pt": "KPI de medicao",          "fr": "KPI de mesure",            "de": "Mess-KPI"],
+        "smart.step4":          ["es": "Resumen",               "en": "Summary",                "pt": "Resumo",                  "fr": "Resume",                   "de": "Zusammenfassung"],
+        "smart.create":         ["es": "Crear objetivo",        "en": "Create objective",       "pt": "Criar objetivo",          "fr": "Creer objectif",           "de": "Ziel erstellen"],
+        "smart.save":           ["es": "Guardar cambios",       "en": "Save changes",           "pt": "Salvar alteracoes",       "fr": "Enregistrer",              "de": "Anderungen speichern"],
+        "smart.specific":       ["es": "Especifico",            "en": "Specific",               "pt": "Especifico",              "fr": "Specifique",               "de": "Spezifisch"],
+        "smart.measurable":     ["es": "Medible",               "en": "Measurable",             "pt": "Mensuravel",              "fr": "Mesurable",                "de": "Messbar"],
+        "smart.achievable":     ["es": "Alcanzable",            "en": "Achievable",             "pt": "Alcancavel",              "fr": "Realisable",               "de": "Erreichbar"],
+        "smart.relevant":       ["es": "Relevante",             "en": "Relevant",               "pt": "Relevante",               "fr": "Pertinent",                "de": "Relevant"],
+        "smart.timebound":      ["es": "Tiempo definido",       "en": "Time-bound",             "pt": "Tempo definido",          "fr": "Delimite dans le temps",   "de": "Zeitgebunden"],
+        "smart.what_goal":      ["es": "Que exactamente quieres lograr?",  "en": "What exactly do you want to achieve?",  "pt": "O que exatamente voce quer alcancar?",  "fr": "Qu'est-ce que vous voulez accomplir?",  "de": "Was genau mochten Sie erreichen?"],
+        "smart.how_measure":    ["es": "Como sabras que lo lograste?",     "en": "How will you know you achieved it?",    "pt": "Como sabera que conseguiu?",             "fr": "Comment saurez-vous que vous l'avez realise?", "de": "Wie werden Sie wissen, dass Sie es erreicht haben?"],
+        "smart.why_achievable": ["es": "Por que puedes lograrlo?",         "en": "Why can you achieve it?",               "pt": "Por que voce pode alcanca-lo?",          "fr": "Pourquoi pouvez-vous y parvenir?",      "de": "Warum konnen Sie es erreichen?"],
+        "smart.why_relevant":   ["es": "Por que es importante ahora?",     "en": "Why is it important now?",              "pt": "Por que e importante agora?",            "fr": "Pourquoi est-ce important maintenant?", "de": "Warum ist es jetzt wichtig?"],
+        "smart.deadline":       ["es": "Fecha limite",          "en": "Deadline",               "pt": "Prazo",                   "fr": "Date limite",              "de": "Frist"],
+        "smart.horizon":        ["es": "Horizonte",             "en": "Horizon",                "pt": "Horizonte",               "fr": "Horizon",                  "de": "Horizont"],
+        "smart.title_field":    ["es": "Titulo del objetivo",   "en": "Objective title",        "pt": "Titulo do objetivo",      "fr": "Titre de l'objectif",      "de": "Zieltitel"],
+        "smart.area":           ["es": "Area de vida",          "en": "Life area",              "pt": "Area de vida",            "fr": "Domaine de vie",           "de": "Lebensbereich"],
+
+        // Project labels
+        "project.name":        ["es": "Nombre",              "en": "Name",               "pt": "Nome",              "fr": "Nom",               "de": "Name"],
+        "project.description": ["es": "Descripcion",         "en": "Description",        "pt": "Descricao",         "fr": "Description",       "de": "Beschreibung"],
+        "project.priority":    ["es": "Prioridad",           "en": "Priority",           "pt": "Prioridade",        "fr": "Priorite",          "de": "Prioritat"],
+        "project.start":       ["es": "Fecha inicio",        "en": "Start date",         "pt": "Data de inicio",    "fr": "Date de debut",     "de": "Startdatum"],
+        "project.end":         ["es": "Fecha fin",           "en": "End date",           "pt": "Data de fim",       "fr": "Date de fin",       "de": "Enddatum"],
+        "project.objective":   ["es": "Objetivo vinculado",  "en": "Linked objective",   "pt": "Objetivo vinculado","fr": "Objectif lie",      "de": "Verknupftes Ziel"],
+        "project.status":      ["es": "Estado",              "en": "Status",             "pt": "Status",            "fr": "Statut",            "de": "Status"],
+
+        // Task labels
+        "task.title_field":     ["es": "Titulo",                "en": "Title",                "pt": "Titulo",              "fr": "Titre",                "de": "Titel"],
+        "task.project":         ["es": "Proyecto",              "en": "Project",              "pt": "Projeto",             "fr": "Projet",               "de": "Projekt"],
+        "task.delegate_toggle": ["es": "Delegar a alguien",     "en": "Delegate to someone",  "pt": "Delegar para alguem", "fr": "Deleguer a quelqu'un", "de": "An jemanden delegieren"],
+        "task.assignee":        ["es": "Responsable",           "en": "Assignee",             "pt": "Responsavel",         "fr": "Responsable",          "de": "Zustandig"],
+        "task.notes":           ["es": "Notas de delegacion",   "en": "Delegation notes",     "pt": "Notas de delegacao",  "fr": "Notes de delegation",  "de": "Delegationsnotizen"],
+        "task.contacts":        ["es": "Asociar contactos",     "en": "Associate contacts",   "pt": "Associar contatos",   "fr": "Associer contacts",    "de": "Kontakte zuordnen"],
+        "task.select_contact":  ["es": "Seleccionar contacto",  "en": "Select contact",       "pt": "Selecionar contato",  "fr": "Selectionner contact", "de": "Kontakt auswahlen"],
+        "task.no_priority":     ["es": "Sin prioridad = va al Inbox", "en": "No priority = goes to Inbox", "pt": "Sem prioridade = vai para Inbox", "fr": "Sans priorite = va dans Inbox", "de": "Keine Prioritat = geht in Inbox"],
+
+        // Contact labels
+        "contact.name":         ["es": "Nombre",             "en": "Name",              "pt": "Nome",             "fr": "Nom",              "de": "Name"],
+        "contact.email":        ["es": "Correo electronico", "en": "Email",             "pt": "E-mail",           "fr": "E-mail",           "de": "E-Mail"],
+        "contact.phone":        ["es": "Telefono",           "en": "Phone",             "pt": "Telefone",         "fr": "Telephone",        "de": "Telefon"],
+        "contact.company":      ["es": "Empresa",            "en": "Company",           "pt": "Empresa",          "fr": "Entreprise",       "de": "Unternehmen"],
+        "contact.role":         ["es": "Cargo",              "en": "Role",              "pt": "Cargo",            "fr": "Poste",            "de": "Position"],
+        "contact.operational":  ["es": "Operativa",          "en": "Operational",       "pt": "Operacional",      "fr": "Operationnel",     "de": "Operativ"],
+        "contact.personal_net": ["es": "Personal",           "en": "Personal",          "pt": "Pessoal",          "fr": "Personnel",        "de": "Personlich"],
+        "contact.strategic":    ["es": "Estrategica",        "en": "Strategic",         "pt": "Estrategica",      "fr": "Strategique",      "de": "Strategisch"],
+        "contact.unclassified": ["es": "Sin clasificar",     "en": "Unclassified",      "pt": "Sem classificacao","fr": "Non classe",       "de": "Nicht klassifiziert"],
+        "contact.influence_high":   ["es": "Alto",   "en": "High",   "pt": "Alto",   "fr": "Eleve",  "de": "Hoch"],
+        "contact.influence_medium": ["es": "Medio",  "en": "Medium", "pt": "Medio",  "fr": "Moyen",  "de": "Mittel"],
+        "contact.influence_low":    ["es": "Bajo",   "en": "Low",    "pt": "Baixo",  "fr": "Faible", "de": "Niedrig"],
+        "contact.filter.all":       ["es": "Todos",  "en": "All",    "pt": "Todos",  "fr": "Tous",   "de": "Alle"],
+
+        // Email analysis
+        "emails.analyze_btn":  ["es": "Analizar correos con IA",  "en": "Analyze emails with AI", "pt": "Analisar e-mails com IA", "fr": "Analyser les e-mails avec IA", "de": "E-Mails mit KI analysieren"],
     ]
 }

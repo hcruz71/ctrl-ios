@@ -4,6 +4,7 @@ struct SMARTObjectiveFormView: View {
     @ObservedObject var vm: ObjectivesViewModel
     var objectiveToEdit: Objective? = nil
     var onSave: () -> Void
+    @EnvironmentObject var lang: LanguageManager
     @Environment(\.dismiss) private var dismiss
     @State private var step = 0
     @State private var isSaving = false
@@ -113,10 +114,10 @@ struct SMARTObjectiveFormView: View {
 
     private var stepTitle: String {
         switch step {
-        case 0: return "Informacion basica"
-        case 1: return "Metodologia SMART"
-        case 2: return "KPI de medicion"
-        case 3: return "Resumen"
+        case 0: return lang.t("smart.step1")
+        case 1: return lang.t("smart.step2")
+        case 2: return lang.t("smart.step3")
+        case 3: return lang.t("smart.step4")
         default: return ""
         }
     }
@@ -125,11 +126,11 @@ struct SMARTObjectiveFormView: View {
 
     private var step1Basics: some View {
         Form {
-            Section("Titulo del objetivo") {
+            Section(lang.t("smart.title_field")) {
                 TextField("Ej: Reducir vulnerabilidades criticas", text: $title)
             }
 
-            Section("Area de vida") {
+            Section(lang.t("smart.area")) {
                 LazyVGrid(columns: [GridItem(.adaptive(minimum: 100))], spacing: 12) {
                     ForEach(ObjectiveArea.allCases) { a in
                         Button {
@@ -157,8 +158,8 @@ struct SMARTObjectiveFormView: View {
                 .padding(.vertical, 4)
             }
 
-            Section("Horizonte") {
-                Picker("Horizonte", selection: $horizon) {
+            Section(lang.t("smart.horizon")) {
+                Picker(lang.t("smart.horizon"), selection: $horizon) {
                     ForEach(horizons, id: \.self) { h in
                         Text(h.capitalized).tag(h)
                     }
@@ -174,48 +175,48 @@ struct SMARTObjectiveFormView: View {
         Form {
             Section {
                 smartField(
-                    letter: "S", name: "Especifico",
-                    placeholder: "Que exactamente quieres lograr?",
+                    letter: "S", name: lang.t("smart.specific"),
+                    placeholder: lang.t("smart.what_goal"),
                     text: $specific
                 )
             } header: {
-                Text("S — Especifico")
+                Text("S — \(lang.t("smart.specific"))")
             }
 
             Section {
                 smartField(
-                    letter: "M", name: "Medible",
-                    placeholder: "Como sabras que lo lograste?",
+                    letter: "M", name: lang.t("smart.measurable"),
+                    placeholder: lang.t("smart.how_measure"),
                     text: $measurable
                 )
             } header: {
-                Text("M — Medible")
+                Text("M — \(lang.t("smart.measurable"))")
             }
 
             Section {
                 smartField(
-                    letter: "A", name: "Alcanzable",
-                    placeholder: "Por que puedes lograrlo?",
+                    letter: "A", name: lang.t("smart.achievable"),
+                    placeholder: lang.t("smart.why_achievable"),
                     text: $achievable
                 )
             } header: {
-                Text("A — Alcanzable")
+                Text("A — \(lang.t("smart.achievable"))")
             }
 
             Section {
                 smartField(
-                    letter: "R", name: "Relevante",
-                    placeholder: "Por que es importante ahora?",
+                    letter: "R", name: lang.t("smart.relevant"),
+                    placeholder: lang.t("smart.why_relevant"),
                     text: $relevant
                 )
             } header: {
-                Text("R — Relevante")
+                Text("R — \(lang.t("smart.relevant"))")
             }
 
             Section {
-                DatePicker("Fecha limite", selection: $timeBound, displayedComponents: .date)
+                DatePicker(lang.t("smart.deadline"), selection: $timeBound, displayedComponents: .date)
             } header: {
-                Text("T — Tiempo definido")
+                Text("T — \(lang.t("smart.timebound"))")
             }
         }
     }
@@ -348,7 +349,7 @@ struct SMARTObjectiveFormView: View {
                         if isSaving {
                             ProgressView().tint(.white)
                         }
-                        Text(isEditing ? "Guardar cambios" : "Crear objetivo")
+                        Text(isEditing ? lang.t("smart.save") : lang.t("smart.create"))
                             .fontWeight(.semibold)
                     }
                     .frame(maxWidth: .infinity)

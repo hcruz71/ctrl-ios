@@ -213,7 +213,7 @@ struct ProfileView: View {
                 }
 
                 // 4.5 API Key propia (BYOK)
-                collapsibleSection(title: "API Key propia", icon: "key.fill", expanded: $expandedByok) {
+                collapsibleSection(title: lang.t("profile.byok"), icon: "key.fill", expanded: $expandedByok) {
                     Toggle("Usar mi propia API Key", isOn: $byokEnabled)
                         .onChange(of: byokEnabled) { enabled in
                             if !enabled {

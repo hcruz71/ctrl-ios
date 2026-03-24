@@ -93,12 +93,12 @@ enum ObjectiveArea: String, CaseIterable, Identifiable {
 
     var label: String {
         switch self {
-        case .salud:        return "Salud & Bienestar"
-        case .profesional:  return "Profesional & Negocios"
-        case .financiero:   return "Financiero"
-        case .familia:      return "Familia & Relaciones"
-        case .crecimiento:  return "Crecimiento Personal"
-        case .espiritual:   return "Espiritual & Recreación"
+        case .salud:        return LanguageManager.shared.t("area.health")
+        case .profesional:  return LanguageManager.shared.t("area.professional")
+        case .financiero:   return LanguageManager.shared.t("area.financial")
+        case .familia:      return LanguageManager.shared.t("area.family")
+        case .crecimiento:  return LanguageManager.shared.t("area.growth")
+        case .espiritual:   return LanguageManager.shared.t("area.spiritual")
         }
     }
 

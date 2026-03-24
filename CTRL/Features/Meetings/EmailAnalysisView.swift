@@ -28,7 +28,7 @@ struct EmailAnalysisView: View {
                 // Analyze button
                 if !hasLoaded && !isLoading {
                     Button { showAIConfirm = true } label: {
-                        Label("Analizar correos con IA", systemImage: "sparkles")
+                        Label(lang.t("emails.analyze_btn"), systemImage: "sparkles")
                             .fontWeight(.semibold)
                             .frame(maxWidth: .infinity)
                             .padding()
