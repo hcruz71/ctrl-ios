@@ -194,7 +194,8 @@ actor ICSParser {
         let isAllDay = dtstart.count == 8
         let isRecurring = props["RRULE"] != nil
 
-        let (date, time) = parseDTStart(dtstart)
+        let rawKey = props["DTSTART_RAW"] ?? ""
+        let (date, time) = parseDTStart(dtstart, rawKey: rawKey)
         guard let date else { return nil }
 
         // Apply filters
@@ -300,26 +301,70 @@ actor ICSParser {
         return (name, email)
     }
 
-    private func parseDTStart(_ value: String) -> (String?, String?) {
+    private func parseDTStart(_ value: String, rawKey: String = "") -> (String?, String?) {
         let clean = value.trimmingCharacters(in: .whitespaces)
+        guard clean.count >= 8 else { return (nil, nil) }
 
-        if clean.count >= 8 {
+        // All-day event (YYYYMMDD only)
+        if clean.count == 8 {
             let year = String(clean.prefix(4))
             let month = String(clean.dropFirst(4).prefix(2))
             let day = String(clean.dropFirst(6).prefix(2))
-            let date = "\(year)-\(month)-\(day)"
-
-            if clean.count >= 15 {
-                let timeStr = String(clean.dropFirst(9).prefix(4))
-                if timeStr.count == 4 {
-                    let hour = String(timeStr.prefix(2))
-                    let minute = String(timeStr.suffix(2))
-                    return (date, "\(hour):\(minute)")
-                }
-            }
-            return (date, nil)
+            return ("\(year)-\(month)-\(day)", nil)
         }
-        return (nil, nil)
+
+        // DateTime with time component (YYYYMMDDTHHmmss or YYYYMMDDTHHmmssZ)
+        guard clean.count >= 15 else {
+            let year = String(clean.prefix(4))
+            let month = String(clean.dropFirst(4).prefix(2))
+            let day = String(clean.dropFirst(6).prefix(2))
+            return ("\(year)-\(month)-\(day)", nil)
+        }
+
+        let isUTC = clean.hasSuffix("Z")
+
+        // Check if TZID is specified in the key (e.g., DTSTART;TZID=America/Mexico_City)
+        var sourceTZ: TimeZone = .current
+        if let tzRange = rawKey.range(of: "TZID=", options: .caseInsensitive) {
+            let tzName = String(rawKey[tzRange.upperBound...])
+                .components(separatedBy: ";").first ?? ""
+            if let tz = TimeZone(identifier: tzName) {
+                sourceTZ = tz
+            }
+        } else if isUTC {
+            sourceTZ = TimeZone(identifier: "UTC")!
+        }
+
+        // Parse components
+        let year = String(clean.prefix(4))
+        let month = String(clean.dropFirst(4).prefix(2))
+        let day = String(clean.dropFirst(6).prefix(2))
+        let hour = String(clean.dropFirst(9).prefix(2))
+        let minute = String(clean.dropFirst(11).prefix(2))
+
+        // If already in local timezone and not UTC, return directly
+        if !isUTC && sourceTZ == .current {
+            return ("\(year)-\(month)-\(day)", "\(hour):\(minute)")
+        }
+
+        // Convert to local timezone
+        let df = DateFormatter()
+        df.dateFormat = "yyyyMMdd'T'HHmmss"
+        df.timeZone = sourceTZ
+        let dateStr = String(clean.prefix(15)) // Strip trailing Z
+        guard let date = df.date(from: dateStr) else {
+            return ("\(year)-\(month)-\(day)", "\(hour):\(minute)")
+        }
+
+        let outDate = DateFormatter()
+        outDate.dateFormat = "yyyy-MM-dd"
+        outDate.timeZone = .current
+
+        let outTime = DateFormatter()
+        outTime.dateFormat = "HH:mm"
+        outTime.timeZone = .current
+
+        return (outDate.string(from: date), outTime.string(from: date))
     }
 
     private func unescapeICS(_ text: String) -> String {
