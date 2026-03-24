@@ -11,6 +11,8 @@ struct MeetingsView: View {
     @State private var showingProductivity = false
     @State private var showingAnalysis = false
     @State private var showingDeletePast = false
+    @State private var showingDeleteAll = false
+    @State private var showingDeleteImported = false
     @State private var isSyncing = false
     @State private var selectedTab = 0
     @State private var deletedCount = 0
@@ -156,6 +158,16 @@ struct MeetingsView: View {
                             } label: {
                                 Label("Limpiar reuniones pasadas", systemImage: "trash.circle")
                             }
+                            Button(role: .destructive) {
+                                showingDeleteImported = true
+                            } label: {
+                                Label("Limpiar importadas", systemImage: "tray.and.arrow.up")
+                            }
+                            Button(role: .destructive) {
+                                showingDeleteAll = true
+                            } label: {
+                                Label("Eliminar todas las reuniones", systemImage: "trash.fill")
+                            }
                         } label: {
                             if isSyncing {
                                 ProgressView()
@@ -208,6 +220,25 @@ struct MeetingsView: View {
                 }
             } message: {
                 Text("Se eliminaran todas las reuniones anteriores a hoy. Esta accion no se puede deshacer.")
+            }
+            .alert("Limpiar importadas", isPresented: $showingDeleteImported) {
+                Button("Cancelar", role: .cancel) {}
+                Button("Eliminar", role: .destructive) {
+                    Task { deletedCount = await vm.deleteImported() }
+                }
+            } message: {
+                Text("Se eliminaran las reuniones importadas de .ics y Google Calendar. Las creadas manualmente se conservan.")
+            }
+            .alert("Eliminar todas las reuniones", isPresented: $showingDeleteAll) {
+                Button("Cancelar", role: .cancel) {}
+                Button("Eliminar todo", role: .destructive) {
+                    Task {
+                        deletedCount = await vm.deleteAll()
+                        await refreshCurrentTab()
+                    }
+                }
+            } message: {
+                Text("Se eliminaran TODAS las reuniones (\(vm.meetings.count)). Esta accion no se puede deshacer.")
             }
             .onChange(of: selectedTab) { _ in
                 Task { await refreshCurrentTab() }

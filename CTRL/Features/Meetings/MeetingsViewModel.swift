@@ -89,11 +89,36 @@ final class MeetingsViewModel: ObservableObject {
         }
     }
 
-    struct DeletePastResult: Codable { let deleted: Int }
+    struct DeleteResult: Codable { let deleted: Int }
+
+    func deleteAll() async -> Int {
+        do {
+            let result: DeleteResult = try await APIClient.shared.request(.meetingsAll, method: "DELETE")
+            meetings = []
+            todayMeetings = []
+            upcomingMeetings = []
+            return result.deleted
+        } catch {
+            errorMessage = error.localizedDescription
+            return 0
+        }
+    }
+
+    func deleteImported() async -> Int {
+        do {
+            let result: DeleteResult = try await APIClient.shared.request(.meetingsImported, method: "DELETE")
+            await fetchToday()
+            await fetchMeetings()
+            return result.deleted
+        } catch {
+            errorMessage = error.localizedDescription
+            return 0
+        }
+    }
 
     func deletePast() async -> Int {
         do {
-            let result: DeletePastResult = try await APIClient.shared.request(
+            let result: DeleteResult = try await APIClient.shared.request(
                 .meetingsPast, method: "DELETE"
             )
             await fetchMeetings()
