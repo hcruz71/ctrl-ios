@@ -31,7 +31,7 @@ struct CalendarDayView: View {
             Divider()
 
             // Meetings without time
-            let noTimeMeetings = meetings.filter { $0.meetingTime == nil || $0.meetingTime?.isEmpty == true }
+            let noTimeMeetings = meetings.filter { !isValidTime($0.meetingTime) }
             if !noTimeMeetings.isEmpty {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 8) {
@@ -154,13 +154,24 @@ struct CalendarDayView: View {
 
     private func parseMinutes(_ timeStr: String) -> Int {
         let parts = timeStr.split(separator: ":")
-        guard parts.count >= 2, let h = Int(parts[0]), let m = Int(parts[1]) else { return 0 }
+        guard parts.count >= 2,
+              let h = Int(parts[0]), h >= 0, h < 24,
+              let m = Int(parts[1]), m >= 0, m < 60 else { return 0 }
         return h * 60 + m
+    }
+
+    private func isValidTime(_ timeStr: String?) -> Bool {
+        guard let t = timeStr, !t.isEmpty else { return false }
+        let parts = t.split(separator: ":")
+        guard parts.count >= 2,
+              let h = Int(parts[0]), h >= 0, h < 24,
+              let m = Int(parts[1]), m >= 0, m < 60 else { return false }
+        return true
     }
 
     private func layoutMeetings(_ meetings: [Meeting]) -> [MeetingLayout] {
         let timed = meetings
-            .filter { $0.meetingTime != nil && !($0.meetingTime?.isEmpty ?? true) }
+            .filter { isValidTime($0.meetingTime) }
             .sorted { parseMinutes($0.meetingTime ?? "0") < parseMinutes($1.meetingTime ?? "0") }
 
         guard !timed.isEmpty else { return [] }
@@ -237,10 +248,11 @@ struct CalendarDayView: View {
         let layouts = layoutMeetings(meetings)
 
         return ForEach(layouts) { layout in
-            let colWidth = contentWidth / CGFloat(layout.totalColumns)
-            let blockWidth = colWidth - 4
-            let blockHeight = max(hourHeight - 4, 44)
+            let colWidth = max(20, contentWidth / CGFloat(max(1, layout.totalColumns)))
+            let blockWidth = max(20, colWidth - 4)
+            let blockHeight = max(44, hourHeight - 4)
             let xOrigin = labelWidth + 4 + CGFloat(layout.columnIndex) * colWidth + colWidth / 2
+            let yPos = max(0, yOffset(for: layout.meeting.meetingTime ?? "00:00")) + blockHeight / 2
 
             NavigationLink {
                 MeetingDetailView(vm: vm, meeting: layout.meeting)
@@ -248,10 +260,7 @@ struct CalendarDayView: View {
                 meetingBlock(layout.meeting, width: blockWidth, height: blockHeight)
             }
             .buttonStyle(.plain)
-            .position(
-                x: xOrigin,
-                y: yOffset(for: layout.meeting.meetingTime ?? "00:00") + blockHeight / 2
-            )
+            .position(x: xOrigin, y: yPos)
         }
     }
 

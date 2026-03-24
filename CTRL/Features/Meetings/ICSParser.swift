@@ -70,7 +70,7 @@ actor ICSParser {
         var keyword: String? = nil
         var excludeAllDay: Bool = false
         var excludePastRecurring: Bool = true
-        var maxEvents: Int = 500
+        var maxEvents: Int = 2000
     }
 
     func parse(data: Data, options: ParseOptions) -> [ICSEvent] {
@@ -173,6 +173,11 @@ actor ICSParser {
             }
         }
 
+        let noTime = events.filter { $0.time == nil }.count
+        print("[ICSParser] Total eventos en archivo: \(debugEventCount)")
+        print("[ICSParser] Eventos despues de filtros: \(events.count)")
+        print("[ICSParser] Eventos sin hora: \(noTime)")
+
         return events.sorted { ($0.dateForSorting ?? .distantPast) < ($1.dateForSorting ?? .distantPast) }
     }
 
@@ -191,8 +196,22 @@ actor ICSParser {
 
         guard let dtstart = props["DTSTART"] else { return nil }
 
-        let isAllDay = dtstart.count == 8
+        var isAllDay = dtstart.count == 8
         let isRecurring = props["RRULE"] != nil
+
+        // Detect midnight-UTC events that are actually all-day
+        // e.g., DTSTART:20230901T000000Z with DTEND:20230902T000000Z
+        if !isAllDay && dtstart.hasSuffix("Z") {
+            let timeDigits = String(dtstart.dropFirst(9).prefix(6))
+            if timeDigits == "000000" {
+                if let dtend = props["DTEND"] {
+                    let endTime = String(dtend.dropFirst(9).prefix(6))
+                    if endTime == "000000" || endTime == "235959" {
+                        isAllDay = true
+                    }
+                }
+            }
+        }
 
         let rawKey = props["DTSTART_RAW"] ?? ""
         let (date, time) = parseDTStart(dtstart, rawKey: rawKey)
