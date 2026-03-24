@@ -25,6 +25,7 @@
 		1E19D9FD3E0C46EFE26B345B /* Color+CTRL.swift in Sources */ = {isa = PBXBuildFile; fileRef = 036BD62DCD2DC50060A4C0C8 /* Color+CTRL.swift */; };
 		249F41BC741203A70092F09C /* TasksViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00E7AE65E31C73949B99BEC /* TasksViewModel.swift */; };
 		26698FE315AE6F5E29DDAD04 /* StoreManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9804B8BF25D1A2DB97F9F01F /* StoreManager.swift */; };
+		27BED8D042B14AA6B7CFD311 /* HelpModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1610748183A87DD484DC145B /* HelpModels.swift */; };
 		31D95A21FDB11944E06EA4E4 /* TasksView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEC10A3922719C59B9D9C719 /* TasksView.swift */; };
 		35369D4C9AB74D97481A3588 /* TaskRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 622F7A4D76C2F5FA8DCED64E /* TaskRowView.swift */; };
 		3CC2767A913404E45BCFDCF0 /* CalendarDayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ABB59F8FD0105A395681A72 /* CalendarDayView.swift */; };
@@ -65,6 +66,7 @@
 		899887BEBCF9012F73FB2B7A /* LoginViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 757CFD3291A5F2CC1C182E79 /* LoginViewModel.swift */; };
 		8C5FD08BCE5A9187F713D471 /* ContactPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA37C484E3A3F7904F1E8E73 /* ContactPickerView.swift */; };
 		8CE750DCC6BF6B34120C9F42 /* SubscriptionPlan.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D8B659839744F71E726D771 /* SubscriptionPlan.swift */; };
+		8E3A423FBEB0BA592E4466A0 /* HelpService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1C3E0DB2901ADBF7EEB921 /* HelpService.swift */; };
 		901F43A3C05C793E253F9EE1 /* ICSImportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BDE28EC8D4BE52841802BBD /* ICSImportView.swift */; };
 		9417916A725AC4EBE9574FAD /* ProductivityDashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92121CD052BEFFB61BBA8D24 /* ProductivityDashboardView.swift */; };
 		982840541515DB56C9ADFC6C /* ObjectiveRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10DF027E47C9DECD467A86A0 /* ObjectiveRowView.swift */; };
@@ -148,6 +150,7 @@
 		10DF027E47C9DECD467A86A0 /* ObjectiveRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjectiveRowView.swift; sourceTree = "<group>"; };
 		11CA8E9114FCAE6191BF807B /* DayPlanView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DayPlanView.swift; sourceTree = "<group>"; };
 		139B5D4EA83727E9A9D09EC7 /* EditTaskSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditTaskSheet.swift; sourceTree = "<group>"; };
+		1610748183A87DD484DC145B /* HelpModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelpModels.swift; sourceTree = "<group>"; };
 		188D10DF623892FE64EC2E1B /* AIUsageAlert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIUsageAlert.swift; sourceTree = "<group>"; };
 		1D1DEBF2E1339735151F9F96 /* PeopleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PeopleView.swift; sourceTree = "<group>"; };
 		1D8B659839744F71E726D771 /* SubscriptionPlan.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionPlan.swift; sourceTree = "<group>"; };
@@ -208,6 +211,7 @@
 		A332BD070E3FC2B977122D67 /* KPIMeasurementSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KPIMeasurementSheet.swift; sourceTree = "<group>"; };
 		A76BB19FBC1853B202553CA6 /* WatchNavigationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchNavigationView.swift; sourceTree = "<group>"; };
 		A7A39DFFC304E1CBC642BC0A /* AbsencesListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AbsencesListView.swift; sourceTree = "<group>"; };
+		AA1C3E0DB2901ADBF7EEB921 /* HelpService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelpService.swift; sourceTree = "<group>"; };
 		AB9457A113088E3F698F2AC2 /* EmailAnalysis.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailAnalysis.swift; sourceTree = "<group>"; };
 		AC3E5D28A1672242FE7E0723 /* WatchMainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchMainView.swift; sourceTree = "<group>"; };
 		AD42369D15A9D66A16BE4468 /* Objective.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Objective.swift; sourceTree = "<group>"; };
@@ -215,7 +219,7 @@
 		ADFDB41BC7D103108536BCB4 /* PushManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushManager.swift; sourceTree = "<group>"; };
 		AFC8CD8F102E1D7A8108D211 /* MeetingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeetingsView.swift; sourceTree = "<group>"; };
 		B24F1A613ECD6D4FCA90F290 /* DelegationsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DelegationsView.swift; sourceTree = "<group>"; };
-		BCB7B72F8005F0E28D01D868 /* CTRL.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CTRL.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		BCB7B72F8005F0E28D01D868 /* CTRL.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = CTRL.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C3AEEFB479CFA8230643A843 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		C635AE199357CAAC50E92DB1 /* KeychainHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainHelper.swift; sourceTree = "<group>"; };
 		C664F04BDFE1DC00F09F61F0 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -278,6 +282,7 @@
 				747152AAA74268420C1757F3 /* Delegation.swift */,
 				AB9457A113088E3F698F2AC2 /* EmailAnalysis.swift */,
 				498DF89075DEA18FF03D827E /* GoogleCalendarAccount.swift */,
+				1610748183A87DD484DC145B /* HelpModels.swift */,
 				841D966F79AD307D33C0DF8B /* LanguageManager.swift */,
 				FA55BCCF6F7843807C220466 /* Meeting.swift */,
 				AD42369D15A9D66A16BE4468 /* Objective.swift */,
@@ -347,6 +352,7 @@
 				C8FABDF842457B4F00BD05B5 /* APIClient.swift */,
 				80B0F44B02257D8251AAF414 /* APIEndpoints.swift */,
 				70D8DBCD3BE31DD2352D1222 /* APIError.swift */,
+				AA1C3E0DB2901ADBF7EEB921 /* HelpService.swift */,
 				08E1B949704CEA0602D18147 /* WatchBridge.swift */,
 			);
 			path = Network;
@@ -605,9 +611,11 @@
 				LastUpgradeCheck = 1600;
 				TargetAttributes = {
 					09159ADE5BA5373811DC53BE = {
+						DevelopmentTeam = "";
 						ProvisioningStyle = Automatic;
 					};
 					449051C4D4F3A5384442DD25 = {
+						DevelopmentTeam = "";
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -698,6 +706,8 @@
 				B38BCA4BD9C8F3BC93833B47 /* EventEditView.swift in Sources */,
 				FD2C001D785C094318222D44 /* GanttChartView.swift in Sources */,
 				FD8F460F80B4E0436D8F2E42 /* GoogleCalendarAccount.swift in Sources */,
+				27BED8D042B14AA6B7CFD311 /* HelpModels.swift in Sources */,
+				8E3A423FBEB0BA592E4466A0 /* HelpService.swift in Sources */,
 				FC4AF084F597F03B4B9547B9 /* HelpView.swift in Sources */,
 				901F43A3C05C793E253F9EE1 /* ICSImportView.swift in Sources */,
 				E66672160A7D169A7CC45F4D /* ICSParser.swift in Sources */,
@@ -782,11 +792,9 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ALLOW_ENTITLEMENTS_MODIFICATION = YES;
-				CODE_SIGN_ENTITLEMENTS = CTRL/CTRL.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 679TR4ZAZB;
 				INFOPLIST_FILE = CTRL/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -804,11 +812,9 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ALLOW_ENTITLEMENTS_MODIFICATION = YES;
-				CODE_SIGN_ENTITLEMENTS = CTRL/CTRL.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 679TR4ZAZB;
 				INFOPLIST_FILE = CTRL/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -828,7 +834,6 @@
 				CODE_SIGN_ENTITLEMENTS = CTRLWatch/CTRLWatch.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 679TR4ZAZB;
 				INFOPLIST_FILE = CTRLWatch/Info.plist;
 				MARKETING_VERSION = 1.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.hector.ctrl.watchkitapp;
@@ -909,7 +914,6 @@
 				CODE_SIGN_ENTITLEMENTS = CTRLWatch/CTRLWatch.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 679TR4ZAZB;
 				INFOPLIST_FILE = CTRLWatch/Info.plist;
 				MARKETING_VERSION = 1.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.hector.ctrl.watchkitapp;
