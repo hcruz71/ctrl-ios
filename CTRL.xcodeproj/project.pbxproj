@@ -89,6 +89,7 @@
 		B60589455F8842F4E0B5673C /* DelegationsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1063F17C6BC9D67D616FF26 /* DelegationsViewModel.swift */; };
 		BB1BE756C32ECB01497ADBED /* EmptyStateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC1E7A0DF4D448B002898EFC /* EmptyStateView.swift */; };
 		BB95A81039825708B436A14E /* Date+Formatting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B7A8F927A1269926D196750 /* Date+Formatting.swift */; };
+		BC396AA05ECF01BF9B82246B /* HelpViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA138421F949085682E998E8 /* HelpViewModel.swift */; };
 		C3757FFAF2B3C94904FBBB34 /* WatchConnectivityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E665C178FE871FC8885FF3D /* WatchConnectivityManager.swift */; };
 		C69A16C8D80FC73E6AFED95C /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 893796B7C9E94CE74C00A3AE /* LoginView.swift */; };
 		C8A6FC94511E2DFD6C671340 /* ProjectPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CDCF5E45A6145365A5CC164 /* ProjectPickerView.swift */; };
@@ -225,6 +226,7 @@
 		C664F04BDFE1DC00F09F61F0 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		C8AF4F6CAFCC1575F17737F0 /* ObjectivesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjectivesView.swift; sourceTree = "<group>"; };
 		C8FABDF842457B4F00BD05B5 /* APIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIClient.swift; sourceTree = "<group>"; };
+		CA138421F949085682E998E8 /* HelpViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelpViewModel.swift; sourceTree = "<group>"; };
 		CA37C484E3A3F7904F1E8E73 /* ContactPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactPickerView.swift; sourceTree = "<group>"; };
 		CDCDAAF0697BF9291877BEFC /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
 		CDFBF773AC465660D16E454B /* AbsenceDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AbsenceDetailView.swift; sourceTree = "<group>"; };
@@ -265,6 +267,7 @@
 			isa = PBXGroup;
 			children = (
 				D88A08BFF9A763CADA0D63AA /* HelpView.swift */,
+				CA138421F949085682E998E8 /* HelpViewModel.swift */,
 				893796B7C9E94CE74C00A3AE /* LoginView.swift */,
 				757CFD3291A5F2CC1C182E79 /* LoginViewModel.swift */,
 				CDCDAAF0697BF9291877BEFC /* ProfileView.swift */,
@@ -709,6 +712,7 @@
 				27BED8D042B14AA6B7CFD311 /* HelpModels.swift in Sources */,
 				8E3A423FBEB0BA592E4466A0 /* HelpService.swift in Sources */,
 				FC4AF084F597F03B4B9547B9 /* HelpView.swift in Sources */,
+				BC396AA05ECF01BF9B82246B /* HelpViewModel.swift in Sources */,
 				901F43A3C05C793E253F9EE1 /* ICSImportView.swift in Sources */,
 				E66672160A7D169A7CC45F4D /* ICSParser.swift in Sources */,
 				A10B7C1924CE34E1CF9CDAB8 /* KPIMeasurementSheet.swift in Sources */,
