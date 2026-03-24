@@ -53,16 +53,14 @@ struct CalendarDayView: View {
             // HOUR GRID
             ScrollViewReader { proxy in
                 ScrollView {
-                    ZStack(alignment: .topLeading) {
-                        // Hour lines
-                        hourGrid
-
-                        // Meeting blocks
-                        meetingBlocks
-
-                        // Current time indicator
-                        if isToday {
-                            currentTimeIndicator
+                    GeometryReader { geo in
+                        let gridW = max(1, geo.size.width)
+                        ZStack(alignment: .topLeading) {
+                            hourGrid
+                            meetingBlocksView(gridWidth: gridW)
+                            if isToday {
+                                currentTimeIndicator
+                            }
                         }
                     }
                     .frame(height: CGFloat(endHour - startHour) * hourHeight)
@@ -242,25 +240,28 @@ struct CalendarDayView: View {
 
     // MARK: - Meeting Blocks
 
-    private var meetingBlocks: some View {
-        let gridWidth = UIScreen.main.bounds.width - 16
-        let contentWidth = gridWidth - labelWidth - 4
+    @ViewBuilder
+    private func meetingBlocksView(gridWidth: CGFloat) -> some View {
+        let availableWidth = max(1, gridWidth - labelWidth - 8)
         let layouts = layoutMeetings(meetings)
 
-        return ForEach(layouts) { layout in
-            let colWidth = max(20, contentWidth / CGFloat(max(1, layout.totalColumns)))
+        ForEach(layouts) { layout in
+            let cols = CGFloat(max(1, layout.totalColumns))
+            let colWidth = max(44, availableWidth / cols)
             let blockWidth = max(20, colWidth - 4)
-            let blockHeight = max(44, hourHeight - 4)
+            let blockHeight: CGFloat = max(44, hourHeight - 4)
             let xOrigin = labelWidth + 4 + CGFloat(layout.columnIndex) * colWidth + colWidth / 2
             let yPos = max(0, yOffset(for: layout.meeting.meetingTime ?? "00:00")) + blockHeight / 2
 
-            NavigationLink {
-                MeetingDetailView(vm: vm, meeting: layout.meeting)
-            } label: {
-                meetingBlock(layout.meeting, width: blockWidth, height: blockHeight)
+            if blockWidth.isFinite && blockHeight.isFinite && xOrigin.isFinite && yPos.isFinite {
+                NavigationLink {
+                    MeetingDetailView(vm: vm, meeting: layout.meeting)
+                } label: {
+                    meetingBlock(layout.meeting, width: blockWidth, height: blockHeight)
+                }
+                .buttonStyle(.plain)
+                .position(x: xOrigin, y: yPos)
             }
-            .buttonStyle(.plain)
-            .position(x: xOrigin, y: yPos)
         }
     }
 
