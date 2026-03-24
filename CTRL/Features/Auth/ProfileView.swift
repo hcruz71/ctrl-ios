@@ -17,27 +17,17 @@ private class OAuthCoordinator: NSObject, ASWebAuthenticationPresentationContext
 struct ProfileView: View {
     @EnvironmentObject var authManager: AuthManager
     @EnvironmentObject var lang: LanguageManager
-    @StateObject private var pushManager = PushManager.shared
     @Environment(\.dismiss) private var dismiss
-    @State private var showingPermissionAlert = false
 
     @State private var assistantName: String = ""
     @State private var assistantPersonality: String = "ejecutivo"
     @State private var assistantVoice: String = "es-MX-female"
     @State private var isSaving = false
     @State private var previewSynthesizer = AVSpeechSynthesizer()
-    @State private var googleAccounts: [GoogleCalendarAccount] = []
-    @State private var gcalLoading = false
-    @State private var accountToDelete: GoogleCalendarAccount?
-    @State private var oauthCoordinator = OAuthCoordinator()
-    @State private var currentMode: WorkMode?
 
     // MARK: Collapsible section state
     @AppStorage("profile.section.assistant") private var expandedAssistant = false
     @AppStorage("profile.section.voice") private var expandedVoice = false
-    @AppStorage("profile.section.gcal") private var expandedGCal = false
-    @AppStorage("profile.section.schedule") private var expandedSchedule = false
-    @AppStorage("profile.section.notifications") private var expandedNotifications = false
     @AppStorage("profile.section.language") private var expandedLanguage = false
     @AppStorage("profile.section.byok") private var expandedByok = false
     @State private var selectedLanguage: String = LanguageManager.shared.currentLanguage
@@ -278,192 +268,16 @@ struct ProfileView: View {
                     }
                 }
 
-                // 5. Google Calendar — collapsible, default expanded
-                collapsibleSection(title: "Google Calendar", icon: "calendar.badge.checkmark", expanded: $expandedGCal) {
-                    if gcalLoading && googleAccounts.isEmpty {
-                        HStack {
-                            Spacer()
-                            ProgressView()
-                            Spacer()
-                        }
-                    }
-
-                    ForEach(googleAccounts) { account in
-                        HStack(spacing: 12) {
-                            Circle()
-                                .fill(Color.blue.opacity(0.15))
-                                .frame(width: 36, height: 36)
-                                .overlay {
-                                    Text(String(account.email.prefix(1)).uppercased())
-                                        .font(.subheadline.bold())
-                                        .foregroundStyle(.blue)
-                                }
-
-                            VStack(alignment: .leading, spacing: 2) {
-                                Text(account.label ?? account.email)
-                                    .font(.subheadline)
-                                    .fontWeight(.medium)
-                                if account.label != nil {
-                                    Text(account.email)
-                                        .font(.caption)
-                                        .foregroundStyle(.secondary)
-                                }
-                            }
-
-                            Spacer()
-
-                            if account.isActive {
-                                Image(systemName: "checkmark.circle.fill")
-                                    .foregroundStyle(.green)
-                                    .font(.caption)
-                            } else {
-                                Image(systemName: "pause.circle.fill")
-                                    .foregroundStyle(.secondary)
-                                    .font(.caption)
-                            }
-                        }
-                        .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-                            Button(role: .destructive) {
-                                accountToDelete = account
-                            } label: {
-                                Label("Eliminar", systemImage: "trash")
-                            }
-
-                            Button {
-                                Task { await toggleAccountActive(account) }
-                            } label: {
-                                Label(
-                                    account.isActive ? "Pausar" : "Activar",
-                                    systemImage: account.isActive ? "pause" : "play"
-                                )
-                            }
-                            .tint(account.isActive ? .orange : .green)
-                        }
-                    }
-
-                    Button {
-                        startGoogleOAuth()
-                    } label: {
-                        Label("Agregar cuenta de Google", systemImage: "plus.circle")
-                    }
-
-                    if !googleAccounts.isEmpty {
-                        Button {
-                            Task {
-                                gcalLoading = true
-                                struct R: Codable { let created: Int; let updated: Int }
-                                let _: R? = try? await APIClient.shared.request(.googleCalendarSync)
-                                await loadGoogleAccounts()
-                                gcalLoading = false
-                            }
-                        } label: {
-                            Label(
-                                gcalLoading ? "Sincronizando..." : "Sincronizar todas",
-                                systemImage: "arrow.triangle.2.circlepath"
-                            )
-                        }
-                        .disabled(gcalLoading)
-                    }
-                }
-                .alert("Desconectar cuenta", isPresented: .init(
-                    get: { accountToDelete != nil },
-                    set: { if !$0 { accountToDelete = nil } }
-                )) {
-                    Button("Cancelar", role: .cancel) { accountToDelete = nil }
-                    Button("Desconectar", role: .destructive) {
-                        if let account = accountToDelete {
-                            Task { await deleteAccount(account) }
-                        }
-                    }
-                } message: {
-                    Text("Se desconectará \(accountToDelete?.email ?? "") de CTRL. Las reuniones importadas se conservan.")
-                }
-
-                // 6. Horario y modos — collapsible, default collapsed
-                collapsibleSection(title: lang.t("profile.schedule"), icon: "clock", expanded: $expandedSchedule) {
-                    NavigationLink {
-                        ScheduleSettingsView()
-                    } label: {
-                        HStack {
-                            Label("Horario laboral", systemImage: "clock")
-                            Spacer()
-                            if let mode = currentMode {
-                                Text(mode.label)
-                                    .font(.caption)
-                                    .padding(.horizontal, 8)
-                                    .padding(.vertical, 3)
-                                    .background(modeColor(mode).opacity(0.15))
-                                    .foregroundStyle(modeColor(mode))
-                                    .clipShape(Capsule())
-                            }
-                        }
-                    }
-
-                    NavigationLink {
-                        AbsencesListView()
-                    } label: {
-                        Label("Vacaciones y ausencias", systemImage: "sun.max")
-                    }
-                }
-
-                // 7. Notificaciones — collapsible, default collapsed
-                collapsibleSection(title: lang.t("profile.notifications"), icon: "bell.fill", expanded: $expandedNotifications) {
-                    HStack {
-                        Label("Estado", systemImage: "bell.fill")
-                        Spacer()
-                        Text(permissionLabel)
-                            .foregroundStyle(.secondary)
-                    }
-
-                    if pushManager.permissionStatus == .notDetermined {
-                        Button {
-                            Task { await pushManager.requestPermissionAndRegister() }
-                        } label: {
-                            Label("Activar notificaciones", systemImage: "bell.badge")
-                        }
-                    } else if pushManager.permissionStatus == .denied {
-                        Button {
-                            if let url = URL(string: UIApplication.openSettingsURLString) {
-                                UIApplication.shared.open(url)
-                            }
-                        } label: {
-                            Label("Abrir Ajustes para activar", systemImage: "gear")
-                        }
-                    }
-
-                    if let token = pushManager.deviceToken {
-                        HStack {
-                            Label("Token", systemImage: "key.fill")
-                            Spacer()
-                            Text(token.prefix(12) + "…")
-                                .font(.caption.monospaced())
-                                .foregroundStyle(.secondary)
-                        }
-                    }
-
-                    #if DEBUG
-                    Button {
-                        pushManager.sendLocalNotification(
-                            title: "CTRL — Test local",
-                            body: "Deep linking y UI funcionan correctamente.",
-                            data: ["type": "delegation:overdue"]
-                        )
-                    } label: {
-                        Label("Enviar notificación local", systemImage: "arrow.up.message.fill")
-                    }
-                    #endif
-                }
-
-                // Usage section — before logout
+                // 5. Configuraciones
                 Section {
                     NavigationLink {
-                        UsageView()
+                        SettingsView()
                     } label: {
-                        Label("Uso de IA", systemImage: "chart.bar.fill")
+                        Label("Configuraciones", systemImage: "gear")
                     }
                 }
 
-                // 8. Logout — always visible
+                // 6. Logout — always visible
                 Section {
                     Button(role: .destructive) {
                         authManager.logout()
@@ -491,10 +305,7 @@ struct ProfileView: View {
             }
             .task {
                 await authManager.fetchProfile()
-                await pushManager.refreshPermissionStatus()
                 loadAssistantSettings()
-                await loadGoogleAccounts()
-                await loadCurrentMode()
             }
         }
     }
@@ -599,79 +410,6 @@ struct ProfileView: View {
         previewSynthesizer.speak(utterance)
     }
 
-    private func startGoogleOAuth() {
-        guard let token = authManager.token,
-              let url = URL(string: "\(APIEndpoint.baseURL)/google-calendar/auth?token=\(token)") else {
-            return
-        }
-
-        let session = ASWebAuthenticationSession(
-            url: url,
-            callbackURLScheme: "ctrl"
-        ) { _, _ in
-            // Backend redirects to ctrl://oauth/google/success after linking.
-            // ASWebAuthenticationSession auto-dismisses on scheme match.
-            Task { await loadGoogleAccounts() }
-        }
-        session.prefersEphemeralWebBrowserSession = false
-        session.presentationContextProvider = oauthCoordinator
-        session.start()
-    }
-
-    private func loadGoogleAccounts() async {
-        gcalLoading = true
-        do {
-            let accounts: [GoogleCalendarAccount] = try await APIClient.shared.request(.googleCalendarAccounts)
-            googleAccounts = accounts
-            print("[ProfileView] Loaded \(accounts.count) Google account(s)")
-        } catch {
-            print("[ProfileView] Failed to load Google accounts: \(error)")
-            googleAccounts = []
-        }
-        gcalLoading = false
-    }
-
-    private func toggleAccountActive(_ account: GoogleCalendarAccount) async {
-        let body = UpdateGoogleCalendarBody(isActive: !account.isActive)
-        do {
-            let _: GoogleCalendarAccount = try await APIClient.shared.request(
-                .googleCalendarAccount(id: account.id),
-                method: "PATCH",
-                body: body
-            )
-            await loadGoogleAccounts()
-        } catch { }
-    }
-
-    private func deleteAccount(_ account: GoogleCalendarAccount) async {
-        do {
-            try await APIClient.shared.requestVoid(
-                .googleCalendarAccount(id: account.id),
-                method: "DELETE"
-            )
-        } catch { }
-        accountToDelete = nil
-        await loadGoogleAccounts()
-    }
-
-    private func loadCurrentMode() async {
-        do {
-            let response: WorkModeResponse = try await APIClient.shared.request(.scheduleMode)
-            currentMode = response.mode
-        } catch {
-            currentMode = .work
-        }
-    }
-
-    private func modeColor(_ mode: WorkMode) -> Color {
-        switch mode {
-        case .work:     return .blue
-        case .personal: return .green
-        case .rest:     return .gray
-        case .vacation: return .orange
-        }
-    }
-
     private var currentPlanEnum: SubscriptionPlan {
         guard let planStr = authManager.currentUser?.plan else { return .free }
         return SubscriptionPlan(rawValue: planStr) ?? .free
@@ -723,14 +461,4 @@ struct ProfileView: View {
         }
     }
 
-    private var permissionLabel: String {
-        switch pushManager.permissionStatus {
-        case .authorized: return "Activadas"
-        case .denied: return "Denegadas"
-        case .provisional: return "Provisional"
-        case .ephemeral: return "Temporal"
-        case .notDetermined: return "Sin configurar"
-        @unknown default: return "Desconocido"
-        }
-    }
 }
