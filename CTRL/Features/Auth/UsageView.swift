@@ -37,7 +37,7 @@ struct UsageView: View {
 
     @ViewBuilder
     private func gaugeSection(_ s: UsageSummary) -> some View {
-        let pct = Double(s.percentageUsed) / 100.0
+        let pct = min(1.0, max(0, Double(s.percentageUsed) / 100.0))
         let color = gaugeColor(s.percentageUsed)
 
         VStack(spacing: 12) {
@@ -71,7 +71,7 @@ struct UsageView: View {
                         .fill(Color.gray.opacity(0.2))
                     RoundedRectangle(cornerRadius: 4)
                         .fill(color)
-                        .frame(width: geo.size.width * pct)
+                        .frame(width: max(0, geo.size.width * pct))
                 }
             }
             .frame(height: 8)

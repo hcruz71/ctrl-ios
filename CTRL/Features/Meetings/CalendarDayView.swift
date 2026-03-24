@@ -54,12 +54,13 @@ struct CalendarDayView: View {
             ScrollViewReader { proxy in
                 ScrollView {
                     GeometryReader { geo in
-                        let gridW = max(1, geo.size.width)
-                        ZStack(alignment: .topLeading) {
-                            hourGrid
-                            meetingBlocksView(gridWidth: gridW)
-                            if isToday {
-                                currentTimeIndicator
+                        if geo.size.width > 44 {
+                            ZStack(alignment: .topLeading) {
+                                hourGrid
+                                meetingBlocksView(gridWidth: geo.size.width)
+                                if isToday {
+                                    currentTimeIndicator
+                                }
                             }
                         }
                     }

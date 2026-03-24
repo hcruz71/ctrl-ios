@@ -135,7 +135,7 @@ struct ProductivityDashboardView: View {
                         RoundedRectangle(cornerRadius: 4)
                             .fill(Color.ctrlPurple.opacity(0.3))
                             .frame(
-                                width: geo.size.width * CGFloat(item.meetingCount) / CGFloat(maxCount),
+                                width: max(0, geo.size.width * CGFloat(item.meetingCount) / CGFloat(max(1, maxCount))),
                                 height: 6
                             )
                     }

@@ -198,7 +198,7 @@ private struct ObjectiveSmartRow: View {
                             .fill(Color.gray.opacity(0.2))
                         RoundedRectangle(cornerRadius: 3)
                             .fill(progressColor(pct))
-                            .frame(width: geo.size.width * CGFloat(pct) / 100)
+                            .frame(width: max(0, geo.size.width * min(1, CGFloat(pct) / 100)))
                     }
                 }
                 .frame(height: 6)

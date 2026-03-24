@@ -118,7 +118,7 @@ struct ProjectDetailView: View {
                             .fill(Color.gray.opacity(0.2))
                         RoundedRectangle(cornerRadius: 4)
                             .fill(Color.ctrlPurple)
-                            .frame(width: geo.size.width * CGFloat(project.taskProgress) / 100)
+                            .frame(width: max(0, geo.size.width * min(1, CGFloat(project.taskProgress) / 100)))
                     }
                 }
                 .frame(height: 8)

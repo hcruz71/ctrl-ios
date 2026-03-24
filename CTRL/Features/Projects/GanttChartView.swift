@@ -174,22 +174,25 @@ struct GanttChartView: View {
                 return cal.date(byAdding: .day, value: 1, to: taskStart)!
             }()
 
-            let startDays = CGFloat(cal.dateComponents([.day], from: range.min, to: taskStart).day ?? 0)
-            let durDays = CGFloat(max(1, cal.dateComponents([.day], from: taskStart, to: taskEnd).day ?? 1))
+            let startDays = max(0, CGFloat(cal.dateComponents([.day], from: range.min, to: taskStart).day ?? 0))
+            let durDays = max(1, CGFloat(cal.dateComponents([.day], from: taskStart, to: taskEnd).day ?? 1))
             let barX = labelWidth + startDays * ptPerDay
-            let barW = max(durDays * ptPerDay, 20)
+            let barW = max(20, durDays * ptPerDay)
+            let barY = y
 
-            RoundedRectangle(cornerRadius: 4)
-                .fill(barColor(task))
-                .frame(width: barW, height: rowHeight - 8)
-                .overlay(alignment: .leading) {
-                    Text(task.title)
-                        .font(.caption2.bold())
-                        .foregroundStyle(.white)
-                        .lineLimit(1)
-                        .padding(.leading, 4)
-                }
-                .position(x: barX + barW / 2, y: y)
+            if barW.isFinite && barX.isFinite && barY.isFinite {
+                RoundedRectangle(cornerRadius: 4)
+                    .fill(barColor(task))
+                    .frame(width: barW, height: rowHeight - 8)
+                    .overlay(alignment: .leading) {
+                        Text(task.title)
+                            .font(.caption2.bold())
+                            .foregroundStyle(.white)
+                            .lineLimit(1)
+                            .padding(.leading, 4)
+                    }
+                    .position(x: barX + barW / 2, y: barY)
+            }
         }
     }
 
