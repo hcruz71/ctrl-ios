@@ -158,11 +158,6 @@ struct SettingsView: View {
                     Label("Uso de IA", systemImage: "chart.bar.fill")
                 }
 
-                NavigationLink {
-                    SubscriptionView()
-                } label: {
-                    Label("Plan y suscripcion", systemImage: "crown")
-                }
             }
         }
         .navigationTitle("Configuraciones")
