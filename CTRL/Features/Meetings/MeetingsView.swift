@@ -1,9 +1,12 @@
 import SwiftUI
+import EventKit
+import EventKitUI
 
 struct MeetingsView: View {
     @EnvironmentObject var lang: LanguageManager
     @StateObject private var vm = MeetingsViewModel()
     @State private var showingAdd = false
+    @State private var showingEventEditor = false
     @State private var showingICSImport = false
     @State private var showingProductivity = false
     @State private var showingAnalysis = false
@@ -161,13 +164,37 @@ struct MeetingsView: View {
                             }
                         }
 
-                        Button { showingAdd = true } label: {
+                        Button {
+                            let store = EKEventStore()
+                            store.requestAccess(to: .event) { granted, _ in
+                                DispatchQueue.main.async {
+                                    if granted {
+                                        showingEventEditor = true
+                                    } else {
+                                        showingAdd = true
+                                    }
+                                }
+                            }
+                        } label: {
                             Image(systemName: "plus")
                         }
                     }
                 }
             }
             .withProfileButton()
+            .sheet(isPresented: $showingEventEditor) {
+                EventEditView { title, date, time in
+                    let body = CreateMeetingBody(
+                        title: title,
+                        meetingDate: date,
+                        meetingTime: time
+                    )
+                    Task {
+                        await vm.create(body)
+                        await refreshCurrentTab()
+                    }
+                }
+            }
             .sheet(isPresented: $showingAdd) { addMeetingSheet }
             .sheet(isPresented: $showingICSImport) { ICSImportView(vm: vm) }
             .sheet(isPresented: $showingProductivity) { ProductivityDashboardView(vm: vm) }

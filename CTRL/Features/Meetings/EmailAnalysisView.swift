@@ -2,119 +2,131 @@ import SwiftUI
 import UniformTypeIdentifiers
 
 struct EmailAnalysisView: View {
-    @Environment(\.dismiss) private var dismiss
     @State private var result: EmailAnalysisResult?
     @State private var isLoading = false
     @State private var hasLoaded = false
     @State private var selectedPeriod = 72
     @State private var showImport = false
     @State private var showAIConfirm = false
-    @State private var expandedCategories = true
+    @State private var showStats = false
 
     private let periods = [(24, "24h"), (48, "48h"), (72, "72h")]
 
     var body: some View {
-        NavigationStack {
-            ScrollView {
-                VStack(spacing: 16) {
-                    // Source selector
-                    HStack {
-                        Picker("Periodo", selection: $selectedPeriod) {
-                            ForEach(periods, id: \.0) { p in
-                                Text(p.1).tag(p.0)
-                            }
-                        }
-                        .pickerStyle(.segmented)
+        ScrollView {
+            VStack(spacing: 16) {
+                // Period selector
+                Picker("Periodo", selection: $selectedPeriod) {
+                    ForEach(periods, id: \.0) { p in
+                        Text(p.1).tag(p.0)
+                    }
+                }
+                .pickerStyle(.segmented)
+                .padding(.horizontal)
 
-                        Button {
-                            showImport = true
-                        } label: {
-                            Image(systemName: "doc.badge.plus")
-                                .foregroundStyle(Color.ctrlPurple)
-                        }
+                // Analyze button
+                if !hasLoaded && !isLoading {
+                    Button { showAIConfirm = true } label: {
+                        Label("Analizar correos con IA", systemImage: "sparkles")
+                            .fontWeight(.semibold)
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(Color.ctrlPurple)
+                            .foregroundStyle(.white)
+                            .clipShape(RoundedRectangle(cornerRadius: 12))
                     }
                     .padding(.horizontal)
+                }
 
-                    // Analyze button
-                    if !hasLoaded && !isLoading {
-                        Button { showAIConfirm = true } label: {
-                            Label("Analizar correos con IA", systemImage: "sparkles")
-                                .fontWeight(.semibold)
-                                .frame(maxWidth: .infinity)
-                                .padding()
-                                .background(Color.ctrlPurple)
-                                .foregroundStyle(.white)
-                                .clipShape(RoundedRectangle(cornerRadius: 12))
+                if isLoading {
+                    VStack(spacing: 12) {
+                        ProgressView()
+                        Text("Leyendo y analizando correos...")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                    .padding(.vertical, 40)
+                } else if let r = result {
+                    // Summary
+                    VStack(alignment: .leading, spacing: 8) {
+                        HStack {
+                            Text("\(r.totalEmails) correos analizados")
+                                .font(.subheadline.bold())
+                            Spacer()
+                            if let period = r.period {
+                                Text(period)
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
                         }
-                        .padding(.horizontal)
+
+                        Text(r.analysis)
+                            .font(.body)
+                            .lineSpacing(4)
+                    }
+                    .padding()
+                    .background(Color(.secondarySystemGroupedBackground))
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                    .padding(.horizontal)
+
+                    // Categories
+                    if let cats = r.categories {
+                        categoriesSection(cats)
                     }
 
-                    if isLoading {
-                        VStack(spacing: 12) {
-                            ProgressView()
-                            Text("Leyendo y analizando correos...")
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                        }
-                        .padding(.vertical, 40)
-                    } else if let r = result {
-                        // Summary
-                        VStack(alignment: .leading, spacing: 8) {
-                            HStack {
-                                Text("\(r.totalEmails) correos analizados")
-                                    .font(.subheadline.bold())
-                                Spacer()
-                                if let period = r.period {
-                                    Text(period)
-                                        .font(.caption)
-                                        .foregroundStyle(.secondary)
-                                }
-                            }
-
-                            Text(r.analysis)
-                                .font(.body)
-                                .lineSpacing(4)
-                        }
-                        .padding()
-                        .background(Color(.secondarySystemGroupedBackground))
-                        .clipShape(RoundedRectangle(cornerRadius: 12))
-                        .padding(.horizontal)
-
-                        // Categories
-                        if let cats = r.categories {
-                            categoriesSection(cats)
-                        }
-
-                        // Suggested tasks
-                        if let tasks = r.suggestedTasks, !tasks.isEmpty {
-                            suggestedTasksSection(tasks)
-                        }
+                    // Suggested tasks
+                    if let tasks = r.suggestedTasks, !tasks.isEmpty {
+                        suggestedTasksSection(tasks)
                     }
                 }
-                .padding(.vertical)
             }
-            .navigationTitle("Analisis de Correos")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Cerrar") { dismiss() }
+            .padding(.vertical)
+        }
+        .navigationTitle("Correos")
+        .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                Button { composeEmail() } label: {
+                    Image(systemName: "square.and.pencil")
+                }
+            }
+            ToolbarItemGroup(placement: .navigationBarTrailing) {
+                Button { showImport = true } label: {
+                    Image(systemName: "folder.badge.plus")
                 }
                 if hasLoaded {
-                    ToolbarItem(placement: .navigationBarTrailing) {
-                        Button { showAIConfirm = true } label: {
-                            Image(systemName: "arrow.clockwise")
-                        }
+                    Button { showStats = true } label: {
+                        Image(systemName: "chart.bar")
                     }
                 }
-            }
-            .aiUsageAlert(isPresented: $showAIConfirm, title: "Analizar correos con IA", estimatedUsage: "3-5") {
-                Task { await analyzeGmail() }
-            }
-            .sheet(isPresented: $showImport) {
-                MboxImportView { content in
-                    Task { await analyzeMbox(content) }
+                Button { showAIConfirm = true } label: {
+                    Image(systemName: "sparkles")
                 }
             }
+        }
+        .withProfileButton()
+        .aiUsageAlert(isPresented: $showAIConfirm, title: "Analizar correos con IA", estimatedUsage: "3-5") {
+            Task { await analyzeGmail() }
+        }
+        .sheet(isPresented: $showImport) {
+            MboxImportView { content in
+                Task { await analyzeMbox(content) }
+            }
+        }
+        .sheet(isPresented: $showStats) {
+            if let r = result {
+                EmailStatsSheet(result: r) {
+                    result = nil
+                    hasLoaded = false
+                }
+            }
+        }
+    }
+
+    // MARK: - Compose
+
+    private func composeEmail() {
+        if let url = URL(string: "mailto:"), UIApplication.shared.canOpenURL(url) {
+            UIApplication.shared.open(url)
         }
     }
 
@@ -243,13 +255,81 @@ struct EmailAnalysisView: View {
     }
 }
 
+// MARK: - Email Stats Sheet
+
+private struct EmailStatsSheet: View {
+    let result: EmailAnalysisResult
+    var onClear: () -> Void
+    @Environment(\.dismiss) private var dismiss
+    @State private var showClearConfirm = false
+
+    var body: some View {
+        NavigationStack {
+            List {
+                Section("Resumen") {
+                    LabeledContent("Total analizados", value: "\(result.totalEmails)")
+                    if let p = result.period {
+                        LabeledContent("Periodo", value: p)
+                    }
+                }
+
+                if let cats = result.categories {
+                    Section("Por categoria") {
+                        HStack {
+                            statBadge("Urgente", cats.urgente?.count ?? 0, .red)
+                            statBadge("Accion", cats.requiereAccion?.count ?? 0, .orange)
+                            statBadge("Info", cats.informativo?.count ?? 0, .blue)
+                            statBadge("Ignorar", cats.ignorar?.count ?? 0, .gray)
+                        }
+                    }
+                }
+
+                Section {
+                    Button(role: .destructive) {
+                        showClearConfirm = true
+                    } label: {
+                        Label("Limpiar analisis", systemImage: "trash")
+                    }
+                }
+            }
+            .navigationTitle("Estadisticas")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Listo") { dismiss() }
+                }
+            }
+            .alert("Limpiar analisis", isPresented: $showClearConfirm) {
+                Button("Cancelar", role: .cancel) {}
+                Button("Limpiar", role: .destructive) {
+                    onClear()
+                    dismiss()
+                }
+            } message: {
+                Text("Se eliminara el analisis actual. Podras ejecutar uno nuevo.")
+            }
+        }
+    }
+
+    private func statBadge(_ label: String, _ count: Int, _ color: Color) -> some View {
+        VStack(spacing: 4) {
+            Text("\(count)")
+                .font(.title3.bold())
+                .foregroundStyle(color)
+            Text(label)
+                .font(.caption2)
+                .foregroundStyle(.secondary)
+        }
+        .frame(maxWidth: .infinity)
+    }
+}
+
 // MARK: - Mbox Import View
 
 private struct MboxImportView: View {
     var onImport: (String) -> Void
     @Environment(\.dismiss) private var dismiss
     @State private var showFilePicker = false
-    @State private var importedContent = ""
 
     var body: some View {
         NavigationStack {
@@ -292,7 +372,12 @@ private struct MboxImportView: View {
             }
             .fileImporter(
                 isPresented: $showFilePicker,
-                allowedContentTypes: [.plainText, .data],
+                allowedContentTypes: [
+                    UTType(filenameExtension: "mbox") ?? .data,
+                    UTType(filenameExtension: "eml") ?? .data,
+                    .plainText,
+                    .data,
+                ],
                 allowsMultipleSelection: false
             ) { result in
                 switch result {
