@@ -253,7 +253,7 @@ struct TasksView: View {
                 HStack(spacing: 6) {
                     Image(systemName: "person.2.fill")
                         .foregroundStyle(.blue)
-                    Text("DELEGADAS")
+                    Text(lang.t("tasks.delegated").uppercased())
                         .fontWeight(.semibold)
                         .foregroundStyle(.primary)
                     Spacer()

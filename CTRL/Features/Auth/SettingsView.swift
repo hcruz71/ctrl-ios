@@ -12,6 +12,7 @@ private class OAuthCoordinator: NSObject, ASWebAuthenticationPresentationContext
 
 struct SettingsView: View {
     @EnvironmentObject var authManager: AuthManager
+    @EnvironmentObject var lang: LanguageManager
     @StateObject private var pushManager = PushManager.shared
 
     @State private var googleAccounts: [GoogleCalendarAccount] = []
@@ -23,7 +24,7 @@ struct SettingsView: View {
     var body: some View {
         List {
             // MARK: - Calendario
-            Section("Calendario") {
+            Section(lang.t("settings.calendar")) {
                 if gcalLoading && googleAccounts.isEmpty {
                     HStack { Spacer(); ProgressView(); Spacer() }
                 }
@@ -100,12 +101,12 @@ struct SettingsView: View {
             }
 
             // MARK: - Tiempo y Disponibilidad
-            Section("Tiempo y Disponibilidad") {
+            Section(lang.t("settings.schedule")) {
                 NavigationLink {
                     ScheduleSettingsView()
                 } label: {
                     HStack {
-                        Label("Horario laboral", systemImage: "clock")
+                        Label(lang.t("profile.schedule"), systemImage: "clock")
                         Spacer()
                         if let mode = currentMode {
                             Text(mode.label)
@@ -122,14 +123,14 @@ struct SettingsView: View {
                 NavigationLink {
                     AbsencesListView()
                 } label: {
-                    Label("Vacaciones y ausencias", systemImage: "sun.max")
+                    Label(lang.t("settings.absences"), systemImage: "sun.max")
                 }
             }
 
             // MARK: - Sistema
-            Section("Sistema") {
+            Section(lang.t("settings.notifications")) {
                 HStack {
-                    Label("Notificaciones", systemImage: "bell.fill")
+                    Label(lang.t("profile.notifications"), systemImage: "bell.fill")
                     Spacer()
                     Text(permissionLabel)
                         .font(.caption)
@@ -155,12 +156,12 @@ struct SettingsView: View {
                 NavigationLink {
                     UsageView()
                 } label: {
-                    Label("Uso de IA", systemImage: "chart.bar.fill")
+                    Label(lang.t("settings.usage"), systemImage: "chart.bar.fill")
                 }
 
             }
         }
-        .navigationTitle("Configuraciones")
+        .navigationTitle(lang.t("settings.title"))
         .navigationBarTitleDisplayMode(.inline)
         .task {
             await pushManager.refreshPermissionStatus()

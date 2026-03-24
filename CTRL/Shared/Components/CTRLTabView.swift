@@ -17,7 +17,7 @@ struct CTRLTabView: View {
 
                 ProjectsView()
                     .tabItem {
-                        Label("Proyectos", systemImage: "folder.fill")
+                        Label(lang.t("projects.title"), systemImage: "folder.fill")
                     }
                     .tag(1)
 
@@ -35,7 +35,7 @@ struct CTRLTabView: View {
 
                 DayPlanView()
                     .tabItem {
-                        Label("Plan del Dia", systemImage: "calendar.badge.clock")
+                        Label(lang.t("tab.analysis"), systemImage: "chart.xyaxis.line")
                     }
                     .tag(4)
             }

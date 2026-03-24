@@ -2,6 +2,7 @@ import SwiftUI
 import UniformTypeIdentifiers
 
 struct EmailAnalysisView: View {
+    @EnvironmentObject var lang: LanguageManager
     @State private var result: EmailAnalysisResult?
     @State private var isLoading = false
     @State private var hasLoaded = false
@@ -82,7 +83,7 @@ struct EmailAnalysisView: View {
             }
             .padding(.vertical)
         }
-        .navigationTitle("Correos")
+        .navigationTitle(lang.t("emails.title"))
         .toolbar {
             ToolbarItem(placement: .navigationBarLeading) {
                 Button { composeEmail() } label: {

@@ -8,7 +8,7 @@ struct DayPlanView: View {
         VStack(spacing: 0) {
             Picker("Vista", selection: $selectedTab) {
                 Text(lang.t("tab.meetings")).tag(0)
-                Text("Correos").tag(1)
+                Text(lang.t("emails.title")).tag(1)
                 Text(lang.t("contacts.title")).tag(2)
             }
             .pickerStyle(.segmented)

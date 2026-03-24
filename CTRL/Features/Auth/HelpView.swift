@@ -1,18 +1,19 @@
 import SwiftUI
 
 struct HelpView: View {
+    @EnvironmentObject var lang: LanguageManager
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {
         NavigationStack {
-            Text("Ayuda proximamente")
+            Text(lang.t("help.coming_soon"))
                 .foregroundStyle(.secondary)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .navigationTitle("Ayuda")
+                .navigationTitle(lang.t("help.title"))
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar {
                     ToolbarItem(placement: .navigationBarTrailing) {
-                        Button("Cerrar") { dismiss() }
+                        Button(lang.t("action.close")) { dismiss() }
                     }
                 }
         }

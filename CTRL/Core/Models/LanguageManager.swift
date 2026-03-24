@@ -39,6 +39,7 @@ final class LanguageManager: ObservableObject {
         "tab.assistant":    ["es": "Asistente",    "en": "Assistant",     "pt": "Assistente",   "fr": "Assistant",    "de": "Assistent"],
         "tab.tasks":        ["es": "Tareas",       "en": "Tasks",         "pt": "Tarefas",      "fr": "Taches",       "de": "Aufgaben"],
         "tab.people":       ["es": "Personas",     "en": "People",        "pt": "Pessoas",      "fr": "Personnes",    "de": "Personen"],
+        "tab.analysis":     ["es": "Analisis",     "en": "Analysis",      "pt": "Analise",      "fr": "Analyse",      "de": "Analyse"],
 
         // Priorities
         "priority.urgent":    ["es": "Urgentes",      "en": "Urgent",       "pt": "Urgente",       "fr": "Urgent",       "de": "Dringend"],
