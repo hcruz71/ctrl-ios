@@ -106,6 +106,7 @@
 		F4BE43FC0243CE9E39D64C2C /* CTRLTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = E64BC0E4BEA4290D599549BD /* CTRLTask.swift */; };
 		F79BABF4C3C5D3691067B0D4 /* DelegateMeetingSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848A23D629BA52E622D6307E /* DelegateMeetingSheet.swift */; };
 		FA335682AC85D581642F83D4 /* ProfileToolbarModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A1CF888F823BB03C5B99460 /* ProfileToolbarModifier.swift */; };
+		FC4AF084F597F03B4B9547B9 /* HelpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D88A08BFF9A763CADA0D63AA /* HelpView.swift */; };
 		FCEDC0FCBFE371BE8DF49BAC /* QuickCaptureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B1DA4DE1AB14C8D4DAE080D /* QuickCaptureView.swift */; };
 		FD2C001D785C094318222D44 /* GanttChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEACD5A05491F1D2FEE69A76 /* GanttChartView.swift */; };
 		FD8F460F80B4E0436D8F2E42 /* GoogleCalendarAccount.swift in Sources */ = {isa = PBXBuildFile; fileRef = 498DF89075DEA18FF03D827E /* GoogleCalendarAccount.swift */; };
@@ -214,7 +215,7 @@
 		ADFDB41BC7D103108536BCB4 /* PushManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushManager.swift; sourceTree = "<group>"; };
 		AFC8CD8F102E1D7A8108D211 /* MeetingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeetingsView.swift; sourceTree = "<group>"; };
 		B24F1A613ECD6D4FCA90F290 /* DelegationsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DelegationsView.swift; sourceTree = "<group>"; };
-		BCB7B72F8005F0E28D01D868 /* CTRL.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CTRL.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		BCB7B72F8005F0E28D01D868 /* CTRL.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = CTRL.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C3AEEFB479CFA8230643A843 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		C635AE199357CAAC50E92DB1 /* KeychainHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainHelper.swift; sourceTree = "<group>"; };
 		C664F04BDFE1DC00F09F61F0 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -226,6 +227,7 @@
 		CFB1C9C38F1FD20B1AE1E7AE /* MeetingAnalysisView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeetingAnalysisView.swift; sourceTree = "<group>"; };
 		D1EDC5357EAF1A0105D69B4B /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		D204C87FA053788E023A105D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		D88A08BFF9A763CADA0D63AA /* HelpView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelpView.swift; sourceTree = "<group>"; };
 		DD40852BCE37FBEF3AED6108 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		DEC10A3922719C59B9D9C719 /* TasksView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TasksView.swift; sourceTree = "<group>"; };
 		DF4D22D98D857F3FD4CC2218 /* ContactRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactRowView.swift; sourceTree = "<group>"; };
@@ -258,6 +260,7 @@
 		1349C0957FCF9DACAA9A52C4 /* Auth */ = {
 			isa = PBXGroup;
 			children = (
+				D88A08BFF9A763CADA0D63AA /* HelpView.swift */,
 				893796B7C9E94CE74C00A3AE /* LoginView.swift */,
 				757CFD3291A5F2CC1C182E79 /* LoginViewModel.swift */,
 				CDCDAAF0697BF9291877BEFC /* ProfileView.swift */,
@@ -602,9 +605,11 @@
 				LastUpgradeCheck = 1600;
 				TargetAttributes = {
 					09159ADE5BA5373811DC53BE = {
+						DevelopmentTeam = "";
 						ProvisioningStyle = Automatic;
 					};
 					449051C4D4F3A5384442DD25 = {
+						DevelopmentTeam = "";
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -695,6 +700,7 @@
 				B38BCA4BD9C8F3BC93833B47 /* EventEditView.swift in Sources */,
 				FD2C001D785C094318222D44 /* GanttChartView.swift in Sources */,
 				FD8F460F80B4E0436D8F2E42 /* GoogleCalendarAccount.swift in Sources */,
+				FC4AF084F597F03B4B9547B9 /* HelpView.swift in Sources */,
 				901F43A3C05C793E253F9EE1 /* ICSImportView.swift in Sources */,
 				E66672160A7D169A7CC45F4D /* ICSParser.swift in Sources */,
 				A10B7C1924CE34E1CF9CDAB8 /* KPIMeasurementSheet.swift in Sources */,
@@ -778,11 +784,9 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ALLOW_ENTITLEMENTS_MODIFICATION = YES;
-				CODE_SIGN_ENTITLEMENTS = CTRL/CTRL.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 679TR4ZAZB;
 				INFOPLIST_FILE = CTRL/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -800,11 +804,9 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ALLOW_ENTITLEMENTS_MODIFICATION = YES;
-				CODE_SIGN_ENTITLEMENTS = CTRL/CTRL.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 679TR4ZAZB;
 				INFOPLIST_FILE = CTRL/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -824,7 +826,6 @@
 				CODE_SIGN_ENTITLEMENTS = CTRLWatch/CTRLWatch.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 679TR4ZAZB;
 				INFOPLIST_FILE = CTRLWatch/Info.plist;
 				MARKETING_VERSION = 1.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.hector.ctrl.watchkitapp;
@@ -905,7 +906,6 @@
 				CODE_SIGN_ENTITLEMENTS = CTRLWatch/CTRLWatch.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 679TR4ZAZB;
 				INFOPLIST_FILE = CTRLWatch/Info.plist;
 				MARKETING_VERSION = 1.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.hector.ctrl.watchkitapp;
