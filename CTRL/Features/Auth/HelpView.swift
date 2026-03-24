@@ -1,4 +1,5 @@
 import SwiftUI
+import AVFoundation
 
 struct HelpView: View {
     @EnvironmentObject var lang: LanguageManager
@@ -88,10 +89,26 @@ struct HelpView: View {
                         if !vm.filteredArticles.isEmpty {
                             Section("Articulos") {
                                 ForEach(vm.filteredArticles) { article in
-                                    NavigationLink {
-                                        HelpArticleDetailView(article: article)
-                                    } label: {
-                                        HelpArticleRow(article: article)
+                                    HStack(spacing: 8) {
+                                        NavigationLink {
+                                            HelpArticleDetailView(article: article, vm: vm)
+                                        } label: {
+                                            HelpArticleRow(article: article)
+                                        }
+
+                                        Button {
+                                            if vm.currentlySpeakingId == article.id {
+                                                vm.stopSpeaking()
+                                            } else {
+                                                vm.speakArticle(article)
+                                            }
+                                        } label: {
+                                            Image(systemName: vm.currentlySpeakingId == article.id
+                                                  ? "stop.circle.fill" : "play.circle")
+                                                .foregroundStyle(Color.ctrlPurple)
+                                                .font(.title3)
+                                        }
+                                        .buttonStyle(.plain)
                                     }
                                 }
                             }
@@ -106,8 +123,23 @@ struct HelpView: View {
                                             .foregroundStyle(.secondary)
                                             .padding(.vertical, 4)
                                     } label: {
-                                        Text(faq.question)
-                                            .font(.subheadline)
+                                        HStack {
+                                            Text(faq.question)
+                                                .font(.subheadline)
+                                            Spacer()
+                                            Button {
+                                                if vm.currentlySpeakingId == faq.id {
+                                                    vm.stopSpeaking()
+                                                } else {
+                                                    vm.speakFaq(faq)
+                                                }
+                                            } label: {
+                                                Image(systemName: vm.currentlySpeakingId == faq.id
+                                                      ? "stop.circle.fill" : "play.circle")
+                                                    .foregroundStyle(Color.ctrlPurple)
+                                            }
+                                            .buttonStyle(.plain)
+                                        }
                                     }
                                 }
                             }
@@ -123,6 +155,7 @@ struct HelpView: View {
                     Button(lang.t("action.close")) { dismiss() }
                 }
             }
+            .onDisappear { vm.stopSpeaking() }
             .task { await vm.loadContent() }
             .onChange(of: vm.searchQuery) { _ in
                 Task { await vm.search() }
@@ -191,7 +224,10 @@ private struct HelpArticleRow: View {
 
 struct HelpArticleDetailView: View {
     let article: HelpArticle
+    @ObservedObject var vm: HelpViewModel
     @State private var showShare = false
+
+    private var isSpeaking: Bool { vm.currentlySpeakingId == article.id }
 
     var body: some View {
         ScrollView {
@@ -225,7 +261,16 @@ struct HelpArticleDetailView: View {
         .navigationTitle(article.title)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
-            ToolbarItem(placement: .navigationBarTrailing) {
+            ToolbarItemGroup(placement: .navigationBarTrailing) {
+                Button {
+                    if isSpeaking {
+                        vm.stopSpeaking()
+                    } else {
+                        vm.speakArticle(article)
+                    }
+                } label: {
+                    Image(systemName: isSpeaking ? "stop.circle.fill" : "play.circle")
+                }
                 Button { showShare = true } label: {
                     Image(systemName: "square.and.arrow.up")
                 }
