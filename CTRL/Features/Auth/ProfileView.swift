@@ -268,16 +268,7 @@ struct ProfileView: View {
                     }
                 }
 
-                // 5. Configuraciones
-                Section {
-                    NavigationLink {
-                        SettingsView()
-                    } label: {
-                        Label("Configuraciones", systemImage: "gear")
-                    }
-                }
-
-                // 6. Logout — always visible
+                // 5. Logout — always visible
                 Section {
                     Button(role: .destructive) {
                         authManager.logout()
