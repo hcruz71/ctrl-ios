@@ -70,7 +70,7 @@ actor ICSParser {
         var keyword: String? = nil
         var excludeAllDay: Bool = false
         var excludePastRecurring: Bool = true
-        var maxEvents: Int = 2000
+        var maxEvents: Int = 5000
     }
 
     func parse(data: Data, options: ParseOptions) -> [ICSEvent] {
@@ -173,12 +173,20 @@ actor ICSParser {
             }
         }
 
-        let noTime = events.filter { $0.time == nil }.count
+        let withTime = events.filter { t in
+            guard let time = t.time, !time.isEmpty else { return false }
+            let parts = time.split(separator: ":")
+            guard parts.count == 2,
+                  let h = Int(parts[0]), h >= 0, h < 24,
+                  let m = Int(parts[1]), m >= 0, m < 60 else { return false }
+            return true
+        }
         print("[ICSParser] Total eventos en archivo: \(debugEventCount)")
         print("[ICSParser] Eventos despues de filtros: \(events.count)")
-        print("[ICSParser] Eventos sin hora: \(noTime)")
+        print("[ICSParser] Eventos con hora valida: \(withTime.count)")
+        print("[ICSParser] Eventos sin hora descartados: \(events.count - withTime.count)")
 
-        return events.sorted { ($0.dateForSorting ?? .distantPast) < ($1.dateForSorting ?? .distantPast) }
+        return withTime.sorted { ($0.dateForSorting ?? .distantPast) < ($1.dateForSorting ?? .distantPast) }
     }
 
     private func buildEvent(
