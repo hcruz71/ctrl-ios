@@ -26,7 +26,6 @@ struct DayPlanView: View {
                 NavigationStack {
                     ContactsContentView()
                         .navigationTitle(lang.t("contacts.title"))
-                        .withProfileButton()
                 }
             }
         }
