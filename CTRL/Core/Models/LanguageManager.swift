@@ -54,7 +54,8 @@ final class LanguageManager: ObservableObject {
         "action.edit":   ["es": "Editar",    "en": "Edit",    "pt": "Editar",    "fr": "Modifier",    "de": "Bearbeiten"],
         "action.add":    ["es": "Agregar",   "en": "Add",     "pt": "Adicionar", "fr": "Ajouter",     "de": "Hinzufugen"],
         "action.close":  ["es": "Cerrar",    "en": "Close",   "pt": "Fechar",    "fr": "Fermer",      "de": "Schliessen"],
-        "action.search": ["es": "Buscar",    "en": "Search",  "pt": "Buscar",    "fr": "Rechercher",  "de": "Suchen"],
+        "action.search":  ["es": "Buscar",    "en": "Search",  "pt": "Buscar",    "fr": "Rechercher",  "de": "Suchen"],
+        "action.confirm": ["es": "Confirmar", "en": "Confirm", "pt": "Confirmar", "fr": "Confirmer",   "de": "Bestatigen"],
 
         // Objectives
         "objectives.title":          ["es": "Objetivos",          "en": "Objectives",         "pt": "Objetivos",          "fr": "Objectifs",             "de": "Ziele"],
@@ -213,6 +214,9 @@ final class LanguageManager: ObservableObject {
 
         // Profile (new)
         "profile.byok": ["es": "API Key propia", "en": "Own API Key", "pt": "API Key propria", "fr": "Cle API personnelle", "de": "Eigener API-Schlussel"],
+        "profile.help_section":           ["es": "Guia y Configuracion",                                                   "en": "Guide & Settings",                                                                "pt": "Guia e Configuracoes",                                                            "fr": "Guide et Parametres",                                                              "de": "Anleitung und Einstellungen"],
+        "profile.restart_onboarding":     ["es": "Ver guia de inicio",                                                     "en": "View getting started guide",                                                      "pt": "Ver guia de inicio",                                                              "fr": "Voir le guide de demarrage",                                                       "de": "Erste-Schritte-Anleitung anzeigen"],
+        "profile.restart_onboarding_msg": ["es": "Se mostrara la guia de inicio nuevamente. Tu informacion no se perdera.", "en": "The getting started guide will be shown again. Your information will not be lost.", "pt": "O guia de inicio sera exibido novamente. Suas informacoes nao serao perdidas.",     "fr": "Le guide de demarrage sera affiche a nouveau. Vos informations ne seront pas perdues.", "de": "Die Erste-Schritte-Anleitung wird erneut angezeigt. Ihre Informationen gehen nicht verloren."],
 
         // Onboarding
         "onboarding.welcome":      ["es": "Bienvenido a CTRL",                      "en": "Welcome to CTRL",                     "pt": "Bem-vindo ao CTRL",                "fr": "Bienvenue dans CTRL",              "de": "Willkommen bei CTRL"],

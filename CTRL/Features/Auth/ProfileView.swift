@@ -35,6 +35,7 @@ struct ProfileView: View {
     @State private var byokEnabled = KeychainHelper.getAnthropicKey()?.isEmpty == false
     @State private var byokKeyInput = ""
     @State private var byokStatus: ByokStatus = .none
+    @State private var showResetOnboardingAlert = false
 
     private enum ByokStatus {
         case none, validating, valid, invalid(String)
@@ -268,7 +269,23 @@ struct ProfileView: View {
                     }
                 }
 
-                // 5. Logout — always visible
+                // 5. Guide & Settings
+                Section {
+                    Button {
+                        showResetOnboardingAlert = true
+                    } label: {
+                        HStack {
+                            Image(systemName: "arrow.counterclockwise.circle")
+                                .foregroundColor(.ctrlPurple)
+                            Text(lang.t("profile.restart_onboarding"))
+                                .foregroundColor(.ctrlPurple)
+                        }
+                    }
+                } header: {
+                    Text(lang.t("profile.help_section"))
+                }
+
+                // 6. Logout — always visible
                 Section {
                     Button(role: .destructive) {
                         authManager.logout()
@@ -277,6 +294,20 @@ struct ProfileView: View {
                         Label(lang.t("profile.logout"), systemImage: "rectangle.portrait.and.arrow.right")
                     }
                 }
+            }
+            .alert(
+                lang.t("profile.restart_onboarding"),
+                isPresented: $showResetOnboardingAlert
+            ) {
+                Button(lang.t("action.confirm")) {
+                    Task {
+                        await authManager.resetOnboarding()
+                        dismiss()
+                    }
+                }
+                Button(lang.t("action.cancel"), role: .cancel) { }
+            } message: {
+                Text(lang.t("profile.restart_onboarding_msg"))
             }
             .toolbar {
                 ToolbarItemGroup(placement: .keyboard) {

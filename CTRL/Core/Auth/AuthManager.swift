@@ -95,6 +95,16 @@ final class AuthManager: ObservableObject {
         } catch { }
     }
 
+    func resetOnboarding() async {
+        struct Body: Encodable { let completed: Bool; let step: Int }
+        do {
+            let _: EmptyResponse = try await APIClient.shared.request(
+                .onboarding, method: "PATCH", body: Body(completed: false, step: 0)
+            )
+            currentUser?.onboardingCompleted = false
+        } catch { }
+    }
+
     private struct EmptyResponse: Decodable {}
 
     func logout() {
