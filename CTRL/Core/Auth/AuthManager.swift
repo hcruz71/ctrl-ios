@@ -85,6 +85,18 @@ final class AuthManager: ObservableObject {
         }
     }
 
+    func completeOnboarding() async {
+        struct Body: Encodable { let completed: Bool }
+        do {
+            let _: EmptyResponse = try await APIClient.shared.request(
+                .onboarding, method: "PATCH", body: Body(completed: true)
+            )
+            currentUser?.onboardingCompleted = true
+        } catch { }
+    }
+
+    private struct EmptyResponse: Decodable {}
+
     func logout() {
         // Revoke MCP tokens on the backend before clearing local state
         Task {

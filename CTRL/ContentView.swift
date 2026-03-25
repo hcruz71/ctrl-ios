@@ -4,6 +4,7 @@ struct ContentView: View {
     @EnvironmentObject var authManager: AuthManager
     @EnvironmentObject var navigationState: NavigationState
     @EnvironmentObject var lang: LanguageManager
+    @State private var showOnboarding = false
 
     var body: some View {
         Group {
@@ -16,6 +17,14 @@ struct ContentView: View {
             }
         }
         .animation(.easeInOut, value: authManager.isAuthenticated)
+        .onChange(of: authManager.currentUser?.onboardingCompleted) { completed in
+            if authManager.isAuthenticated && completed != true {
+                showOnboarding = true
+            }
+        }
+        .fullScreenCover(isPresented: $showOnboarding) {
+            OnboardingView()
+        }
     }
 }
 

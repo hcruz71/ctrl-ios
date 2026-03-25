@@ -10,6 +10,8 @@ struct User: Codable, Identifiable {
     var assistantPersonality: String?
     var assistantVoice: String?
     var language: String?
+    var onboardingCompleted: Bool?
+    var onboardingStep: Int?
     let createdAt: Date?
     let updatedAt: Date?
 }

@@ -214,6 +214,17 @@ final class LanguageManager: ObservableObject {
         // Profile (new)
         "profile.byok": ["es": "API Key propia", "en": "Own API Key", "pt": "API Key propria", "fr": "Cle API personnelle", "de": "Eigener API-Schlussel"],
 
+        // Onboarding
+        "onboarding.welcome":      ["es": "Bienvenido a CTRL",                      "en": "Welcome to CTRL",                     "pt": "Bem-vindo ao CTRL",                "fr": "Bienvenue dans CTRL",              "de": "Willkommen bei CTRL"],
+        "onboarding.subtitle":     ["es": "Tu asistente ejecutivo personal con IA",  "en": "Your personal AI executive assistant","pt": "Seu assistente executivo com IA",   "fr": "Votre assistant executif avec IA",  "de": "Ihr personlicher KI-Assistent"],
+        "onboarding.start":        ["es": "Comenzar",        "en": "Get Started",    "pt": "Comecar",        "fr": "Commencer",       "de": "Loslegen"],
+        "onboarding.skip":         ["es": "Saltar",          "en": "Skip",           "pt": "Pular",          "fr": "Passer",          "de": "Uberspringen"],
+        "onboarding.later":        ["es": "Lo hare despues", "en": "I'll do it later","pt": "Farei depois",   "fr": "Plus tard",       "de": "Spater"],
+        "onboarding.finish":       ["es": "Comenzar a usar CTRL","en": "Start using CTRL","pt": "Comecar a usar CTRL","fr": "Commencer CTRL","de": "CTRL verwenden"],
+        "onboarding.step1.title":  ["es": "Comienza con un objetivo",        "en": "Start with an objective",       "pt": "Comece com um objetivo",        "fr": "Commencez avec un objectif",      "de": "Beginnen Sie mit einem Ziel"],
+        "onboarding.step2.title":  ["es": "Tus reuniones en un solo lugar",  "en": "Your meetings in one place",    "pt": "Suas reunioes em um so lugar",  "fr": "Vos reunions en un seul endroit", "de": "Ihre Besprechungen an einem Ort"],
+        "onboarding.step3.title":  ["es": "Tu red ejecutiva",                "en": "Your executive network",        "pt": "Sua rede executiva",            "fr": "Votre reseau executif",           "de": "Ihr Fuehrungsnetzwerk"],
+
         // Objective Areas
         "area.health":       ["es": "Salud & Bienestar",       "en": "Health & Wellness",       "pt": "Saude & Bem-estar",       "fr": "Sante & Bien-etre",          "de": "Gesundheit & Wohlbefinden"],
         "area.professional": ["es": "Profesional & Negocios",  "en": "Professional & Business", "pt": "Profissional & Negocios", "fr": "Professionnel & Affaires",   "de": "Beruflich & Geschaftlich"],

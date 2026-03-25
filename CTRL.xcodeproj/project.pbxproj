@@ -28,6 +28,7 @@
 		27BED8D042B14AA6B7CFD311 /* HelpModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1610748183A87DD484DC145B /* HelpModels.swift */; };
 		31D95A21FDB11944E06EA4E4 /* TasksView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEC10A3922719C59B9D9C719 /* TasksView.swift */; };
 		35369D4C9AB74D97481A3588 /* TaskRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 622F7A4D76C2F5FA8DCED64E /* TaskRowView.swift */; };
+		38B855FF7AE8EE6CDBAB2CAC /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BC0DAE3B5BE9FCA7089810A /* OnboardingView.swift */; };
 		3CC2767A913404E45BCFDCF0 /* CalendarDayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ABB59F8FD0105A395681A72 /* CalendarDayView.swift */; };
 		3D800444EF79ED74CD655F1C /* MeetingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CD51DF9DC658F3AE13A3FA7 /* MeetingsViewModel.swift */; };
 		3F35DCAC89657348E919B50B /* ScheduleSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ECE709E82631F9D7341FAB1 /* ScheduleSettingsView.swift */; };
@@ -169,6 +170,7 @@
 		439FF87DA6A3179EBFC1AD63 /* AssistantViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssistantViewModel.swift; sourceTree = "<group>"; };
 		46D2313733E4F034245B93D1 /* ContactsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactsViewModel.swift; sourceTree = "<group>"; };
 		498DF89075DEA18FF03D827E /* GoogleCalendarAccount.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoogleCalendarAccount.swift; sourceTree = "<group>"; };
+		4BC0DAE3B5BE9FCA7089810A /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 		4CDCF5E45A6145365A5CC164 /* ProjectPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectPickerView.swift; sourceTree = "<group>"; };
 		4E665C178FE871FC8885FF3D /* WatchConnectivityManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchConnectivityManager.swift; sourceTree = "<group>"; };
 		54AFD9AA8053E5283F3F50C3 /* AssistantView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssistantView.swift; sourceTree = "<group>"; };
@@ -270,6 +272,7 @@
 				CA138421F949085682E998E8 /* HelpViewModel.swift */,
 				893796B7C9E94CE74C00A3AE /* LoginView.swift */,
 				757CFD3291A5F2CC1C182E79 /* LoginViewModel.swift */,
+				4BC0DAE3B5BE9FCA7089810A /* OnboardingView.swift */,
 				CDCDAAF0697BF9291877BEFC /* ProfileView.swift */,
 				DD40852BCE37FBEF3AED6108 /* SettingsView.swift */,
 				9AB929CF0643B8BF98583019 /* UsageView.swift */,
@@ -735,6 +738,7 @@
 				982840541515DB56C9ADFC6C /* ObjectiveRowView.swift in Sources */,
 				6DCA646E48A1B9155B28E114 /* ObjectivesView.swift in Sources */,
 				A7C17EED98CE02D9EEC440FC /* ObjectivesViewModel.swift in Sources */,
+				38B855FF7AE8EE6CDBAB2CAC /* OnboardingView.swift in Sources */,
 				4889113267D7155BAFC887ED /* PeopleView.swift in Sources */,
 				9417916A725AC4EBE9574FAD /* ProductivityDashboardView.swift in Sources */,
 				FA335682AC85D581642F83D4 /* ProfileToolbarModifier.swift in Sources */,
