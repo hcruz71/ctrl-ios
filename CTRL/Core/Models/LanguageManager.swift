@@ -279,5 +279,20 @@ final class LanguageManager: ObservableObject {
 
         // Email analysis
         "emails.analyze_btn":  ["es": "Analizar correos con IA",  "en": "Analyze emails with AI", "pt": "Analisar e-mails com IA", "fr": "Analyser les e-mails avec IA", "de": "E-Mails mit KI analysieren"],
+
+        // Task source tracking
+        "source.origin":          ["es": "Origen",                          "en": "Origin",            "pt": "Origem",              "fr": "Origine",              "de": "Ursprung"],
+        "source.commitment":      ["es": "Como surgio este compromiso?",    "en": "How did this arise?","pt": "Como surgiu?",        "fr": "Comment est-ce ne?",   "de": "Wie entstand das?"],
+        "source.reunion":         ["es": "Reunion",          "en": "Meeting",          "pt": "Reuniao",         "fr": "Reunion",         "de": "Besprechung"],
+        "source.correo":          ["es": "Correo",           "en": "Email",            "pt": "E-mail",          "fr": "E-mail",          "de": "E-Mail"],
+        "source.llamada":         ["es": "Llamada",          "en": "Call",             "pt": "Ligacao",         "fr": "Appel",           "de": "Anruf"],
+        "source.mensaje":         ["es": "Mensaje",          "en": "Message",          "pt": "Mensagem",        "fr": "Message",         "de": "Nachricht"],
+        "source.decision_propia": ["es": "Decision propia",  "en": "Own decision",     "pt": "Decisao propria", "fr": "Decision personnelle","de": "Eigene Entscheidung"],
+        "source.solicitud":       ["es": "Solicitud",        "en": "Request",          "pt": "Solicitacao",     "fr": "Demande",         "de": "Anfrage"],
+        "source.seguimiento":     ["es": "Seguimiento",      "en": "Follow-up",        "pt": "Acompanhamento",  "fr": "Suivi",           "de": "Nachverfolgung"],
+        "source.otro":            ["es": "Otro",             "en": "Other",            "pt": "Outro",           "fr": "Autre",           "de": "Anderes"],
+        "source.date":            ["es": "Fecha del origen", "en": "Source date",       "pt": "Data de origem",  "fr": "Date d'origine",  "de": "Ursprungsdatum"],
+        "source.notes_placeholder":["es":"Notas del origen (opcional)", "en": "Source notes (optional)", "pt": "Notas de origem (opcional)", "fr": "Notes d'origine (facultatif)", "de": "Ursprungsnotizen (optional)"],
+        "source.select_meeting":  ["es": "Seleccionar reunion","en": "Select meeting",  "pt": "Selecionar reuniao","fr": "Selectionner reunion","de": "Besprechung auswahlen"],
     ]
 }

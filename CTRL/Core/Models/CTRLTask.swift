@@ -32,8 +32,32 @@ struct CTRLTask: Codable, Identifiable {
     var delegationNotes: String?
     var emailSentAt: Date?
 
+    // Source tracking
+    var sourceType: String?
+    var sourceDate: String?
+    var sourceReferenceId: UUID?
+    var sourceNotes: String?
+
     let createdAt: Date?
     let updatedAt: Date?
+
+    var sourceIcon: String {
+        switch sourceType {
+        case "reunion":         return "calendar"
+        case "correo":          return "envelope"
+        case "llamada":         return "phone"
+        case "mensaje":         return "message"
+        case "decision_propia": return "person.fill"
+        case "solicitud":       return "person.badge.plus"
+        case "seguimiento":     return "arrow.triangle.2.circlepath"
+        default:                return "questionmark.circle"
+        }
+    }
+
+    var sourceDisplay: String? {
+        guard let type = sourceType else { return nil }
+        return LanguageManager.shared.t("source.\(type)")
+    }
 
     /// Display label e.g. "A1", "B3", nil for inbox
     var priorityLabel: String? {
@@ -57,6 +81,10 @@ struct CreateTaskBody: Encodable {
     var assignee: String?
     var assigneeContactId: String?
     var delegationNotes: String?
+    var sourceType: String?
+    var sourceDate: String?
+    var sourceReferenceId: String?
+    var sourceNotes: String?
 }
 
 struct UpdateTaskBody: Encodable {
@@ -76,6 +104,10 @@ struct UpdateTaskBody: Encodable {
     var delegationStatus: String?
     var delegationNotes: String?
     var emailSentAt: String?
+    var sourceType: String?
+    var sourceDate: String?
+    var sourceReferenceId: String?
+    var sourceNotes: String?
 }
 
 struct ReorderTasksBody: Encodable {

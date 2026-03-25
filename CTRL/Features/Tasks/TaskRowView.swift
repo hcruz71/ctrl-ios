@@ -72,6 +72,19 @@ struct TaskRowView: View {
                         .font(.caption2)
                         .foregroundStyle(.secondary)
                 }
+
+                if let source = task.sourceDisplay {
+                    HStack(spacing: 3) {
+                        Image(systemName: task.sourceIcon)
+                        Text(source)
+                    }
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+                    .padding(.horizontal, 6)
+                    .padding(.vertical, 2)
+                    .background(Color(.systemGray6))
+                    .clipShape(RoundedRectangle(cornerRadius: 4))
+                }
             }
 
             Spacer()

@@ -17,6 +17,8 @@ struct EditTaskSheet: View {
     @State private var delegationNotes = ""
     @State private var selectedProjectId: UUID?
     @State private var selectedContactIds: Set<UUID> = []
+    @State private var sourceType: String?
+    @State private var sourceNotes = ""
     @State private var isSaving = false
     @State private var didLoad = false
 
@@ -41,7 +43,9 @@ struct EditTaskSheet: View {
                     assigneeContactId: $assigneeContactId,
                     delegationNotes: $delegationNotes,
                     selectedProjectId: $selectedProjectId,
-                    selectedContactIds: $selectedContactIds
+                    selectedContactIds: $selectedContactIds,
+                    sourceType: $sourceType,
+                    sourceNotes: $sourceNotes
                 )
             }
             .toolbar {
@@ -94,6 +98,8 @@ struct EditTaskSheet: View {
         if let contacts = task.contacts {
             selectedContactIds = Set(contacts.map(\.id))
         }
+        sourceType = task.sourceType
+        sourceNotes = task.sourceNotes ?? ""
     }
 
     private func save() async {
@@ -111,7 +117,9 @@ struct EditTaskSheet: View {
             isDelegated: isDelegated ? true : false,
             assignee: isDelegated && !assignee.isEmpty ? assignee : nil,
             assigneeContactId: isDelegated ? assigneeContactId?.uuidString : nil,
-            delegationNotes: isDelegated && !delegationNotes.isEmpty ? delegationNotes : nil
+            delegationNotes: isDelegated && !delegationNotes.isEmpty ? delegationNotes : nil,
+            sourceType: sourceType,
+            sourceNotes: sourceNotes.isEmpty ? nil : sourceNotes
         )
         do {
             let _: CTRLTask = try await APIClient.shared.request(

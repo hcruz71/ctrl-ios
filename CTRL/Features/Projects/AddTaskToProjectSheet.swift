@@ -17,6 +17,8 @@ struct AddTaskToProjectSheet: View {
     @State private var delegationNotes = ""
     @State private var selectedProjectId: UUID?
     @State private var selectedContactIds: Set<UUID> = []
+    @State private var sourceType: String?
+    @State private var sourceNotes = ""
     @State private var isSaving = false
 
     var body: some View {
@@ -35,6 +37,8 @@ struct AddTaskToProjectSheet: View {
                     delegationNotes: $delegationNotes,
                     selectedProjectId: $selectedProjectId,
                     selectedContactIds: $selectedContactIds,
+                    sourceType: $sourceType,
+                    sourceNotes: $sourceNotes,
                     showProjectPicker: false,
                     showContactsPicker: false
                 )

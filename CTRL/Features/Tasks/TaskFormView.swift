@@ -14,6 +14,8 @@ struct TaskFormView: View {
     @Binding var delegationNotes: String
     @Binding var selectedProjectId: UUID?
     @Binding var selectedContactIds: Set<UUID>
+    @Binding var sourceType: String?
+    @Binding var sourceNotes: String
 
     var showProjectPicker: Bool = true
     var showContactsPicker: Bool = true
@@ -174,6 +176,39 @@ struct TaskFormView: View {
             }
         }
 
+        // Source tracking
+        Section(LanguageManager.shared.t("source.origin")) {
+            LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 8) {
+                ForEach(sourceTypes, id: \.self) { type in
+                    Button {
+                        withAnimation { sourceType = sourceType == type ? nil : type }
+                    } label: {
+                        HStack(spacing: 4) {
+                            Image(systemName: sourceIconFor(type))
+                                .font(.caption)
+                            Text(LanguageManager.shared.t("source.\(type)"))
+                                .font(.caption)
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding(8)
+                        .background(sourceType == type ? Color.ctrlPurple.opacity(0.2) : Color(.systemGray6))
+                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 8)
+                                .stroke(sourceType == type ? Color.ctrlPurple : .clear, lineWidth: 1.5)
+                        )
+                    }
+                    .buttonStyle(.plain)
+                    .foregroundStyle(sourceType == type ? Color.ctrlPurple : .primary)
+                }
+            }
+
+            if sourceType != nil {
+                TextField(LanguageManager.shared.t("source.notes_placeholder"), text: $sourceNotes, axis: .vertical)
+                    .lineLimit(2...3)
+            }
+        }
+
         // Hidden sheets — triggered by buttons above
         Color.clear.frame(height: 0)
             .sheet(isPresented: $showingProjectPicker) {
@@ -203,5 +238,23 @@ struct TaskFormView: View {
                     } catch { }
                 }
             }
+    }
+
+    private let sourceTypes = [
+        "reunion", "correo", "llamada", "mensaje",
+        "decision_propia", "solicitud", "seguimiento", "otro",
+    ]
+
+    private func sourceIconFor(_ type: String) -> String {
+        switch type {
+        case "reunion":         return "calendar"
+        case "correo":          return "envelope"
+        case "llamada":         return "phone"
+        case "mensaje":         return "message"
+        case "decision_propia": return "person.fill"
+        case "solicitud":       return "person.badge.plus"
+        case "seguimiento":     return "arrow.triangle.2.circlepath"
+        default:                return "questionmark.circle"
+        }
     }
 }
