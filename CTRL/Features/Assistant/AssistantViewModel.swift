@@ -1,6 +1,7 @@
 import Foundation
 import Speech
 import AVFoundation
+import Combine
 import os.log
 
 private let logger = Logger(subsystem: "com.hector.ctrl", category: "AssistantVM")
@@ -86,10 +87,11 @@ final class AssistantViewModel: ObservableObject {
     }
 
     // MARK: Speech recognition
-    private let speechRecognizer = SFSpeechRecognizer(locale: Locale(identifier: AssistantViewModel.speechLocale))
+    private var speechRecognizer: SFSpeechRecognizer? = SFSpeechRecognizer(locale: Locale(identifier: AssistantViewModel.speechLocale))
     private var recognitionTask: SFSpeechRecognitionTask?
     private var audioEngine = AVAudioEngine()
     private var recognitionRequest: SFSpeechAudioBufferRecognitionRequest?
+    private var languageCancellable: AnyCancellable?
 
     // MARK: Text-to-speech
     private let synthesizer = AVSpeechSynthesizer()
@@ -111,6 +113,15 @@ final class AssistantViewModel: ObservableObject {
             role: .assistant,
             content: greeting
         ))
+
+        // Observe language changes to update speech recognizer
+        languageCancellable = LanguageManager.shared.$currentLanguage
+            .dropFirst()
+            .sink { [weak self] newLang in
+                Task { @MainActor in
+                    self?.updateSpeechLocale(newLang)
+                }
+            }
 
         synthesizer.delegate = ttsDelegate
         ttsDelegate.onFinish = { [weak self] in
@@ -541,6 +552,20 @@ final class AssistantViewModel: ObservableObject {
         case "de": return "Hallo, ich bin Ihr CTRL-Assistent"
         default:   return "Hola, soy tu asistente CTRL"
         }
+    }
+
+    func updateSpeechLocale(_ lang: String) {
+        if isRecording { stopRecording() }
+        let locale: String
+        switch lang {
+        case "en": locale = "en-US"
+        case "pt": locale = "pt-BR"
+        case "fr": locale = "fr-FR"
+        case "de": locale = "de-DE"
+        default:   locale = "es-MX"
+        }
+        speechRecognizer = SFSpeechRecognizer(locale: Locale(identifier: locale))
+        logger.log("Speech recognizer updated to locale: \(locale)")
     }
 
     /// Locale identifier for SFSpeechRecognizer based on user's selected language.
