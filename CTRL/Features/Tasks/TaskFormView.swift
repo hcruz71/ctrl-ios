@@ -20,10 +20,21 @@ struct TaskFormView: View {
     var showProjectPicker: Bool = true
     var showContactsPicker: Bool = true
 
+    // Optional bindings — callers that don't pass them get the old UI
+    var assigneeEmail: Binding<String>? = nil
+    var assigneePhone: Binding<String>? = nil
+    var saveAsContact: Binding<Bool>? = nil
+    var sourceReferenceId: Binding<UUID?>? = nil
+
     @State private var showingProjectPicker = false
     @State private var showingContactPicker = false
     @State private var showingDelegateContactPicker = false
     @State private var delegateContacts: [Contact] = []
+
+    private enum DelegateMode: Int { case contact, manual }
+    @State private var delegateMode: DelegateMode = .contact
+    @State private var todayMeetings: [Meeting] = []
+    @State private var selectedMeeting: Meeting? = nil
 
     private let levels: [(label: String, value: String, color: Color, icon: String)] = [
         ("A", "A", .red, "flame.fill"),
@@ -122,37 +133,70 @@ struct TaskFormView: View {
         Section("Delegacion") {
             Toggle("Delegar a alguien", isOn: $isDelegated)
             if isDelegated {
-                Button {
-                    showingDelegateContactPicker = true
-                } label: {
-                    HStack {
-                        Image(systemName: "person.fill")
-                            .foregroundStyle(.blue)
-                        if let cId = assigneeContactId,
-                           let contact = delegateContacts.first(where: { $0.id == cId }) {
-                            VStack(alignment: .leading, spacing: 2) {
-                                Text(contact.name)
-                                    .font(.subheadline)
-                                    .foregroundStyle(.primary)
-                                if let email = contact.email, !email.isEmpty {
-                                    Text(email)
-                                        .font(.caption)
-                                        .foregroundStyle(.secondary)
+                // Mode picker — only when manual delegation is available
+                if assigneeEmail != nil {
+                    Picker("", selection: $delegateMode) {
+                        Text(LanguageManager.shared.t("task.delegate_option_contact"))
+                            .tag(DelegateMode.contact)
+                        Text(LanguageManager.shared.t("task.delegate_option_manual"))
+                            .tag(DelegateMode.manual)
+                    }
+                    .pickerStyle(.segmented)
+                    .padding(.vertical, 4)
+                }
+
+                if delegateMode == .contact || assigneeEmail == nil {
+                    // Contact picker (existing flow)
+                    Button {
+                        showingDelegateContactPicker = true
+                    } label: {
+                        HStack {
+                            Image(systemName: "person.fill")
+                                .foregroundStyle(.blue)
+                            if let cId = assigneeContactId,
+                               let contact = delegateContacts.first(where: { $0.id == cId }) {
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text(contact.name)
+                                        .font(.subheadline)
+                                        .foregroundStyle(.primary)
+                                    if let email = contact.email, !email.isEmpty {
+                                        Text(email)
+                                            .font(.caption)
+                                            .foregroundStyle(.secondary)
+                                    }
                                 }
+                            } else {
+                                Text(LanguageManager.shared.t("task.select_contact"))
+                                    .foregroundStyle(.primary)
                             }
-                        } else {
-                            Text("Seleccionar contacto")
-                                .foregroundStyle(.primary)
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
                         }
-                        Spacer()
-                        Image(systemName: "chevron.right")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
+                    }
+                    if assigneeContactId == nil && assigneeEmail == nil {
+                        TextField("O escribe el nombre", text: $assignee)
+                    }
+                } else {
+                    // Manual delegation
+                    TextField(LanguageManager.shared.t("task.assignee"), text: $assignee)
+                    if let emailBinding = assigneeEmail {
+                        TextField("Email (opcional)", text: emailBinding)
+                            .textContentType(.emailAddress)
+                            .keyboardType(.emailAddress)
+                            .textInputAutocapitalization(.never)
+                    }
+                    if let phoneBinding = assigneePhone {
+                        TextField("Telefono (opcional)", text: phoneBinding)
+                            .textContentType(.telephoneNumber)
+                            .keyboardType(.phonePad)
+                    }
+                    if let saveBinding = saveAsContact {
+                        Toggle(LanguageManager.shared.t("task.save_as_contact"), isOn: saveBinding)
                     }
                 }
-                if assigneeContactId == nil {
-                    TextField("O escribe el nombre", text: $assignee)
-                }
+
                 TextField("Notas de delegacion...", text: $delegationNotes, axis: .vertical)
                     .lineLimit(2...4)
             }
@@ -203,6 +247,83 @@ struct TaskFormView: View {
                 }
             }
 
+            // Meeting picker when source is "reunion"
+            if sourceType == "reunion", sourceReferenceId != nil {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text(LanguageManager.shared.t("task.from_meeting"))
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+
+                    if todayMeetings.isEmpty {
+                        Text(LanguageManager.shared.t("task.no_meetings_today"))
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    } else {
+                        ForEach(todayMeetings) { meeting in
+                            Button {
+                                selectedMeeting = meeting
+                                sourceNotes = meeting.title
+                                sourceReferenceId?.wrappedValue = meeting.id
+                            } label: {
+                                HStack {
+                                    VStack(alignment: .leading, spacing: 2) {
+                                        Text(meeting.title)
+                                            .font(.subheadline)
+                                            .foregroundStyle(.primary)
+                                        if let time = meeting.meetingTime {
+                                            Text(time)
+                                                .font(.caption)
+                                                .foregroundStyle(.secondary)
+                                        }
+                                    }
+                                    Spacer()
+                                    if selectedMeeting?.id == meeting.id {
+                                        Image(systemName: "checkmark.circle.fill")
+                                            .foregroundStyle(Color.ctrlPurple)
+                                    }
+                                }
+                                .padding(.vertical, 4)
+                            }
+                            .buttonStyle(.plain)
+                        }
+                    }
+
+                    // Known participants with matching contacts
+                    if let meeting = selectedMeeting,
+                       let attendees = meeting.attendees, !attendees.isEmpty {
+                        let known = attendees.compactMap { att -> Contact? in
+                            guard let email = att.email?.lowercased() else { return nil }
+                            return delegateContacts.first { $0.email?.lowercased() == email }
+                        }
+                        if !known.isEmpty {
+                            Text(LanguageManager.shared.t("task.known_participants"))
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                            ForEach(known) { contact in
+                                Button {
+                                    assigneeContactId = contact.id
+                                    assignee = contact.name
+                                    isDelegated = true
+                                    delegateMode = .contact
+                                } label: {
+                                    HStack(spacing: 6) {
+                                        Image(systemName: "person.circle.fill")
+                                            .foregroundStyle(Color.ctrlPurple)
+                                        Text(contact.name)
+                                            .font(.subheadline)
+                                        Spacer()
+                                        Image(systemName: "arrow.right.circle")
+                                            .font(.caption)
+                                            .foregroundStyle(Color.ctrlPurple)
+                                    }
+                                }
+                                .buttonStyle(.plain)
+                            }
+                        }
+                    }
+                }
+            }
+
             if sourceType != nil {
                 TextField(LanguageManager.shared.t("source.notes_placeholder"), text: $sourceNotes, axis: .vertical)
                     .lineLimit(2...3)
@@ -236,6 +357,27 @@ struct TaskFormView: View {
                     do {
                         delegateContacts = try await APIClient.shared.request(.contacts)
                     } catch { }
+                }
+            }
+            .onChange(of: sourceType) { type in
+                if type == "reunion" && todayMeetings.isEmpty && sourceReferenceId != nil {
+                    Task {
+                        do { todayMeetings = try await APIClient.shared.request(.meetingsToday) } catch { }
+                    }
+                }
+                if type != "reunion" {
+                    selectedMeeting = nil
+                    sourceReferenceId?.wrappedValue = nil
+                }
+            }
+            .onChange(of: delegateMode) { mode in
+                if mode == .manual {
+                    assigneeContactId = nil
+                    assignee = ""
+                } else {
+                    assigneeEmail?.wrappedValue = ""
+                    assigneePhone?.wrappedValue = ""
+                    saveAsContact?.wrappedValue = false
                 }
             }
     }

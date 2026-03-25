@@ -369,6 +369,10 @@ private struct AddTaskSheet: View {
     @State private var selectedContactIds: Set<UUID> = []
     @State private var sourceType: String?
     @State private var sourceNotes = ""
+    @State private var assigneeEmail = ""
+    @State private var assigneePhone = ""
+    @State private var saveAsContact = false
+    @State private var sourceReferenceId: UUID? = nil
 
     var body: some View {
         NavigationStack {
@@ -387,7 +391,11 @@ private struct AddTaskSheet: View {
                     selectedProjectId: $selectedProjectId,
                     selectedContactIds: $selectedContactIds,
                     sourceType: $sourceType,
-                    sourceNotes: $sourceNotes
+                    sourceNotes: $sourceNotes,
+                    assigneeEmail: $assigneeEmail,
+                    assigneePhone: $assigneePhone,
+                    saveAsContact: $saveAsContact,
+                    sourceReferenceId: $sourceReferenceId
                 )
             }
             .toolbar {
@@ -421,24 +429,41 @@ private struct AddTaskSheet: View {
         let df = DateFormatter()
         df.dateFormat = "yyyy-MM-dd"
 
-        let body = CreateTaskBody(
-            title: title,
-            priorityLevel: selectedLevel,
-            projectId: selectedProjectId?.uuidString,
-            dueDate: hasEndDate ? df.string(from: endDate) : nil,
-            startDate: hasStartDate ? df.string(from: startDate) : nil,
-            inbox: selectedLevel == nil ? true : false,
-            contactIds: selectedContactIds.isEmpty
-                ? nil
-                : selectedContactIds.map { $0.uuidString },
-            isDelegated: isDelegated ? true : nil,
-            assignee: isDelegated && !assignee.isEmpty ? assignee : nil,
-            assigneeContactId: isDelegated ? assigneeContactId?.uuidString : nil,
-            delegationNotes: isDelegated && !delegationNotes.isEmpty ? delegationNotes : nil,
-            sourceType: sourceType,
-            sourceNotes: sourceNotes.isEmpty ? nil : sourceNotes
-        )
         Task {
+            var finalContactId = assigneeContactId
+
+            // Auto-create contact if requested
+            if isDelegated && saveAsContact && !assignee.isEmpty && assigneeContactId == nil {
+                let contactBody = CreateContactBody(
+                    name: assignee,
+                    email: assigneeEmail.isEmpty ? nil : assigneeEmail,
+                    phone: assigneePhone.isEmpty ? nil : assigneePhone,
+                    networkType: "operativa"
+                )
+                do {
+                    let created: Contact = try await APIClient.shared.request(.contacts, body: contactBody)
+                    finalContactId = created.id
+                } catch { }
+            }
+
+            let body = CreateTaskBody(
+                title: title,
+                priorityLevel: selectedLevel,
+                projectId: selectedProjectId?.uuidString,
+                dueDate: hasEndDate ? df.string(from: endDate) : nil,
+                startDate: hasStartDate ? df.string(from: startDate) : nil,
+                inbox: selectedLevel == nil ? true : false,
+                contactIds: selectedContactIds.isEmpty
+                    ? nil
+                    : selectedContactIds.map { $0.uuidString },
+                isDelegated: isDelegated ? true : nil,
+                assignee: isDelegated && !assignee.isEmpty ? assignee : nil,
+                assigneeContactId: isDelegated ? finalContactId?.uuidString : nil,
+                delegationNotes: isDelegated && !delegationNotes.isEmpty ? delegationNotes : nil,
+                sourceType: sourceType,
+                sourceReferenceId: sourceReferenceId?.uuidString,
+                sourceNotes: sourceNotes.isEmpty ? nil : sourceNotes
+            )
             await vm.create(body)
             dismiss()
         }

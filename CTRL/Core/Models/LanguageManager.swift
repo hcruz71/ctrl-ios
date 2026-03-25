@@ -276,6 +276,12 @@ final class LanguageManager: ObservableObject {
         "task.contacts":        ["es": "Asociar contactos",     "en": "Associate contacts",   "pt": "Associar contatos",   "fr": "Associer contacts",    "de": "Kontakte zuordnen"],
         "task.select_contact":  ["es": "Seleccionar contacto",  "en": "Select contact",       "pt": "Selecionar contato",  "fr": "Selectionner contact", "de": "Kontakt auswahlen"],
         "task.no_priority":     ["es": "Sin prioridad = va al Inbox", "en": "No priority = goes to Inbox", "pt": "Sem prioridade = vai para Inbox", "fr": "Sans priorite = va dans Inbox", "de": "Keine Prioritat = geht in Inbox"],
+        "task.delegate_option_contact": ["es": "De mis contactos",           "en": "From my contacts",        "pt": "Dos meus contatos",           "fr": "De mes contacts",             "de": "Aus meinen Kontakten"],
+        "task.delegate_option_manual":  ["es": "Escribir nombre",            "en": "Write name",              "pt": "Escrever nome",               "fr": "Ecrire le nom",               "de": "Name eingeben"],
+        "task.save_as_contact":         ["es": "Guardar como nuevo contacto", "en": "Save as new contact",    "pt": "Salvar como novo contato",    "fr": "Enregistrer comme nouveau contact", "de": "Als neuen Kontakt speichern"],
+        "task.from_meeting":            ["es": "De que reunion surgio?",      "en": "From which meeting did it arise?", "pt": "De qual reuniao surgiu?", "fr": "De quelle reunion est-il ne?", "de": "Aus welchem Meeting entstand es?"],
+        "task.known_participants":      ["es": "Participantes conocidos",     "en": "Known participants",      "pt": "Participantes conhecidos",    "fr": "Participants connus",          "de": "Bekannte Teilnehmer"],
+        "task.no_meetings_today":       ["es": "No hay reuniones hoy",        "en": "No meetings today",       "pt": "Sem reunioes hoje",           "fr": "Pas de reunions aujourd'hui",  "de": "Keine Besprechungen heute"],
 
         // Contact labels
         "contact.name":         ["es": "Nombre",             "en": "Name",              "pt": "Nome",             "fr": "Nom",              "de": "Name"],
