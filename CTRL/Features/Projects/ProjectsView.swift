@@ -13,6 +13,7 @@ struct ProjectsView: View {
     @State private var hasEndDate = false
     @State private var selectedObjectiveId: UUID?
     @StateObject private var objectivesVM = ObjectivesViewModel()
+    @State private var showingTrash = false
 
     var body: some View {
         NavigationStack {
@@ -67,12 +68,23 @@ struct ProjectsView: View {
             .navigationTitle("Proyectos")
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
+                    Button { showingTrash = true } label: {
+                        Image(systemName: "trash")
+                            .foregroundStyle(.secondary)
+                    }
+                }
+                ToolbarItem(placement: .navigationBarTrailing) {
                     Button { showingAdd = true } label: {
                         Image(systemName: "plus")
                     }
                 }
             }
             .withProfileButton()
+            .sheet(isPresented: $showingTrash) {
+                NavigationStack {
+                    TrashView(initialTab: "projects")
+                }
+            }
             .sheet(isPresented: $showingAdd) {
                 addProjectSheet
             }

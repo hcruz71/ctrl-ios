@@ -11,6 +11,7 @@ struct TasksView: View {
     @State private var expandedInbox = true
     @State private var taskToEdit: CTRLTask?
     @State private var taskToEmail: CTRLTask?
+    @State private var showingTrash = false
 
     var body: some View {
         NavigationStack {
@@ -60,12 +61,23 @@ struct TasksView: View {
             .navigationTitle(lang.t("tasks.title"))
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
+                    Button { showingTrash = true } label: {
+                        Image(systemName: "trash")
+                            .foregroundStyle(.secondary)
+                    }
+                }
+                ToolbarItem(placement: .navigationBarTrailing) {
                     Button { showingAdd = true } label: {
                         Image(systemName: "plus")
                     }
                 }
             }
             .withProfileButton()
+            .sheet(isPresented: $showingTrash) {
+                NavigationStack {
+                    TrashView(initialTab: "tasks")
+                }
+            }
             .sheet(isPresented: $showingAdd) {
                 AddTaskSheet(vm: vm)
             }

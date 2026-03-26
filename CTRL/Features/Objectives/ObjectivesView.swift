@@ -8,6 +8,7 @@ struct ObjectivesView: View {
     @State private var selectedStatus = "activo"
     @State private var measureObjective: Objective?
     @State private var objectiveToEdit: Objective?
+    @State private var showingTrash = false
 
     private var filteredObjectives: [Objective] {
         var list = vm.objectives
@@ -92,12 +93,23 @@ struct ObjectivesView: View {
             .navigationTitle(lang.t("objectives.title"))
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
+                    Button { showingTrash = true } label: {
+                        Image(systemName: "trash")
+                            .foregroundStyle(.secondary)
+                    }
+                }
+                ToolbarItem(placement: .navigationBarTrailing) {
                     Button { showingAdd = true } label: {
                         Image(systemName: "plus")
                     }
                 }
             }
             .withProfileButton()
+            .sheet(isPresented: $showingTrash) {
+                NavigationStack {
+                    TrashView(initialTab: "objectives")
+                }
+            }
             .sheet(isPresented: $showingAdd) {
                 SMARTObjectiveFormView(vm: vm) {
                     showingAdd = false

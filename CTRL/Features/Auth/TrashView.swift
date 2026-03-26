@@ -2,12 +2,24 @@ import SwiftUI
 
 struct TrashView: View {
     @EnvironmentObject var lang: LanguageManager
-    @State private var selectedTab = 0
+    let initialTab: String
+    @State private var selectedTab: Int
     @State private var deletedTasks: [CTRLTask] = []
     @State private var deletedProjects: [Project] = []
     @State private var deletedObjectives: [Objective] = []
     @State private var isLoading = false
     @State private var showEmptyAlert = false
+
+    init(initialTab: String = "tasks") {
+        self.initialTab = initialTab
+        let tab: Int
+        switch initialTab {
+        case "projects":   tab = 1
+        case "objectives": tab = 2
+        default:           tab = 0
+        }
+        _selectedTab = State(initialValue: tab)
+    }
 
     var totalCount: Int {
         deletedTasks.count + deletedProjects.count + deletedObjectives.count
