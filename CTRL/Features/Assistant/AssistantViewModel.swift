@@ -74,6 +74,9 @@ final class AssistantViewModel: ObservableObject {
     @Published var micMode: MicMode = .pushToTalk
     @Published var isWaitingToSend = false
     @Published var isPaused = false
+    @Published var micStatus: String? = nil
+    @Published var lastFailedMessage: String? = nil
+    @Published var networkError: Bool = false
 
     private var hasStartedSession = false
     private var releaseDelayTask: Task<Void, Never>?
@@ -338,14 +341,30 @@ final class AssistantViewModel: ObservableObject {
         guard !text.isEmpty else { return }
 
         inputText = ""
+        lastFailedMessage = text
+        networkError = false
         messages.append(ChatMessage(role: .user, content: text))
 
-        Task { await callAssistant() }
+        Task { await callAssistant(retryCount: 0) }
     }
 
-    private func callAssistant() async {
+    func retryLastMessage() {
+        guard let msg = lastFailedMessage else { return }
+        lastFailedMessage = nil
+        networkError = false
+        // Remove last error message if present
+        if let last = messages.last, last.role == .assistant,
+           last.content.contains("Sin conexion") || last.content.contains("error") {
+            messages.removeLast()
+        }
+        messages.append(ChatMessage(role: .user, content: msg))
+        Task { await callAssistant(retryCount: 0) }
+    }
+
+    private func callAssistant(retryCount: Int) async {
         isLoading = true
         errorMessage = nil
+        networkError = false
 
         var responseToSpeak: String?
 
@@ -405,15 +424,26 @@ final class AssistantViewModel: ObservableObject {
                 actions: actions.isEmpty ? nil : actions
             ))
 
+            lastFailedMessage = nil
             responseToSpeak = responseText
         } catch {
             logger.error("Assistant error: \(error.localizedDescription)")
-            errorMessage = error.localizedDescription
 
-            let errorText = "Hubo un error al procesar tu mensaje. Intenta de nuevo."
-            messages.append(ChatMessage(role: .assistant, content: errorText))
+            // Auto-retry once after 2 seconds
+            if retryCount < 1 {
+                isLoading = true
+                try? await Task.sleep(nanoseconds: 2_000_000_000)
+                await callAssistant(retryCount: retryCount + 1)
+                return
+            }
 
-            responseToSpeak = errorText
+            // Show network error banner for retry
+            lastFailedMessage = messages.last(where: { $0.role == .user })?.content
+            networkError = true
+
+            let noConnectionMsg = LanguageManager.shared.t("assistant.no_connection")
+            messages.append(ChatMessage(role: .assistant, content: noConnectionMsg))
+            responseToSpeak = noConnectionMsg
         }
 
         isLoading = false
@@ -783,6 +813,7 @@ final class AssistantViewModel: ObservableObject {
                         self.handleSilenceDetected()
                     } else {
                         self.stopRecording()
+                        self.micStatus = "No pude escucharte. Toca para intentar de nuevo."
                     }
                 }
             }
@@ -799,5 +830,11 @@ final class AssistantViewModel: ObservableObject {
         recognitionTask = nil
         recognitionRequest = nil
         isRecording = false
+    }
+
+    func stopListening() {
+        stopRecording()
+        liveTranscript = ""
+        micStatus = LanguageManager.shared.t("assistant.mic_off")
     }
 }

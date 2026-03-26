@@ -20,6 +20,7 @@ struct SettingsView: View {
     @State private var accountToDelete: GoogleCalendarAccount?
     @State private var oauthCoordinator = OAuthCoordinator()
     @State private var currentMode: WorkMode?
+    @State private var trashCount = 0
 
     var body: some View {
         List {
@@ -159,6 +160,23 @@ struct SettingsView: View {
                     Label(lang.t("settings.usage"), systemImage: "chart.bar.fill")
                 }
 
+                NavigationLink {
+                    TrashView()
+                } label: {
+                    HStack {
+                        Label(lang.t("trash.title"), systemImage: "trash")
+                        Spacer()
+                        if trashCount > 0 {
+                            Text("\(trashCount)")
+                                .font(.caption2.bold())
+                                .foregroundStyle(.white)
+                                .padding(.horizontal, 6)
+                                .padding(.vertical, 2)
+                                .background(Color.red)
+                                .clipShape(Capsule())
+                        }
+                    }
+                }
             }
         }
         .navigationTitle(lang.t("settings.title"))
@@ -167,6 +185,7 @@ struct SettingsView: View {
             await pushManager.refreshPermissionStatus()
             await loadGoogleAccounts()
             await loadCurrentMode()
+            await loadTrashCount()
         }
     }
 
@@ -228,6 +247,13 @@ struct SettingsView: View {
         case .rest:     return .gray
         case .vacation: return .orange
         }
+    }
+
+    private func loadTrashCount() async {
+        let tasks: [CTRLTask] = (try? await APIClient.shared.request(.tasksTrash)) ?? []
+        let projects: [Project] = (try? await APIClient.shared.request(.projectsTrash)) ?? []
+        let objectives: [Objective] = (try? await APIClient.shared.request(.objectivesTrash)) ?? []
+        trashCount = tasks.count + projects.count + objectives.count
     }
 
     private var permissionLabel: String {

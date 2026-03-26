@@ -18,6 +18,9 @@ enum APIEndpoint {
     case objective(id: UUID)
     case objectiveKpi(id: UUID)
     case objectiveMeasurements(id: UUID)
+    case objectivesTrash
+    case objectiveRestore(id: UUID)
+    case objectiveHardDelete(id: UUID)
 
     // MARK: - Meetings
     case meetings
@@ -45,6 +48,9 @@ enum APIEndpoint {
     case tasksToday
     case tasksInbox
     case tasksReorder
+    case tasksTrash
+    case taskRestore(id: UUID)
+    case taskHardDelete(id: UUID)
 
     // MARK: - Delegations
     case delegations
@@ -68,6 +74,9 @@ enum APIEndpoint {
     case project(id: UUID)
     case projectSummary(id: UUID)
     case projectTasks(id: UUID)
+    case projectsTrash
+    case projectRestore(id: UUID)
+    case projectHardDelete(id: UUID)
 
     // MARK: - Push
     case registerToken
@@ -98,6 +107,9 @@ enum APIEndpoint {
     // MARK: - Usage
     case usageSummary
 
+    // MARK: - Trash
+    case trashEmpty
+
     // MARK: - Subscriptions
     case subscriptionVerify
     case subscriptionMe
@@ -119,6 +131,9 @@ enum APIEndpoint {
         case .objective(let id):                return "/objectives/\(id)"
         case .objectiveKpi(let id):             return "/objectives/\(id)/kpi"
         case .objectiveMeasurements(let id):    return "/objectives/\(id)/measurements"
+        case .objectivesTrash:                  return "/objectives/trash"
+        case .objectiveRestore(let id):         return "/objectives/\(id)/restore"
+        case .objectiveHardDelete(let id):      return "/objectives/\(id)/hard"
         case .meetings:                  return "/meetings"
         case .meeting(let id):           return "/meetings/\(id)"
         case .meetingObjective(let id):  return "/meetings/\(id)/objective"
@@ -146,6 +161,9 @@ enum APIEndpoint {
         case .tasksToday:         return "/tasks/today"
         case .tasksInbox:         return "/tasks/inbox"
         case .tasksReorder:       return "/tasks/reorder"
+        case .tasksTrash:                return "/tasks/trash"
+        case .taskRestore(let id):       return "/tasks/\(id)/restore"
+        case .taskHardDelete(let id):    return "/tasks/\(id)/hard"
         case .delegations:                   return "/delegations"
         case .delegation(let id):            return "/delegations/\(id)"
         case .sendDelegationEmail(let id):      return "/delegations/\(id)/send-email"
@@ -157,10 +175,13 @@ enum APIEndpoint {
         case .absences:                  return "/schedule/absences"
         case .absence(let id):           return "/schedule/absences/\(id)"
         case .generateHandover(let id):  return "/schedule/absences/\(id)/generate-documents"
-        case .projects:                  return "/projects"
-        case .project(let id):           return "/projects/\(id)"
-        case .projectSummary(let id):    return "/projects/\(id)/summary"
-        case .projectTasks(let id):      return "/projects/\(id)/tasks"
+        case .projects:                       return "/projects"
+        case .project(let id):                return "/projects/\(id)"
+        case .projectSummary(let id):         return "/projects/\(id)/summary"
+        case .projectTasks(let id):           return "/projects/\(id)/tasks"
+        case .projectsTrash:                  return "/projects/trash"
+        case .projectRestore(let id):         return "/projects/\(id)/restore"
+        case .projectHardDelete(let id):      return "/projects/\(id)/hard"
         case .registerToken:             return "/push/register-token"
         case .revokeMcpToken:          return "/auth/mcp-token"
         case .googleCalendarAuth:               return "/google-calendar/auth"
@@ -184,6 +205,7 @@ enum APIEndpoint {
         case .helpCategories:                return "/help/categories"
         case .assistantChat:           return "/assistant/chat"
         case .usageSummary:              return "/usage/summary"
+        case .trashEmpty:                return "/trash/empty"
         case .subscriptionVerify:        return "/subscriptions/verify"
         case .subscriptionMe:            return "/subscriptions/me"
         case .subscriptionPlans:         return "/subscriptions/plans"
@@ -203,7 +225,7 @@ enum APIEndpoint {
     /// Whether this endpoint targets a collection (no id) vs a single resource.
     var isCollection: Bool {
         switch self {
-        case .objectives, .meetings, .tasks, .delegations, .contacts, .login, .register, .loginApple, .loginGoogle, .registerToken, .revokeMcpToken, .assistantChat, .tasksToday, .tasksInbox, .tasksReorder, .updateMe, .onboarding, .processMinutes, .confirmTasks, .importICS, .meetingsToday, .meetingsUpcoming, .meetingsProductivity, .meetingsPast, .meetingsAll, .meetingsImported, .meetingAttendance, .meetingScore, .meetingDelegate, .meetingsByDate, .meetingsAnalysis, .sendDelegationEmail, .prepareDelegationEmail, .taskPrepareEmail, .googleCalendarAuth, .googleCalendarSync, .googleCalendarSyncAccount, .googleCalendarStatus, .googleCalendarAccounts, .gmailAnalyze, .gmailAnalyzeMbox, .schedule, .scheduleMode, .absences, .generateHandover, .objectiveKpi, .objectiveMeasurements, .projects, .projectSummary, .projectTasks, .usageSummary, .subscriptionVerify, .subscriptionMe, .subscriptionPlans, .subscriptionRestore, .helpArticles, .helpArticle, .helpFaqs, .helpSearch, .helpCategories:
+        case .objectives, .meetings, .tasks, .delegations, .contacts, .login, .register, .loginApple, .loginGoogle, .registerToken, .revokeMcpToken, .assistantChat, .tasksToday, .tasksInbox, .tasksReorder, .tasksTrash, .taskRestore, .taskHardDelete, .updateMe, .onboarding, .processMinutes, .confirmTasks, .importICS, .meetingsToday, .meetingsUpcoming, .meetingsProductivity, .meetingsPast, .meetingsAll, .meetingsImported, .meetingAttendance, .meetingScore, .meetingDelegate, .meetingsByDate, .meetingsAnalysis, .sendDelegationEmail, .prepareDelegationEmail, .taskPrepareEmail, .googleCalendarAuth, .googleCalendarSync, .googleCalendarSyncAccount, .googleCalendarStatus, .googleCalendarAccounts, .gmailAnalyze, .gmailAnalyzeMbox, .schedule, .scheduleMode, .absences, .generateHandover, .objectiveKpi, .objectiveMeasurements, .objectivesTrash, .objectiveRestore, .objectiveHardDelete, .projects, .projectSummary, .projectTasks, .projectsTrash, .projectRestore, .projectHardDelete, .trashEmpty, .usageSummary, .subscriptionVerify, .subscriptionMe, .subscriptionPlans, .subscriptionRestore, .helpArticles, .helpArticle, .helpFaqs, .helpSearch, .helpCategories:
             return true
         default:
             return false

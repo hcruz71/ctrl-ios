@@ -315,5 +315,22 @@ final class LanguageManager: ObservableObject {
         "source.date":            ["es": "Fecha del origen", "en": "Source date",       "pt": "Data de origem",  "fr": "Date d'origine",  "de": "Ursprungsdatum"],
         "source.notes_placeholder":["es":"Notas del origen (opcional)", "en": "Source notes (optional)", "pt": "Notas de origem (opcional)", "fr": "Notes d'origine (facultatif)", "de": "Ursprungsnotizen (optional)"],
         "source.select_meeting":  ["es": "Seleccionar reunion","en": "Select meeting",  "pt": "Selecionar reuniao","fr": "Selectionner reunion","de": "Besprechung auswahlen"],
+
+        // Trash
+        "trash.title":          ["es": "Basurero",           "en": "Trash",              "pt": "Lixeira",            "fr": "Corbeille",           "de": "Papierkorb"],
+        "trash.tasks":          ["es": "Tareas",             "en": "Tasks",              "pt": "Tarefas",            "fr": "Taches",              "de": "Aufgaben"],
+        "trash.projects":       ["es": "Proyectos",          "en": "Projects",           "pt": "Projetos",           "fr": "Projets",             "de": "Projekte"],
+        "trash.objectives":     ["es": "Objetivos",          "en": "Objectives",         "pt": "Objetivos",          "fr": "Objectifs",           "de": "Ziele"],
+        "trash.restore":        ["es": "Restaurar",          "en": "Restore",            "pt": "Restaurar",          "fr": "Restaurer",           "de": "Wiederherstellen"],
+        "trash.empty":          ["es": "Vaciar basurero",    "en": "Empty trash",        "pt": "Esvaziar lixeira",   "fr": "Vider la corbeille",  "de": "Papierkorb leeren"],
+        "trash.empty_confirm":  ["es": "Eliminar permanentemente todos los elementos?", "en": "Permanently delete all items?", "pt": "Excluir permanentemente todos os itens?", "fr": "Supprimer definitivement tous les elements?", "de": "Alle Elemente dauerhaft loschen?"],
+        "trash.deleted_on":     ["es": "Eliminado el",       "en": "Deleted on",         "pt": "Excluido em",        "fr": "Supprime le",         "de": "Geloscht am"],
+        "trash.auto_delete":    ["es": "Los elementos se eliminan automaticamente despues de 30 dias", "en": "Items are automatically deleted after 30 days", "pt": "Os itens sao excluidos automaticamente apos 30 dias", "fr": "Les elements sont automatiquement supprimes apres 30 jours", "de": "Elemente werden nach 30 Tagen automatisch geloscht"],
+
+        // Assistant
+        "assistant.thinking":      ["es": "Pensando",                    "en": "Thinking",          "pt": "Pensando",             "fr": "En train de reflechir", "de": "Nachdenken"],
+        "assistant.mic_off":       ["es": "Microfono desactivado",       "en": "Microphone off",    "pt": "Microfone desativado",  "fr": "Microphone desactive",  "de": "Mikrofon aus"],
+        "assistant.no_connection": ["es": "Sin conexion. Reintentar?",   "en": "No connection. Retry?", "pt": "Sem conexao. Tentar novamente?", "fr": "Pas de connexion. Reessayer?", "de": "Keine Verbindung. Wiederholen?"],
+        "assistant.retry":         ["es": "Reintentar",                  "en": "Retry",             "pt": "Tentar novamente",      "fr": "Reessayer",             "de": "Wiederholen"],
     ]
 }

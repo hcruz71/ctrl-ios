@@ -7,6 +7,20 @@ struct AssistantView: View {
     @State private var usageSummary: UsageSummary?
     @State private var showingUsage = false
 
+    // Thinking messages
+    private let thinkingMessages = [
+        "Pensando...",
+        "Consultando tus datos...",
+        "Analizando...",
+        "Preparando respuesta..."
+    ]
+    @State private var thinkingIndex = 0
+    @State private var thinkingTimer: Timer?
+
+    // Mic toast
+    @State private var showMicToast = false
+    @State private var micToastMessage = ""
+
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
@@ -65,16 +79,18 @@ struct AssistantView: View {
                             }
 
                             if viewModel.isLoading {
-                                HStack {
-                                    ProgressView()
-                                        .tint(Color.ctrlPurple)
-                                    Text("Pensando…")
+                                HStack(spacing: 8) {
+                                    ThinkingDotsView()
+                                    Text(thinkingMessages[thinkingIndex])
                                         .font(.caption)
                                         .foregroundStyle(.secondary)
+                                        .animation(.easeInOut(duration: 0.3), value: thinkingIndex)
                                     Spacer()
                                 }
                                 .padding(.horizontal)
                                 .id("loading")
+                                .onAppear { startThinkingTimer() }
+                                .onDisappear { stopThinkingTimer() }
                             }
                         }
                         .padding(.vertical, 12)
@@ -261,6 +277,47 @@ struct AssistantView: View {
                     usageSummary = try await APIClient.shared.request(.usageSummary)
                 } catch { }
             }
+            // Mic toast overlay
+            .overlay(alignment: .top) {
+                if showMicToast {
+                    Text(micToastMessage)
+                        .font(.caption)
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 8)
+                        .background(.ultraThinMaterial)
+                        .clipShape(Capsule())
+                        .transition(.move(edge: .top).combined(with: .opacity))
+                        .padding(.top, 8)
+                }
+            }
+            .onChange(of: viewModel.micStatus) { status in
+                guard let status else { return }
+                micToastMessage = status
+                withAnimation { showMicToast = true }
+                DispatchQueue.main.asyncAfter(deadline: .now() + 2.5) {
+                    withAnimation { showMicToast = false }
+                    viewModel.micStatus = nil
+                }
+            }
+            // Network error retry banner
+            .overlay(alignment: .bottom) {
+                if viewModel.networkError {
+                    HStack {
+                        Image(systemName: "wifi.slash")
+                        Text(LanguageManager.shared.t("assistant.no_connection"))
+                            .font(.subheadline)
+                        Spacer()
+                        Button(LanguageManager.shared.t("assistant.retry")) {
+                            viewModel.retryLastMessage()
+                        }
+                        .font(.subheadline.bold())
+                        .foregroundStyle(Color.ctrlPurple)
+                    }
+                    .padding()
+                    .background(.ultraThinMaterial)
+                    .transition(.move(edge: .bottom))
+                }
+            }
         }
     }
 
@@ -309,6 +366,23 @@ struct AssistantView: View {
         return .green
     }
 
+    // MARK: - Thinking timer
+
+    private func startThinkingTimer() {
+        thinkingIndex = 0
+        thinkingTimer = Timer.scheduledTimer(withTimeInterval: 2.0, repeats: true) { _ in
+            DispatchQueue.main.async {
+                thinkingIndex = (thinkingIndex + 1) % thinkingMessages.count
+            }
+        }
+    }
+
+    private func stopThinkingTimer() {
+        thinkingTimer?.invalidate()
+        thinkingTimer = nil
+        thinkingIndex = 0
+    }
+
     private var hintLabel: String {
         if viewModel.isWaitingToSend {
             return "Presiona para seguir hablando"
@@ -329,6 +403,41 @@ struct AssistantView: View {
                 : "Toca para pausar"
         case .paused:     return "Toca para continuar"
         }
+    }
+}
+
+// MARK: - Thinking Dots Animation
+
+struct ThinkingDotsView: View {
+    @State private var dotPhase = 0.0
+
+    var body: some View {
+        HStack(spacing: 4) {
+            ForEach(0..<3, id: \.self) { index in
+                Circle()
+                    .fill(Color.ctrlPurple)
+                    .frame(width: 6, height: 6)
+                    .scaleEffect(dotScale(for: index))
+                    .opacity(dotOpacity(for: index))
+            }
+        }
+        .onAppear {
+            withAnimation(.easeInOut(duration: 0.6).repeatForever(autoreverses: true)) {
+                dotPhase = 1.0
+            }
+        }
+    }
+
+    private func dotScale(for index: Int) -> Double {
+        let offset = Double(index) * 0.3
+        let phase = (dotPhase + offset).truncatingRemainder(dividingBy: 1.5)
+        return 0.6 + phase * 0.4
+    }
+
+    private func dotOpacity(for index: Int) -> Double {
+        let offset = Double(index) * 0.3
+        let phase = (dotPhase + offset).truncatingRemainder(dividingBy: 1.5)
+        return 0.4 + phase * 0.6
     }
 }
 
