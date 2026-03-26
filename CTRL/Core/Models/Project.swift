@@ -17,6 +17,9 @@ struct Project: Codable, Identifiable {
     var completedTaskCount: Int?
     var meetingCount: Int?
     var delegationCount: Int?
+    var isDeleted: Bool?
+    var deletedAt: Date?
+
     let createdAt: Date?
     let updatedAt: Date?
 

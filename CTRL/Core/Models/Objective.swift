@@ -29,6 +29,10 @@ struct Objective: Codable, Identifiable {
     var status: String?
     var completedAt: Date?
 
+    // Soft delete
+    var isDeleted: Bool?
+    var deletedAt: Date?
+
     let createdAt: Date?
     let updatedAt: Date?
 

@@ -5,12 +5,13 @@ struct TrashView: View {
     let initialTab: String
     @State private var selectedTab: Int
     @State private var trashTasks: [CTRLTask] = []
-    @State private var deletedProjects: [Project] = []
-    @State private var deletedObjectives: [Objective] = []
+    @State private var trashProjects: [Project] = []
+    @State private var trashObjectives: [Objective] = []
     @State private var isLoading = false
     @State private var showEmptyAlert = false
     @State private var expandedDeleted = true
     @State private var expandedCompleted = true
+    @State private var toastMessage: String?
 
     init(initialTab: String = "tasks") {
         self.initialTab = initialTab
@@ -23,21 +24,37 @@ struct TrashView: View {
         _selectedTab = State(initialValue: tab)
     }
 
+    // MARK: - Computed filters
+
     private var deletedTasks: [CTRLTask] {
         trashTasks.filter { $0.isDeleted == true }
     }
-
     private var completedTasks: [CTRLTask] {
         trashTasks.filter { $0.done && $0.isDeleted != true }
     }
 
-    var totalCount: Int {
-        trashTasks.count + deletedProjects.count + deletedObjectives.count
+    private var deletedProjects: [Project] {
+        trashProjects.filter { $0.isDeleted == true }
     }
+    private var completedProjects: [Project] {
+        trashProjects.filter { $0.status == "completado" && $0.isDeleted != true }
+    }
+
+    private var deletedObjectives: [Objective] {
+        trashObjectives.filter { $0.isDeleted == true }
+    }
+    private var completedObjectives: [Objective] {
+        trashObjectives.filter { $0.status == "completado" && $0.isDeleted != true }
+    }
+
+    var totalCount: Int {
+        trashTasks.count + trashProjects.count + trashObjectives.count
+    }
+
+    // MARK: - Body
 
     var body: some View {
         VStack(spacing: 0) {
-            // Header count
             if totalCount > 0 {
                 Text("\(totalCount) \(lang.t("trash.title").lowercased())")
                     .font(.caption)
@@ -45,7 +62,6 @@ struct TrashView: View {
                     .padding(.vertical, 6)
             }
 
-            // Segmented picker
             Picker("", selection: $selectedTab) {
                 Text(lang.t("trash.tasks")).tag(0)
                 Text(lang.t("trash.projects")).tag(1)
@@ -68,7 +84,6 @@ struct TrashView: View {
                 .tabViewStyle(.page(indexDisplayMode: .never))
             }
 
-            // Auto-delete notice
             Text(lang.t("trash.auto_delete"))
                 .font(.caption2)
                 .foregroundStyle(.tertiary)
@@ -79,9 +94,7 @@ struct TrashView: View {
         .toolbar {
             if totalCount > 0 {
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button(role: .destructive) {
-                        showEmptyAlert = true
-                    } label: {
+                    Button(role: .destructive) { showEmptyAlert = true } label: {
                         Label(lang.t("trash.empty"), systemImage: "trash.slash")
                     }
                 }
@@ -95,10 +108,23 @@ struct TrashView: View {
         } message: {
             Text(lang.t("trash.empty_confirm"))
         }
+        .overlay(alignment: .bottom) {
+            if let msg = toastMessage {
+                Text(msg)
+                    .font(.subheadline)
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 10)
+                    .background(.ultraThinMaterial)
+                    .clipShape(Capsule())
+                    .shadow(radius: 4)
+                    .padding(.bottom, 40)
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
+            }
+        }
         .task { await loadAll() }
     }
 
-    // MARK: - Tasks list with sections
+    // MARK: - Tasks list
 
     private var tasksList: some View {
         Group {
@@ -106,77 +132,46 @@ struct TrashView: View {
                 emptyState(lang.t("trash.tasks"))
             } else {
                 List {
-                    // Deleted section
                     if !deletedTasks.isEmpty {
-                        Section {
-                            if expandedDeleted {
-                                ForEach(deletedTasks) { task in
-                                    trashRow(
-                                        title: task.title,
-                                        subtitle: formattedDate(task.deletedAt ?? task.updatedAt),
-                                        subtitleKey: "trash.deleted_on",
-                                        restoreLabel: lang.t("trash.restore"),
-                                        restoreIcon: "arrow.uturn.backward",
-                                        onRestore: { Task { await restoreTask(task.id) } },
-                                        onDelete: { Task { await hardDeleteTask(task.id) } }
-                                    )
-                                }
+                        collapsibleSection(
+                            expanded: $expandedDeleted,
+                            title: lang.t("trash.deleted"),
+                            count: deletedTasks.count,
+                            icon: "trash",
+                            color: .red
+                        ) {
+                            ForEach(deletedTasks) { task in
+                                trashRow(
+                                    title: task.title,
+                                    subtitle: formattedDate(task.deletedAt ?? task.updatedAt),
+                                    subtitleKey: "trash.deleted_on",
+                                    restoreLabel: lang.t("trash.restore"),
+                                    restoreIcon: "arrow.uturn.backward",
+                                    onRestore: { Task { await restoreTask(task.id) } },
+                                    onDelete: { Task { await hardDeleteTask(task.id) } }
+                                )
                             }
-                        } header: {
-                            Button {
-                                withAnimation { expandedDeleted.toggle() }
-                            } label: {
-                                HStack(spacing: 6) {
-                                    sectionHeader(
-                                        title: lang.t("trash.deleted"),
-                                        count: deletedTasks.count,
-                                        icon: "trash",
-                                        color: .red
-                                    )
-                                    Spacer()
-                                    Image(systemName: expandedDeleted ? "chevron.up" : "chevron.down")
-                                        .font(.caption2)
-                                        .foregroundStyle(.secondary)
-                                }
-                            }
-                            .buttonStyle(.plain)
                         }
                     }
-
-                    // Completed section
                     if !completedTasks.isEmpty {
-                        Section {
-                            if expandedCompleted {
-                                ForEach(completedTasks) { task in
-                                    trashRow(
-                                        title: task.title,
-                                        subtitle: formattedDate(task.updatedAt),
-                                        subtitleKey: "trash.completed_on",
-                                        restoreLabel: lang.t("trash.reactivate"),
-                                        restoreIcon: "arrow.counterclockwise",
-                                        onRestore: { Task { await reactivateTask(task.id) } },
-                                        onDelete: { Task { await hardDeleteTask(task.id) } }
-                                    )
-                                }
+                        collapsibleSection(
+                            expanded: $expandedCompleted,
+                            title: lang.t("trash.completed"),
+                            count: completedTasks.count,
+                            icon: "checkmark.circle",
+                            color: .green
+                        ) {
+                            ForEach(completedTasks) { task in
+                                trashRow(
+                                    title: task.title,
+                                    subtitle: formattedDate(task.updatedAt),
+                                    subtitleKey: "trash.completed_on",
+                                    restoreLabel: lang.t("trash.reactivate"),
+                                    restoreIcon: "arrow.counterclockwise",
+                                    onRestore: { Task { await reactivateTask(task.id) } },
+                                    onDelete: { Task { await hardDeleteTask(task.id) } }
+                                )
                             }
-                        } header: {
-                            Button {
-                                withAnimation { expandedCompleted.toggle() }
-                            } label: {
-                                HStack(spacing: 6) {
-                                    sectionHeader(
-                                        title: lang.t("trash.completed"),
-                                        count: completedTasks.count,
-                                        icon: "checkmark.circle",
-                                        color: .green
-                                    )
-                                    Spacer()
-                                    Image(systemName: expandedCompleted ? "chevron.up" : "chevron.down")
-                                        .font(.caption2)
-                                        .foregroundStyle(.secondary)
-                                }
-                            }
-                            .buttonStyle(.plain)
                         }
                     }
                 }
@@ -189,23 +184,54 @@ struct TrashView: View {
 
     private var projectsList: some View {
         Group {
-            if deletedProjects.isEmpty {
+            if deletedProjects.isEmpty && completedProjects.isEmpty {
                 emptyState(lang.t("trash.projects"))
             } else {
                 List {
-                    ForEach(deletedProjects) { project in
-                        trashRow(
-                            title: project.name,
-                            subtitle: formattedDate(project.updatedAt),
-                            subtitleKey: "trash.deleted_on",
-                            restoreLabel: lang.t("trash.restore"),
-                            restoreIcon: "arrow.uturn.backward",
-                            onRestore: { Task { await restoreProject(project.id) } },
-                            onDelete: { Task { await hardDeleteProject(project.id) } }
-                        )
+                    if !deletedProjects.isEmpty {
+                        collapsibleSection(
+                            expanded: $expandedDeleted,
+                            title: lang.t("trash.deleted"),
+                            count: deletedProjects.count,
+                            icon: "trash",
+                            color: .red
+                        ) {
+                            ForEach(deletedProjects) { project in
+                                trashRow(
+                                    title: project.name,
+                                    subtitle: formattedDate(project.deletedAt ?? project.updatedAt),
+                                    subtitleKey: "trash.deleted_on",
+                                    restoreLabel: lang.t("trash.restore"),
+                                    restoreIcon: "arrow.uturn.backward",
+                                    onRestore: { Task { await restoreProject(project.id) } },
+                                    onDelete: { Task { await hardDeleteProject(project.id) } }
+                                )
+                            }
+                        }
+                    }
+                    if !completedProjects.isEmpty {
+                        collapsibleSection(
+                            expanded: $expandedCompleted,
+                            title: lang.t("trash.completed"),
+                            count: completedProjects.count,
+                            icon: "checkmark.circle",
+                            color: .green
+                        ) {
+                            ForEach(completedProjects) { project in
+                                trashRow(
+                                    title: project.name,
+                                    subtitle: formattedDate(project.updatedAt),
+                                    subtitleKey: "trash.completed_on",
+                                    restoreLabel: lang.t("trash.reactivate"),
+                                    restoreIcon: "arrow.counterclockwise",
+                                    onRestore: { Task { await reactivateProject(project.id) } },
+                                    onDelete: { Task { await hardDeleteProject(project.id) } }
+                                )
+                            }
+                        }
                     }
                 }
-                .listStyle(.plain)
+                .listStyle(.sidebar)
             }
         }
     }
@@ -214,43 +240,96 @@ struct TrashView: View {
 
     private var objectivesList: some View {
         Group {
-            if deletedObjectives.isEmpty {
+            if deletedObjectives.isEmpty && completedObjectives.isEmpty {
                 emptyState(lang.t("trash.objectives"))
             } else {
                 List {
-                    ForEach(deletedObjectives) { objective in
-                        trashRow(
-                            title: objective.title,
-                            subtitle: formattedDate(objective.updatedAt),
-                            subtitleKey: "trash.deleted_on",
-                            restoreLabel: lang.t("trash.restore"),
-                            restoreIcon: "arrow.uturn.backward",
-                            onRestore: { Task { await restoreObjective(objective.id) } },
-                            onDelete: { Task { await hardDeleteObjective(objective.id) } }
-                        )
+                    if !deletedObjectives.isEmpty {
+                        collapsibleSection(
+                            expanded: $expandedDeleted,
+                            title: lang.t("trash.deleted"),
+                            count: deletedObjectives.count,
+                            icon: "trash",
+                            color: .red
+                        ) {
+                            ForEach(deletedObjectives) { objective in
+                                trashRow(
+                                    title: objective.title,
+                                    subtitle: formattedDate(objective.deletedAt ?? objective.updatedAt),
+                                    subtitleKey: "trash.deleted_on",
+                                    restoreLabel: lang.t("trash.restore"),
+                                    restoreIcon: "arrow.uturn.backward",
+                                    onRestore: { Task { await restoreObjective(objective.id) } },
+                                    onDelete: { Task { await hardDeleteObjective(objective.id) } }
+                                )
+                            }
+                        }
+                    }
+                    if !completedObjectives.isEmpty {
+                        collapsibleSection(
+                            expanded: $expandedCompleted,
+                            title: lang.t("trash.completed"),
+                            count: completedObjectives.count,
+                            icon: "checkmark.circle",
+                            color: .green
+                        ) {
+                            ForEach(completedObjectives) { objective in
+                                trashRow(
+                                    title: objective.title,
+                                    subtitle: formattedDate(objective.updatedAt),
+                                    subtitleKey: "trash.completed_on",
+                                    restoreLabel: lang.t("trash.reactivate"),
+                                    restoreIcon: "arrow.counterclockwise",
+                                    onRestore: { Task { await reactivateObjective(objective.id) } },
+                                    onDelete: { Task { await hardDeleteObjective(objective.id) } }
+                                )
+                            }
+                        }
                     }
                 }
-                .listStyle(.plain)
+                .listStyle(.sidebar)
             }
         }
     }
 
-    // MARK: - Components
+    // MARK: - Reusable components
 
-    private func sectionHeader(title: String, count: Int, icon: String, color: Color) -> some View {
-        HStack(spacing: 6) {
-            Image(systemName: icon)
-                .foregroundStyle(color)
-                .font(.caption)
-            Text(title)
-                .font(.subheadline.bold())
-            Text("\(count)")
-                .font(.caption.bold())
-                .foregroundStyle(.white)
-                .padding(.horizontal, 6)
-                .padding(.vertical, 2)
-                .background(color.opacity(0.8))
-                .clipShape(Capsule())
+    private func collapsibleSection<Content: View>(
+        expanded: Binding<Bool>,
+        title: String,
+        count: Int,
+        icon: String,
+        color: Color,
+        @ViewBuilder content: () -> Content
+    ) -> some View {
+        Section {
+            if expanded.wrappedValue {
+                content()
+            }
+        } header: {
+            Button {
+                withAnimation { expanded.wrappedValue.toggle() }
+            } label: {
+                HStack(spacing: 6) {
+                    Image(systemName: icon)
+                        .foregroundStyle(color)
+                        .font(.caption)
+                    Text(title)
+                        .font(.subheadline.bold())
+                    Text("\(count)")
+                        .font(.caption.bold())
+                        .foregroundStyle(.white)
+                        .padding(.horizontal, 6)
+                        .padding(.vertical, 2)
+                        .background(color.opacity(0.8))
+                        .clipShape(Capsule())
+                    Spacer()
+                    Image(systemName: expanded.wrappedValue ? "chevron.up" : "chevron.down")
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                }
+            }
+            .buttonStyle(.plain)
         }
     }
 
@@ -307,6 +386,13 @@ struct TrashView: View {
         return formatter.string(from: date)
     }
 
+    private func showToast(_ message: String) {
+        withAnimation { toastMessage = message }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+            withAnimation { toastMessage = nil }
+        }
+    }
+
     // MARK: - API calls
 
     private func loadAll() async {
@@ -315,18 +401,16 @@ struct TrashView: View {
         async let p: [Project] = (try? APIClient.shared.request(.projectsTrash)) ?? []
         async let o: [Objective] = (try? APIClient.shared.request(.objectivesTrash)) ?? []
         trashTasks = await t
-        deletedProjects = await p
-        deletedObjectives = await o
+        trashProjects = await p
+        trashObjectives = await o
         isLoading = false
-        print("[TrashView] total tasks: \(trashTasks.count), deleted: \(deletedTasks.count), completed: \(completedTasks.count)")
-        for task in trashTasks {
-            print("[TrashView]   - \(task.title) | done=\(task.done) isDeleted=\(task.isDeleted ?? false) reason=\(task.reason ?? "nil")")
-        }
     }
 
+    // Tasks
     private func restoreTask(_ id: UUID) async {
         let _: CTRLTask? = try? await APIClient.shared.request(.taskRestore(id: id), method: "PATCH")
-        await loadAll()
+        withAnimation { trashTasks.removeAll { $0.id == id } }
+        showToast("Restaurado correctamente")
     }
 
     private func reactivateTask(_ id: UUID) async {
@@ -335,36 +419,59 @@ struct TrashView: View {
         body.priorityLevel = "B"
         body.inbox = false
         let _: CTRLTask? = try? await APIClient.shared.request(.task(id: id), method: "PATCH", body: body)
-        await loadAll()
+        withAnimation { trashTasks.removeAll { $0.id == id } }
+        showToast("Restaurado correctamente")
     }
 
     private func hardDeleteTask(_ id: UUID) async {
         try? await APIClient.shared.requestVoid(.taskHardDelete(id: id), method: "DELETE")
-        await loadAll()
+        withAnimation { trashTasks.removeAll { $0.id == id } }
     }
 
+    // Projects
     private func restoreProject(_ id: UUID) async {
         let _: Project? = try? await APIClient.shared.request(.projectRestore(id: id), method: "PATCH")
-        await loadAll()
+        withAnimation { trashProjects.removeAll { $0.id == id } }
+        showToast("Restaurado correctamente")
+    }
+
+    private func reactivateProject(_ id: UUID) async {
+        let body = UpdateProjectBody(status: "activo")
+        let _: Project? = try? await APIClient.shared.request(.project(id: id), method: "PATCH", body: body)
+        withAnimation { trashProjects.removeAll { $0.id == id } }
+        showToast("Restaurado correctamente")
     }
 
     private func hardDeleteProject(_ id: UUID) async {
         try? await APIClient.shared.requestVoid(.projectHardDelete(id: id), method: "DELETE")
-        await loadAll()
+        withAnimation { trashProjects.removeAll { $0.id == id } }
     }
 
+    // Objectives
     private func restoreObjective(_ id: UUID) async {
         let _: Objective? = try? await APIClient.shared.request(.objectiveRestore(id: id), method: "PATCH")
-        await loadAll()
+        withAnimation { trashObjectives.removeAll { $0.id == id } }
+        showToast("Restaurado correctamente")
+    }
+
+    private func reactivateObjective(_ id: UUID) async {
+        let body = UpdateObjectiveBody(status: "activo")
+        let _: Objective? = try? await APIClient.shared.request(.objective(id: id), method: "PATCH", body: body)
+        withAnimation { trashObjectives.removeAll { $0.id == id } }
+        showToast("Restaurado correctamente")
     }
 
     private func hardDeleteObjective(_ id: UUID) async {
         try? await APIClient.shared.requestVoid(.objectiveHardDelete(id: id), method: "DELETE")
-        await loadAll()
+        withAnimation { trashObjectives.removeAll { $0.id == id } }
     }
 
     private func emptyTrash() async {
         try? await APIClient.shared.requestVoid(.trashEmpty, method: "DELETE")
-        await loadAll()
+        withAnimation {
+            trashTasks.removeAll()
+            trashProjects.removeAll()
+            trashObjectives.removeAll()
+        }
     }
 }
