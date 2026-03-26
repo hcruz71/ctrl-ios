@@ -58,12 +58,12 @@ struct TrashView: View {
             if isLoading {
                 Spacer(); ProgressView(); Spacer()
             } else {
-                TabView(selection: $selectedTab) {
-                    tasksList.tag(0)
-                    projectsList.tag(1)
-                    objectivesList.tag(2)
+                switch selectedTab {
+                case 0:  tasksList
+                case 1:  projectsList
+                case 2:  objectivesList
+                default: tasksList
                 }
-                .tabViewStyle(.page(indexDisplayMode: .never))
             }
 
             Text(lang.t("trash.auto_delete"))
@@ -283,22 +283,21 @@ struct TrashView: View {
     }
 
     private func collapseHeader(_ title: String, count: Int, icon: String, color: Color, expanded: Binding<Bool>) -> some View {
-        Button {
-            withAnimation { expanded.wrappedValue.toggle() }
-        } label: {
-            HStack(spacing: 6) {
-                Image(systemName: icon).foregroundStyle(color).font(.caption)
-                Text(title).font(.subheadline.bold())
-                Text("\(count)")
-                    .font(.caption.bold()).foregroundStyle(.white)
-                    .padding(.horizontal, 6).padding(.vertical, 2)
-                    .background(color.opacity(0.8)).clipShape(Capsule())
-                Spacer()
-                Image(systemName: expanded.wrappedValue ? "chevron.up" : "chevron.down")
-                    .font(.caption2).foregroundStyle(.secondary)
-            }
+        HStack(spacing: 6) {
+            Image(systemName: icon).foregroundStyle(color).font(.caption)
+            Text(title).font(.subheadline.bold())
+            Text("\(count)")
+                .font(.caption.bold()).foregroundStyle(.white)
+                .padding(.horizontal, 6).padding(.vertical, 2)
+                .background(color.opacity(0.8)).clipShape(Capsule())
+            Spacer()
+            Image(systemName: expanded.wrappedValue ? "chevron.up" : "chevron.down")
+                .font(.caption2).foregroundStyle(.secondary)
         }
-        .buttonStyle(.plain)
+        .contentShape(Rectangle())
+        .onTapGesture {
+            withAnimation { expanded.wrappedValue.toggle() }
+        }
     }
 
     private func emptyState(_ type: String) -> some View {

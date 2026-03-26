@@ -111,6 +111,7 @@ actor ICSParser {
                 inEvent = false
                 debugEventCount += 1
 
+                #if DEBUG
                 // DEBUG: print raw lines of first 3 events
                 if debugEventCount <= 3 {
                     let summary = props["SUMMARY"] ?? "(no title)"
@@ -126,6 +127,7 @@ actor ICSParser {
                     }
                     print("[ICSParser] === END EVENT #\(debugEventCount) ===")
                 }
+                #endif
                 if let event = buildEvent(
                     from: props,
                     attendeeLines: attendeeLines,
@@ -181,10 +183,12 @@ actor ICSParser {
                   let m = Int(parts[1]), m >= 0, m < 60 else { return false }
             return true
         }
+        #if DEBUG
         print("[ICSParser] Total eventos en archivo: \(debugEventCount)")
         print("[ICSParser] Eventos despues de filtros: \(events.count)")
         print("[ICSParser] Eventos con hora valida: \(withTime.count)")
         print("[ICSParser] Eventos sin hora descartados: \(events.count - withTime.count)")
+        #endif
 
         return withTime.sorted { ($0.dateForSorting ?? .distantPast) < ($1.dateForSorting ?? .distantPast) }
     }

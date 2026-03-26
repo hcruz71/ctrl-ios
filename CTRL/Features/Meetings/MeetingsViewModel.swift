@@ -33,10 +33,12 @@ final class MeetingsViewModel: ObservableObject {
         errorMessage = nil
         do {
             meetings = try await APIClient.shared.request(.meetings)
+            #if DEBUG
             // DEBUG: log attendees
             for m in meetings.prefix(5) {
                 print("[MeetingsVM] \(m.title) — attendees: \(m.attendees?.count ?? -1), organizer: \(m.organizer ?? "nil")")
             }
+            #endif
         } catch {
             errorMessage = error.localizedDescription
         }

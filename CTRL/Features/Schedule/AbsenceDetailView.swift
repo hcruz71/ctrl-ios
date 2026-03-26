@@ -132,7 +132,9 @@ struct AbsenceDetailView: View {
             generatedAbsence = result
             await onUpdate()
         } catch {
+            #if DEBUG
             print("[AbsenceDetail] Generate failed: \(error)")
+            #endif
         }
         isGenerating = false
     }

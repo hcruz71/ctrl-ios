@@ -117,7 +117,9 @@ struct KPIMeasurementSheet: View {
             onSave()
             dismiss()
         } catch {
+            #if DEBUG
             print("[KPISheet] Save measurement error: \(error)")
+            #endif
         }
         isSaving = false
     }

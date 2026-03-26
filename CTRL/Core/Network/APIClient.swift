@@ -10,7 +10,9 @@ actor APIClient {
 
     private init() {
         let config = URLSessionConfiguration.default
-        config.timeoutIntervalForRequest = 30
+        config.timeoutIntervalForRequest = 15
+        config.timeoutIntervalForResource = 30
+        config.waitsForConnectivity = true
         self.session = URLSession(configuration: config)
 
         self.decoder = JSONDecoder()
@@ -21,6 +23,27 @@ actor APIClient {
     // MARK: - Generic request
 
     func request<T: Decodable>(
+        _ endpoint: APIEndpoint,
+        method: String? = nil,
+        body: (any Encodable)? = nil,
+        retries: Int = 2
+    ) async throws -> T {
+        do {
+            return try await performRequest(endpoint, method: method, body: body)
+        } catch let error as URLError where retries > 0 {
+            let retryable: Set<URLError.Code> = [
+                .networkConnectionLost, .timedOut, .notConnectedToInternet,
+                .cannotFindHost, .cannotConnectToHost,
+            ]
+            if retryable.contains(error.code) {
+                try? await Task.sleep(nanoseconds: 1_000_000_000)
+                return try await request(endpoint, method: method, body: body, retries: retries - 1)
+            }
+            throw error
+        }
+    }
+
+    private func performRequest<T: Decodable>(
         _ endpoint: APIEndpoint,
         method: String? = nil,
         body: (any Encodable)? = nil

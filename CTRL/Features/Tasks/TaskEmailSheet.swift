@@ -89,7 +89,9 @@ struct TaskEmailSheet: View {
 
     private func loadContact() async {
         recipientName = task.assignee ?? ""
+        #if DEBUG
         print("[TaskEmail] assigneeContactId: \(task.assigneeContactId?.uuidString ?? "nil"), assignee: \(task.assignee ?? "nil")")
+        #endif
         guard let contactId = task.assigneeContactId else {
             contactLoading = false
             return
@@ -99,9 +101,13 @@ struct TaskEmailSheet: View {
             contact = c
             recipientName = c.name
             recipientEmail = c.email ?? ""
+            #if DEBUG
             print("[TaskEmail] Contact loaded: \(c.name), email: \(c.email ?? "nil")")
+            #endif
         } catch {
+            #if DEBUG
             print("[TaskEmail] Contact load error: \(error)")
+            #endif
         }
         contactLoading = false
     }

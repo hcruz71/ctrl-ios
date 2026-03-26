@@ -171,7 +171,9 @@ struct ScheduleSettingsView: View {
             restMessage: restMessage
         )
 
+        #if DEBUG
         print("[Schedule] Saving: \(Array(workDays).sorted()), \(tf.string(from: workStart))-\(tf.string(from: workEnd))")
+        #endif
 
         do {
             let _: UserSchedule = try await APIClient.shared.request(
@@ -183,7 +185,9 @@ struct ScheduleSettingsView: View {
                 showSaved = false
             }
         } catch {
+            #if DEBUG
             print("[Schedule] Save error: \(error)")
+            #endif
             saveError = error.localizedDescription
         }
         await loadMode()

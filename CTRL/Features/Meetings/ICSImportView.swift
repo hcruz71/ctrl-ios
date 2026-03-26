@@ -328,6 +328,7 @@ struct ICSImportView: View {
 
         let events = await parser.parse(data: data, options: options)
 
+        #if DEBUG
         // DEBUG: log parse results
         print("[ICSImport] Total eventos parseados: \(events.count)")
         for (i, ev) in events.prefix(3).enumerated() {
@@ -339,6 +340,7 @@ struct ICSImportView: View {
                 print("[ICSImport]     - \(att.name ?? "?") <\(att.email ?? "?")> org=\(att.isOrganizer)")
             }
         }
+        #endif
 
         allEvents = events
         selectedIds = Set(events.map(\.id))
@@ -380,7 +382,9 @@ struct ICSImportView: View {
                 totalImported += result.imported
                 totalSkipped += result.skipped
             } catch {
+                #if DEBUG
                 print("[ICSImport] Batch \(i + 1) failed: \(error)")
+                #endif
             }
         }
 
@@ -416,15 +420,21 @@ struct DocumentPickerView: UIViewControllerRepresentable {
 
         func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
             guard let url = urls.first else { return }
+            #if DEBUG
             print("[ICSImport] File selected: \(url.lastPathComponent)")
+            #endif
             guard url.startAccessingSecurityScopedResource() else {
+                #if DEBUG
                 print("[ICSImport] Failed to access security scoped resource")
+                #endif
                 return
             }
             defer { url.stopAccessingSecurityScopedResource() }
 
             guard let data = try? Data(contentsOf: url) else {
+                #if DEBUG
                 print("[ICSImport] Failed to read file data")
+                #endif
                 return
             }
             let bytes = data.count
@@ -434,7 +444,9 @@ struct DocumentPickerView: UIViewControllerRepresentable {
             } else {
                 sizeStr = String(format: "%.0f KB", Double(bytes) / 1_000)
             }
+            #if DEBUG
             print("[ICSImport] File size: \(sizeStr) (\(bytes) bytes)")
+            #endif
             onPick(data, sizeStr)
         }
     }
