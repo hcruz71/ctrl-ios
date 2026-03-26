@@ -24,11 +24,11 @@ struct TrashView: View {
     }
 
     private var deletedTasks: [CTRLTask] {
-        trashTasks.filter { $0.reason == "deleted" }
+        trashTasks.filter { $0.isDeleted == true }
     }
 
     private var completedTasks: [CTRLTask] {
-        trashTasks.filter { $0.reason == "completed" }
+        trashTasks.filter { $0.done && $0.isDeleted != true }
     }
 
     var totalCount: Int {
@@ -318,6 +318,10 @@ struct TrashView: View {
         deletedProjects = await p
         deletedObjectives = await o
         isLoading = false
+        print("[TrashView] total tasks: \(trashTasks.count), deleted: \(deletedTasks.count), completed: \(completedTasks.count)")
+        for task in trashTasks {
+            print("[TrashView]   - \(task.title) | done=\(task.done) isDeleted=\(task.isDeleted ?? false) reason=\(task.reason ?? "nil")")
+        }
     }
 
     private func restoreTask(_ id: UUID) async {
