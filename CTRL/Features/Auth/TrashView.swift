@@ -4,11 +4,13 @@ struct TrashView: View {
     @EnvironmentObject var lang: LanguageManager
     let initialTab: String
     @State private var selectedTab: Int
-    @State private var deletedTasks: [CTRLTask] = []
+    @State private var trashTasks: [CTRLTask] = []
     @State private var deletedProjects: [Project] = []
     @State private var deletedObjectives: [Objective] = []
     @State private var isLoading = false
     @State private var showEmptyAlert = false
+    @State private var expandedDeleted = true
+    @State private var expandedCompleted = true
 
     init(initialTab: String = "tasks") {
         self.initialTab = initialTab
@@ -21,8 +23,16 @@ struct TrashView: View {
         _selectedTab = State(initialValue: tab)
     }
 
+    private var deletedTasks: [CTRLTask] {
+        trashTasks.filter { $0.reason == "deleted" }
+    }
+
+    private var completedTasks: [CTRLTask] {
+        trashTasks.filter { $0.reason == "completed" }
+    }
+
     var totalCount: Int {
-        deletedTasks.count + deletedProjects.count + deletedObjectives.count
+        trashTasks.count + deletedProjects.count + deletedObjectives.count
     }
 
     var body: some View {
@@ -88,27 +98,94 @@ struct TrashView: View {
         .task { await loadAll() }
     }
 
-    // MARK: - Lists
+    // MARK: - Tasks list with sections
 
     private var tasksList: some View {
         Group {
-            if deletedTasks.isEmpty {
+            if deletedTasks.isEmpty && completedTasks.isEmpty {
                 emptyState(lang.t("trash.tasks"))
             } else {
                 List {
-                    ForEach(deletedTasks) { task in
-                        trashRow(
-                            title: task.title,
-                            subtitle: formattedDate(task.updatedAt),
-                            onRestore: { Task { await restoreTask(task.id) } },
-                            onDelete: { Task { await hardDeleteTask(task.id) } }
-                        )
+                    // Deleted section
+                    if !deletedTasks.isEmpty {
+                        Section {
+                            if expandedDeleted {
+                                ForEach(deletedTasks) { task in
+                                    trashRow(
+                                        title: task.title,
+                                        subtitle: formattedDate(task.deletedAt ?? task.updatedAt),
+                                        subtitleKey: "trash.deleted_on",
+                                        restoreLabel: lang.t("trash.restore"),
+                                        restoreIcon: "arrow.uturn.backward",
+                                        onRestore: { Task { await restoreTask(task.id) } },
+                                        onDelete: { Task { await hardDeleteTask(task.id) } }
+                                    )
+                                }
+                            }
+                        } header: {
+                            Button {
+                                withAnimation { expandedDeleted.toggle() }
+                            } label: {
+                                HStack(spacing: 6) {
+                                    sectionHeader(
+                                        title: lang.t("trash.deleted"),
+                                        count: deletedTasks.count,
+                                        icon: "trash",
+                                        color: .red
+                                    )
+                                    Spacer()
+                                    Image(systemName: expandedDeleted ? "chevron.up" : "chevron.down")
+                                        .font(.caption2)
+                                        .foregroundStyle(.secondary)
+                                }
+                            }
+                            .buttonStyle(.plain)
+                        }
+                    }
+
+                    // Completed section
+                    if !completedTasks.isEmpty {
+                        Section {
+                            if expandedCompleted {
+                                ForEach(completedTasks) { task in
+                                    trashRow(
+                                        title: task.title,
+                                        subtitle: formattedDate(task.updatedAt),
+                                        subtitleKey: "trash.completed_on",
+                                        restoreLabel: lang.t("trash.reactivate"),
+                                        restoreIcon: "arrow.counterclockwise",
+                                        onRestore: { Task { await reactivateTask(task.id) } },
+                                        onDelete: { Task { await hardDeleteTask(task.id) } }
+                                    )
+                                }
+                            }
+                        } header: {
+                            Button {
+                                withAnimation { expandedCompleted.toggle() }
+                            } label: {
+                                HStack(spacing: 6) {
+                                    sectionHeader(
+                                        title: lang.t("trash.completed"),
+                                        count: completedTasks.count,
+                                        icon: "checkmark.circle",
+                                        color: .green
+                                    )
+                                    Spacer()
+                                    Image(systemName: expandedCompleted ? "chevron.up" : "chevron.down")
+                                        .font(.caption2)
+                                        .foregroundStyle(.secondary)
+                                }
+                            }
+                            .buttonStyle(.plain)
+                        }
                     }
                 }
-                .listStyle(.plain)
+                .listStyle(.sidebar)
             }
         }
     }
+
+    // MARK: - Projects list
 
     private var projectsList: some View {
         Group {
@@ -120,6 +197,9 @@ struct TrashView: View {
                         trashRow(
                             title: project.name,
                             subtitle: formattedDate(project.updatedAt),
+                            subtitleKey: "trash.deleted_on",
+                            restoreLabel: lang.t("trash.restore"),
+                            restoreIcon: "arrow.uturn.backward",
                             onRestore: { Task { await restoreProject(project.id) } },
                             onDelete: { Task { await hardDeleteProject(project.id) } }
                         )
@@ -129,6 +209,8 @@ struct TrashView: View {
             }
         }
     }
+
+    // MARK: - Objectives list
 
     private var objectivesList: some View {
         Group {
@@ -140,6 +222,9 @@ struct TrashView: View {
                         trashRow(
                             title: objective.title,
                             subtitle: formattedDate(objective.updatedAt),
+                            subtitleKey: "trash.deleted_on",
+                            restoreLabel: lang.t("trash.restore"),
+                            restoreIcon: "arrow.uturn.backward",
                             onRestore: { Task { await restoreObjective(objective.id) } },
                             onDelete: { Task { await hardDeleteObjective(objective.id) } }
                         )
@@ -152,9 +237,29 @@ struct TrashView: View {
 
     // MARK: - Components
 
+    private func sectionHeader(title: String, count: Int, icon: String, color: Color) -> some View {
+        HStack(spacing: 6) {
+            Image(systemName: icon)
+                .foregroundStyle(color)
+                .font(.caption)
+            Text(title)
+                .font(.subheadline.bold())
+            Text("\(count)")
+                .font(.caption.bold())
+                .foregroundStyle(.white)
+                .padding(.horizontal, 6)
+                .padding(.vertical, 2)
+                .background(color.opacity(0.8))
+                .clipShape(Capsule())
+        }
+    }
+
     private func trashRow(
         title: String,
         subtitle: String?,
+        subtitleKey: String,
+        restoreLabel: String,
+        restoreIcon: String,
         onRestore: @escaping () -> Void,
         onDelete: @escaping () -> Void
     ) -> some View {
@@ -162,14 +267,14 @@ struct TrashView: View {
             Text(title)
                 .font(.subheadline)
             if let subtitle {
-                Text("\(lang.t("trash.deleted_on")) \(subtitle)")
+                Text("\(lang.t(subtitleKey)) \(subtitle)")
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
         }
         .swipeActions(edge: .leading, allowsFullSwipe: true) {
             Button { onRestore() } label: {
-                Label(lang.t("trash.restore"), systemImage: "arrow.uturn.backward")
+                Label(restoreLabel, systemImage: restoreIcon)
             }
             .tint(.green)
         }
@@ -209,7 +314,7 @@ struct TrashView: View {
         async let t: [CTRLTask] = (try? APIClient.shared.request(.tasksTrash)) ?? []
         async let p: [Project] = (try? APIClient.shared.request(.projectsTrash)) ?? []
         async let o: [Objective] = (try? APIClient.shared.request(.objectivesTrash)) ?? []
-        deletedTasks = await t
+        trashTasks = await t
         deletedProjects = await p
         deletedObjectives = await o
         isLoading = false
@@ -217,6 +322,15 @@ struct TrashView: View {
 
     private func restoreTask(_ id: UUID) async {
         let _: CTRLTask? = try? await APIClient.shared.request(.taskRestore(id: id), method: "PATCH")
+        await loadAll()
+    }
+
+    private func reactivateTask(_ id: UUID) async {
+        var body = UpdateTaskBody()
+        body.done = false
+        body.priorityLevel = "B"
+        body.inbox = false
+        let _: CTRLTask? = try? await APIClient.shared.request(.task(id: id), method: "PATCH", body: body)
         await loadAll()
     }
 

@@ -9,6 +9,7 @@ struct ObjectivesView: View {
     @State private var measureObjective: Objective?
     @State private var objectiveToEdit: Objective?
     @State private var showingTrash = false
+    @State private var trashBadge = 0
 
     private var filteredObjectives: [Objective] {
         var list = vm.objectives
@@ -94,8 +95,19 @@ struct ObjectivesView: View {
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button { showingTrash = true } label: {
-                        Image(systemName: "trash")
-                            .foregroundStyle(.secondary)
+                        ZStack(alignment: .topTrailing) {
+                            Image(systemName: "trash")
+                                .foregroundStyle(.secondary)
+                            if trashBadge > 0 {
+                                Text("\(trashBadge)")
+                                    .font(.system(size: 9, weight: .bold))
+                                    .foregroundStyle(.white)
+                                    .padding(3)
+                                    .background(Color.red)
+                                    .clipShape(Circle())
+                                    .offset(x: 6, y: -6)
+                            }
+                        }
                     }
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
@@ -128,7 +140,11 @@ struct ObjectivesView: View {
                     Task { await vm.fetchObjectives() }
                 }
             }
-            .task { await vm.fetchObjectives() }
+            .task {
+                await vm.fetchObjectives()
+                let items: [Objective] = (try? await APIClient.shared.request(.objectivesTrash)) ?? []
+                trashBadge = items.count
+            }
             .alert("Error", isPresented: .constant(vm.errorMessage != nil)) {
                 Button("OK") { vm.errorMessage = nil }
             } message: {

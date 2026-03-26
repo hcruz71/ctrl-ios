@@ -14,6 +14,7 @@ struct ProjectsView: View {
     @State private var selectedObjectiveId: UUID?
     @StateObject private var objectivesVM = ObjectivesViewModel()
     @State private var showingTrash = false
+    @State private var trashBadge = 0
 
     var body: some View {
         NavigationStack {
@@ -69,8 +70,19 @@ struct ProjectsView: View {
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button { showingTrash = true } label: {
-                        Image(systemName: "trash")
-                            .foregroundStyle(.secondary)
+                        ZStack(alignment: .topTrailing) {
+                            Image(systemName: "trash")
+                                .foregroundStyle(.secondary)
+                            if trashBadge > 0 {
+                                Text("\(trashBadge)")
+                                    .font(.system(size: 9, weight: .bold))
+                                    .foregroundStyle(.white)
+                                    .padding(3)
+                                    .background(Color.red)
+                                    .clipShape(Circle())
+                                    .offset(x: 6, y: -6)
+                            }
+                        }
                     }
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
@@ -94,7 +106,11 @@ struct ProjectsView: View {
                     Task { await vm.fetchProjects() }
                 }
             }
-            .task { await vm.fetchProjects() }
+            .task {
+                await vm.fetchProjects()
+                let items: [Project] = (try? await APIClient.shared.request(.projectsTrash)) ?? []
+                trashBadge = items.count
+            }
             .alert("Error", isPresented: .constant(vm.errorMessage != nil)) {
                 Button("OK") { vm.errorMessage = nil }
             } message: {

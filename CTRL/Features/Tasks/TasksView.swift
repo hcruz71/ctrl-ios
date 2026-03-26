@@ -12,6 +12,7 @@ struct TasksView: View {
     @State private var taskToEdit: CTRLTask?
     @State private var taskToEmail: CTRLTask?
     @State private var showingTrash = false
+    @State private var trashBadge = 0
 
     var body: some View {
         NavigationStack {
@@ -62,8 +63,19 @@ struct TasksView: View {
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button { showingTrash = true } label: {
-                        Image(systemName: "trash")
-                            .foregroundStyle(.secondary)
+                        ZStack(alignment: .topTrailing) {
+                            Image(systemName: "trash")
+                                .foregroundStyle(.secondary)
+                            if trashBadge > 0 {
+                                Text("\(trashBadge)")
+                                    .font(.system(size: 9, weight: .bold))
+                                    .foregroundStyle(.white)
+                                    .padding(3)
+                                    .background(Color.red)
+                                    .clipShape(Circle())
+                                    .offset(x: 6, y: -6)
+                            }
+                        }
                     }
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
@@ -89,7 +101,11 @@ struct TasksView: View {
             .sheet(item: $taskToEmail) { task in
                 TaskEmailSheet(task: task)
             }
-            .task { await vm.fetchAll() }
+            .task {
+                await vm.fetchAll()
+                let items: [CTRLTask] = (try? await APIClient.shared.request(.tasksTrash)) ?? []
+                trashBadge = items.count
+            }
             .alert("Error", isPresented: .constant(vm.errorMessage != nil)) {
                 Button("OK") { vm.errorMessage = nil }
             } message: {

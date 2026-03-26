@@ -38,6 +38,11 @@ struct CTRLTask: Codable, Identifiable {
     var sourceReferenceId: UUID?
     var sourceNotes: String?
 
+    // Soft delete
+    var isDeleted: Bool?
+    var deletedAt: Date?
+    var reason: String?
+
     let createdAt: Date?
     let updatedAt: Date?
 

@@ -326,6 +326,10 @@ final class LanguageManager: ObservableObject {
         "trash.empty_confirm":  ["es": "Eliminar permanentemente todos los elementos?", "en": "Permanently delete all items?", "pt": "Excluir permanentemente todos os itens?", "fr": "Supprimer definitivement tous les elements?", "de": "Alle Elemente dauerhaft loschen?"],
         "trash.deleted_on":     ["es": "Eliminado el",       "en": "Deleted on",         "pt": "Excluido em",        "fr": "Supprime le",         "de": "Geloscht am"],
         "trash.auto_delete":    ["es": "Los elementos se eliminan automaticamente despues de 30 dias", "en": "Items are automatically deleted after 30 days", "pt": "Os itens sao excluidos automaticamente apos 30 dias", "fr": "Les elements sont automatiquement supprimes apres 30 jours", "de": "Elemente werden nach 30 Tagen automatisch geloscht"],
+        "trash.deleted":        ["es": "Eliminadas",         "en": "Deleted",            "pt": "Excluidas",          "fr": "Supprimees",          "de": "Geloscht"],
+        "trash.completed":      ["es": "Completadas",        "en": "Completed",          "pt": "Concluidas",         "fr": "Terminees",           "de": "Abgeschlossen"],
+        "trash.reactivate":     ["es": "Reactivar",          "en": "Reactivate",         "pt": "Reativar",           "fr": "Reactiver",           "de": "Reaktivieren"],
+        "trash.completed_on":   ["es": "Completado el",      "en": "Completed on",       "pt": "Concluido em",       "fr": "Termine le",          "de": "Abgeschlossen am"],
 
         // Assistant
         "assistant.thinking":      ["es": "Pensando",                    "en": "Thinking",          "pt": "Pensando",             "fr": "En train de reflechir", "de": "Nachdenken"],
