@@ -15,6 +15,55 @@ struct ProjectsView: View {
     @StateObject private var objectivesVM = ObjectivesViewModel()
     @State private var showingTrash = false
     @State private var trashBadge = 0
+    @State private var filterObjectiveId: UUID? = nil
+    @ObservedObject private var lang = LanguageManager.shared
+
+    var filteredProjects: [Project] {
+        guard let objectiveId = filterObjectiveId else {
+            return vm.projects
+        }
+        return vm.projects.filter { $0.objectiveId == objectiveId }
+    }
+
+    private var objectiveFilterBar: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 8) {
+                Button {
+                    filterObjectiveId = nil
+                } label: {
+                    Text(lang.t("filter.all"))
+                        .font(.caption)
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 6)
+                        .background(filterObjectiveId == nil ? Color.ctrlPurple : Color.gray.opacity(0.15))
+                        .foregroundColor(filterObjectiveId == nil ? .white : .primary)
+                        .cornerRadius(20)
+                }
+                .buttonStyle(.plain)
+
+                ForEach(objectivesVM.objectives) { objective in
+                    Button {
+                        filterObjectiveId = objective.id
+                    } label: {
+                        HStack(spacing: 4) {
+                            Text(ObjectiveArea(rawValue: objective.area ?? "")?.emoji ?? "🎯")
+                                .font(.caption)
+                            Text(objective.title)
+                                .font(.caption)
+                                .lineLimit(1)
+                        }
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 6)
+                        .background(filterObjectiveId == objective.id ? Color.ctrlPurple : Color.gray.opacity(0.15))
+                        .foregroundColor(filterObjectiveId == objective.id ? .white : .primary)
+                        .cornerRadius(20)
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+            .padding(.horizontal, 16)
+        }
+    }
 
     var body: some View {
         NavigationStack {
@@ -38,32 +87,65 @@ struct ProjectsView: View {
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                 } else {
-                    List {
-                        ForEach(vm.projects) { project in
-                            NavigationLink {
-                                ProjectDetailView(vm: vm, project: project)
-                            } label: {
-                                ProjectRowView(project: project)
-                            }
-                            .swipeActions(edge: .leading) {
+                    VStack(spacing: 0) {
+                        if !objectivesVM.objectives.isEmpty {
+                            objectiveFilterBar
+                                .padding(.vertical, 8)
+                        }
+
+                        if filteredProjects.isEmpty && filterObjectiveId != nil {
+                            VStack(spacing: 12) {
+                                Image(systemName: "folder")
+                                    .font(.system(size: 40))
+                                    .foregroundStyle(.secondary)
+                                Text(lang.t("projects.no_objective_projects"))
+                                    .font(.headline)
+                                    .foregroundStyle(.secondary)
+                                    .multilineTextAlignment(.center)
                                 Button {
-                                    projectToEdit = project
+                                    selectedObjectiveId = filterObjectiveId
+                                    showingAdd = true
                                 } label: {
-                                    Label("Editar", systemImage: "pencil")
+                                    Label(lang.t("common.create"), systemImage: "plus")
+                                        .font(.subheadline.bold())
+                                        .padding(.horizontal, 16)
+                                        .padding(.vertical, 8)
+                                        .background(Color.ctrlPurple)
+                                        .foregroundColor(.white)
+                                        .cornerRadius(20)
                                 }
-                                .tint(.blue)
+                                .buttonStyle(.plain)
                             }
-                            .swipeActions(edge: .trailing) {
-                                Button(role: .destructive) {
-                                    Task { await vm.delete(id: project.id) }
-                                } label: {
-                                    Label("Eliminar", systemImage: "trash")
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        } else {
+                            List {
+                                ForEach(filteredProjects) { project in
+                                    NavigationLink {
+                                        ProjectDetailView(vm: vm, project: project)
+                                    } label: {
+                                        ProjectRowView(project: project)
+                                    }
+                                    .swipeActions(edge: .leading) {
+                                        Button {
+                                            projectToEdit = project
+                                        } label: {
+                                            Label("Editar", systemImage: "pencil")
+                                        }
+                                        .tint(.blue)
+                                    }
+                                    .swipeActions(edge: .trailing) {
+                                        Button(role: .destructive) {
+                                            Task { await vm.delete(id: project.id) }
+                                        } label: {
+                                            Label("Eliminar", systemImage: "trash")
+                                        }
+                                    }
                                 }
                             }
+                            .listStyle(.plain)
+                            .refreshable { await vm.fetchProjects() }
                         }
                     }
-                    .listStyle(.plain)
-                    .refreshable { await vm.fetchProjects() }
                 }
             }
             .navigationTitle("Proyectos")
@@ -108,6 +190,7 @@ struct ProjectsView: View {
             }
             .task {
                 await vm.fetchProjects()
+                await objectivesVM.fetchObjectives()
                 let items: [Project] = (try? await APIClient.shared.request(.projectsTrash)) ?? []
                 trashBadge = items.count
             }

@@ -267,6 +267,11 @@ final class LanguageManager: ObservableObject {
         "project.objective":   ["es": "Objetivo vinculado",  "en": "Linked objective",   "pt": "Objetivo vinculado","fr": "Objectif lie",      "de": "Verknupftes Ziel"],
         "project.status":      ["es": "Estado",              "en": "Status",             "pt": "Status",            "fr": "Statut",            "de": "Status"],
 
+        // Filters
+        "filter.all":                      ["es": "Todos",                                  "en": "All",                                  "pt": "Todos",                                 "fr": "Tous",                                  "de": "Alle"],
+        "projects.no_objective_projects":  ["es": "No hay proyectos para este objetivo",    "en": "No projects for this objective",        "pt": "Sem projetos para este objetivo",        "fr": "Pas de projets pour cet objectif",      "de": "Keine Projekte für dieses Ziel"],
+        "common.create":                   ["es": "Crear",                                  "en": "Create",                               "pt": "Criar",                                 "fr": "Créer",                                 "de": "Erstellen"],
+
         // Task labels
         "task.title_field":     ["es": "Titulo",                "en": "Title",                "pt": "Titulo",              "fr": "Titre",                "de": "Titel"],
         "task.project":         ["es": "Proyecto",              "en": "Project",              "pt": "Projeto",             "fr": "Projet",               "de": "Projekt"],
