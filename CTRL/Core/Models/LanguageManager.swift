@@ -271,6 +271,7 @@ final class LanguageManager: ObservableObject {
         "filter.all":                      ["es": "Todos",                                  "en": "All",                                  "pt": "Todos",                                 "fr": "Tous",                                  "de": "Alle"],
         "projects.no_objective_projects":  ["es": "No hay proyectos para este objetivo",    "en": "No projects for this objective",        "pt": "Sem projetos para este objetivo",        "fr": "Pas de projets pour cet objectif",      "de": "Keine Projekte für dieses Ziel"],
         "common.create":                   ["es": "Crear",                                  "en": "Create",                               "pt": "Criar",                                 "fr": "Créer",                                 "de": "Erstellen"],
+        "common.cancel":                   ["es": "Cancelar",                               "en": "Cancel",                               "pt": "Cancelar",                              "fr": "Annuler",                               "de": "Abbrechen"],
 
         // Task labels
         "task.title_field":     ["es": "Titulo",                "en": "Title",                "pt": "Titulo",              "fr": "Titre",                "de": "Titel"],
@@ -304,7 +305,17 @@ final class LanguageManager: ObservableObject {
         "contact.filter.all":       ["es": "Todos",  "en": "All",    "pt": "Todos",  "fr": "Tous",   "de": "Alle"],
 
         // Email analysis
-        "emails.analyze_btn":  ["es": "Analizar correos con IA",  "en": "Analyze emails with AI", "pt": "Analisar e-mails com IA", "fr": "Analyser les e-mails avec IA", "de": "E-Mails mit KI analysieren"],
+        "emails.analyze_btn":          ["es": "Analizar correos con IA",                              "en": "Analyze emails with AI",                        "pt": "Analisar e-mails com IA",                          "fr": "Analyser les e-mails avec IA",                        "de": "E-Mails mit KI analysieren"],
+        "emails.import_gmail":         ["es": "Importar desde Gmail",                                 "en": "Import from Gmail",                             "pt": "Importar do Gmail",                                "fr": "Importer depuis Gmail",                               "de": "Von Gmail importieren"],
+        "emails.import_file":          ["es": "Importar archivo .mbox/.eml",                          "en": "Import .mbox/.eml file",                        "pt": "Importar arquivo .mbox/.eml",                      "fr": "Importer fichier .mbox/.eml",                         "de": ".mbox/.eml Datei importieren"],
+        "emails.no_gmail_connected":   ["es": "Conecta tu cuenta de Google para importar correos",    "en": "Connect your Google account to import emails",  "pt": "Conecte sua conta Google para importar e-mails",   "fr": "Connectez votre compte Google pour importer des e-mails", "de": "Verbinden Sie Ihr Google-Konto, um E-Mails zu importieren"],
+        "emails.unread_only":          ["es": "Solo no leídos",                                       "en": "Unread only",                                   "pt": "Apenas não lidos",                                 "fr": "Non lus seulement",                                   "de": "Nur ungelesene"],
+        "emails.exclude_newsletters":  ["es": "Excluir newsletters",                                  "en": "Exclude newsletters",                           "pt": "Excluir newsletters",                              "fr": "Exclure les newsletters",                             "de": "Newsletter ausschließen"],
+        "emails.attachments_only":     ["es": "Solo con adjuntos",                                    "en": "With attachments only",                         "pt": "Apenas com anexos",                                "fr": "Avec pièces jointes uniquement",                      "de": "Nur mit Anhängen"],
+        "emails.connected_account":    ["es": "Cuenta conectada",                                     "en": "Connected account",                             "pt": "Conta conectada",                                  "fr": "Compte connecté",                                     "de": "Verbundenes Konto"],
+        "emails.period":               ["es": "Período",                                              "en": "Period",                                        "pt": "Período",                                          "fr": "Période",                                             "de": "Zeitraum"],
+        "emails.filters":              ["es": "Filtros",                                               "en": "Filters",                                       "pt": "Filtros",                                          "fr": "Filtres",                                             "de": "Filter"],
+        "emails.go_settings":          ["es": "Ir a Configuraciones",                                 "en": "Go to Settings",                                "pt": "Ir para Configurações",                            "fr": "Aller aux Paramètres",                                "de": "Zu Einstellungen gehen"],
 
         // Task source tracking
         "source.origin":          ["es": "Origen",                          "en": "Origin",            "pt": "Origem",              "fr": "Origine",              "de": "Ursprung"],

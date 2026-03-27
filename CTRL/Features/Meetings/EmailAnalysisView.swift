@@ -10,6 +10,8 @@ struct EmailAnalysisView: View {
     @State private var showImport = false
     @State private var showAIConfirm = false
     @State private var showStats = false
+    @State private var showingGmailImport = false
+    @State private var googleAccounts: [GoogleCalendarAccount] = []
 
     private let periods = [(24, "24h"), (48, "48h"), (72, "72h")]
 
@@ -91,7 +93,18 @@ struct EmailAnalysisView: View {
                 }
             }
             ToolbarItemGroup(placement: .navigationBarTrailing) {
-                Button { showImport = true } label: {
+                Menu {
+                    Button {
+                        showingGmailImport = true
+                    } label: {
+                        Label(lang.t("emails.import_gmail"), systemImage: "envelope.badge")
+                    }
+                    Button {
+                        showImport = true
+                    } label: {
+                        Label(lang.t("emails.import_file"), systemImage: "doc.badge.plus")
+                    }
+                } label: {
                     Image(systemName: "folder.badge.plus")
                 }
                 if hasLoaded {
@@ -113,6 +126,16 @@ struct EmailAnalysisView: View {
                 Task { await analyzeMbox(content) }
             }
         }
+        .sheet(isPresented: $showingGmailImport) {
+            GmailImportView(
+                accounts: googleAccounts,
+                onAnalyze: { hours in
+                    selectedPeriod = hours
+                    showingGmailImport = false
+                    Task { await analyzeGmail() }
+                }
+            )
+        }
         .sheet(isPresented: $showStats) {
             if let r = result {
                 EmailStatsSheet(result: r) {
@@ -120,6 +143,9 @@ struct EmailAnalysisView: View {
                     hasLoaded = false
                 }
             }
+        }
+        .task {
+            googleAccounts = (try? await APIClient.shared.request(.googleCalendarAccounts) as [GoogleCalendarAccount]) ?? []
         }
     }
 
