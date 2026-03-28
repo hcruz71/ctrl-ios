@@ -13,6 +13,7 @@ struct EmailAnalysisView: View {
     @State private var showingGmailImport = false
     @State private var showingImportedList = false
     @State private var importedCount = 0
+    @State private var showDeleteGmailConfirm = false
 
     private let periods = [(24, "24h"), (48, "48h"), (72, "72h")]
 
@@ -123,6 +124,14 @@ struct EmailAnalysisView: View {
                     } label: {
                         Label(lang.t("emails.import_file"), systemImage: "doc.badge.plus")
                     }
+                    if importedCount > 0 {
+                        Divider()
+                        Button(role: .destructive) {
+                            showDeleteGmailConfirm = true
+                        } label: {
+                            Label(lang.t("emails.delete_gmail_only"), systemImage: "trash")
+                        }
+                    }
                 } label: {
                     Image(systemName: "folder.badge.plus")
                 }
@@ -130,9 +139,6 @@ struct EmailAnalysisView: View {
                     Button { showStats = true } label: {
                         Image(systemName: "chart.bar")
                     }
-                }
-                Button { showAIConfirm = true } label: {
-                    Image(systemName: "sparkles")
                 }
             }
         }
@@ -168,6 +174,14 @@ struct EmailAnalysisView: View {
         }
         .task {
             await loadImportedCount()
+        }
+        .alert(lang.t("emails.delete_gmail_only"), isPresented: $showDeleteGmailConfirm) {
+            Button(lang.t("emails.delete_gmail_only"), role: .destructive) {
+                Task { await deleteGmailEmails() }
+            }
+            Button(lang.t("common.cancel"), role: .cancel) {}
+        } message: {
+            Text(lang.t("emails.delete_gmail_confirm"))
         }
     }
 
@@ -299,6 +313,13 @@ struct EmailAnalysisView: View {
         if let countResult: ImportedEmailsCount = try? await APIClient.shared.request(.gmailEmailsCount) {
             importedCount = countResult.count
         }
+    }
+
+    private func deleteGmailEmails() async {
+        try? await APIClient.shared.requestVoid(.gmailEmailsDeleteAll, method: "DELETE")
+        await loadImportedCount()
+        result = nil
+        hasLoaded = false
     }
 
     private func priorityColor(_ p: String) -> Color {

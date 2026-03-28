@@ -83,6 +83,7 @@ struct ImportedEmailItem: Codable, Identifiable {
     var hasAttachments: Bool?
     var threadId: String?
     var importance: String?
+    var source: String?
     // Full detail fields
     var bodyText: String?
     var bodyHtml: String?
