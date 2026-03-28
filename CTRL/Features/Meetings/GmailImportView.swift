@@ -128,6 +128,12 @@ struct GmailImportView: View {
                     Toggle(lang.t("emails.force_reimport"), isOn: $forceReimport)
                 }
 
+                Section {
+                    Label(lang.t("emails.gmail_sync_note"), systemImage: "info.circle")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+
                 // Import result
                 if let result = importResult {
                     Section(lang.t("emails.import_result")) {
