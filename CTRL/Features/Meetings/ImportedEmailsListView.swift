@@ -7,10 +7,15 @@ struct ImportedEmailsListView: View {
     @State private var emails: [ImportedEmailItem] = []
     @State private var total = 0
     @State private var isLoading = true
+    @State private var isLoadingMore = false
+    @State private var hasMore = true
     @State private var selectedCategory: String? = nil
     @State private var searchText = ""
     @State private var showDeleteAllConfirm = false
     @State private var showMarkAllReadConfirm = false
+    @State private var counts: [String: Int] = [:]
+
+    private let pageSize = 50
 
     private let categories = [
         ("urgente", "flame.fill", Color.red),
@@ -22,22 +27,25 @@ struct ImportedEmailsListView: View {
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
-                // Category filter
+                // Category filter with counts
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 8) {
-                        filterChip(label: lang.t("filter.all"), selected: selectedCategory == nil) {
+                        filterChip(
+                            label: chipLabel("filter.all", count: counts["total"]),
+                            selected: selectedCategory == nil
+                        ) {
                             selectedCategory = nil
-                            Task { await loadEmails() }
+                            Task { await resetAndLoad() }
                         }
                         ForEach(categories, id: \.0) { cat, icon, color in
                             filterChip(
-                                label: lang.t("emails.\(cat == "requiere_accion" ? "action" : cat)"),
+                                label: chipLabel("emails.\(cat == "requiere_accion" ? "action" : cat)", count: counts[cat]),
                                 icon: icon,
                                 color: color,
                                 selected: selectedCategory == cat
                             ) {
                                 selectedCategory = cat
-                                Task { await loadEmails() }
+                                Task { await resetAndLoad() }
                             }
                         }
                     }
@@ -45,7 +53,7 @@ struct ImportedEmailsListView: View {
                 }
                 .padding(.vertical, 8)
 
-                if isLoading {
+                if isLoading && emails.isEmpty {
                     ProgressView()
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                 } else if emails.isEmpty {
@@ -62,6 +70,11 @@ struct ImportedEmailsListView: View {
                     List {
                         ForEach(emails) { email in
                             emailRow(email)
+                                .onAppear {
+                                    if email.id == emails.last?.id && hasMore {
+                                        Task { await loadMore() }
+                                    }
+                                }
                                 .swipeActions(edge: .trailing) {
                                     if email.source == "gmail" {
                                         Button(role: .destructive) {
@@ -81,6 +94,15 @@ struct ImportedEmailsListView: View {
                                         .tint(.blue)
                                     }
                                 }
+                        }
+
+                        if isLoadingMore {
+                            HStack {
+                                Spacer()
+                                ProgressView()
+                                Spacer()
+                            }
+                            .listRowSeparator(.hidden)
                         }
                     }
                     .listStyle(.plain)
@@ -112,10 +134,12 @@ struct ImportedEmailsListView: View {
             }
             .searchable(text: $searchText, prompt: lang.t("emails.search_placeholder"))
             .onSubmit(of: .search) {
-                Task { await loadEmails() }
+                Task { await resetAndLoad() }
             }
             .task {
-                await loadEmails()
+                async let countsTask: () = loadCounts()
+                async let emailsTask: () = loadEmails()
+                _ = await (countsTask, emailsTask)
             }
             .alert(lang.t("emails.delete_gmail_only"), isPresented: $showDeleteAllConfirm) {
                 Button(lang.t("common.delete"), role: .destructive) {
@@ -134,12 +158,20 @@ struct ImportedEmailsListView: View {
         }
     }
 
+    // MARK: - Helpers
+
     private var markReadButtonLabel: String {
         if let cat = selectedCategory {
             let catName = lang.t("emails.\(cat == "requiere_accion" ? "action" : cat)")
             return lang.t("emails.mark_category_read").replacingOccurrences(of: "{category}", with: catName)
         }
         return lang.t("emails.mark_all_read")
+    }
+
+    private func chipLabel(_ key: String, count: Int?) -> String {
+        let label = lang.t(key)
+        if let c = count, c > 0 { return "\(label) (\(c))" }
+        return label
     }
 
     // MARK: - Row
@@ -223,19 +255,47 @@ struct ImportedEmailsListView: View {
 
     // MARK: - Actions
 
+    private func loadCounts() async {
+        if let result: [String: Int] = try? await APIClient.shared.request(.gmailEmailsCounts) {
+            counts = result
+        }
+    }
+
+    private func resetAndLoad() async {
+        emails = []
+        hasMore = true
+        await loadEmails()
+    }
+
     private func loadEmails() async {
         isLoading = true
         let search = searchText.isEmpty ? nil : searchText
         do {
             let page: ImportedEmailsPage = try await APIClient.shared.request(
-                .gmailEmails(category: selectedCategory, limit: 100, search: search)
+                .gmailEmails(category: selectedCategory, limit: pageSize, offset: 0, search: search)
             )
             emails = page.emails
             total = page.total
+            hasMore = page.emails.count >= pageSize && emails.count < total
         } catch {
             emails = []
         }
         isLoading = false
+    }
+
+    private func loadMore() async {
+        guard !isLoadingMore && hasMore else { return }
+        isLoadingMore = true
+        let search = searchText.isEmpty ? nil : searchText
+        do {
+            let page: ImportedEmailsPage = try await APIClient.shared.request(
+                .gmailEmails(category: selectedCategory, limit: pageSize, offset: emails.count, search: search)
+            )
+            emails.append(contentsOf: page.emails)
+            total = page.total
+            hasMore = page.emails.count >= pageSize && emails.count < total
+        } catch {}
+        isLoadingMore = false
     }
 
     private func deleteEmail(_ id: String) async {
@@ -248,7 +308,9 @@ struct ImportedEmailsListView: View {
     private func deleteAllGmail() async {
         try? await APIClient.shared.requestVoid(.gmailEmailsDeleteAll, method: "DELETE")
         NotificationCenter.default.post(name: .emailsChanged, object: nil)
-        await loadEmails()
+        counts = [:]
+        await loadCounts()
+        await resetAndLoad()
     }
 
     private func markRead(ids: [String]) async {
