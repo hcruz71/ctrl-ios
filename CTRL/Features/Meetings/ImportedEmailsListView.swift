@@ -70,6 +70,7 @@ struct ImportedEmailsListView: View {
                     List {
                         ForEach(emails) { email in
                             emailRow(email)
+                                .listRowBackground(email.isRead != true ? Color.blue.opacity(0.03) : Color.clear)
                                 .onAppear {
                                     if email.id == emails.last?.id && hasMore {
                                         Task { await loadMore() }
@@ -177,31 +178,43 @@ struct ImportedEmailsListView: View {
     // MARK: - Row
 
     private func emailRow(_ email: ImportedEmailItem) -> some View {
-        VStack(alignment: .leading, spacing: 4) {
-            HStack {
-                if let cat = email.aiCategory {
-                    categoryBadge(cat)
+        let unread = email.isRead != true
+
+        return HStack(spacing: 8) {
+            if unread {
+                Circle()
+                    .fill(Color.blue)
+                    .frame(width: 8, height: 8)
+            }
+
+            VStack(alignment: .leading, spacing: 4) {
+                HStack {
+                    if let cat = email.aiCategory {
+                        categoryBadge(cat)
+                    }
+                    Text(email.sender ?? email.senderEmail ?? "")
+                        .font(.subheadline)
+                        .fontWeight(unread ? .bold : .regular)
+                        .lineLimit(1)
+                    Spacer()
+                    sourceBadge(email.source ?? "gmail")
+                    if email.hasAttachments == true {
+                        Image(systemName: "paperclip")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
                 }
-                Text(email.sender ?? email.senderEmail ?? "")
-                    .font(.subheadline.bold())
+                Text(email.subject ?? "(sin asunto)")
+                    .font(.subheadline)
+                    .fontWeight(unread ? .semibold : .regular)
+                    .foregroundStyle(unread ? .primary : .secondary)
                     .lineLimit(1)
-                Spacer()
-                sourceBadge(email.source ?? "gmail")
-                if email.hasAttachments == true {
-                    Image(systemName: "paperclip")
+                if let snippet = email.snippet, !snippet.isEmpty {
+                    Text(snippet)
                         .font(.caption)
                         .foregroundStyle(.secondary)
+                        .lineLimit(2)
                 }
-            }
-            Text(email.subject ?? "(sin asunto)")
-                .font(.subheadline)
-                .foregroundStyle(email.isRead == true ? .secondary : .primary)
-                .lineLimit(1)
-            if let snippet = email.snippet, !snippet.isEmpty {
-                Text(snippet)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                    .lineLimit(2)
             }
         }
         .padding(.vertical, 2)
