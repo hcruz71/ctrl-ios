@@ -1,11 +1,12 @@
 import SwiftUI
 
 struct GmailImportView: View {
-    let accounts: [GoogleCalendarAccount]
     var onAnalyze: (Int) -> Void
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject var lang: LanguageManager
 
+    @State private var accounts: [GoogleCalendarAccount] = []
+    @State private var isLoadingAccounts = true
     @State private var selectedHours = 72
     @State private var unreadOnly = false
     @State private var excludeNewsletters = false
@@ -22,7 +23,10 @@ struct GmailImportView: View {
     var body: some View {
         NavigationStack {
             Group {
-                if connectedEmail != nil {
+                if isLoadingAccounts {
+                    ProgressView()
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                } else if connectedEmail != nil {
                     connectedContent
                 } else {
                     notConnectedContent
@@ -35,53 +39,68 @@ struct GmailImportView: View {
                     Button(lang.t("common.cancel")) { dismiss() }
                 }
             }
+            .task {
+                do {
+                    accounts = try await APIClient.shared.request(.googleCalendarAccounts)
+                } catch {
+                    accounts = []
+                }
+                isLoadingAccounts = false
+            }
         }
     }
 
     // MARK: - Connected
 
     private var connectedContent: some View {
-        Form {
-            Section {
+        VStack(spacing: 0) {
+            Form {
+                Section {
+                    HStack {
+                        Image(systemName: "envelope.fill")
+                            .foregroundStyle(Color.ctrlPurple)
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(lang.t("emails.connected_account"))
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                            Text(connectedEmail ?? "")
+                                .font(.subheadline.bold())
+                        }
+                    }
+                }
+
+                Section(lang.t("emails.period")) {
+                    Picker(lang.t("emails.period"), selection: $selectedHours) {
+                        ForEach(periodOptions, id: \.0) { option in
+                            Text(option.1).tag(option.0)
+                        }
+                    }
+                    .pickerStyle(.segmented)
+                }
+
+                Section(lang.t("emails.filters")) {
+                    Toggle(lang.t("emails.unread_only"), isOn: $unreadOnly)
+                    Toggle(lang.t("emails.exclude_newsletters"), isOn: $excludeNewsletters)
+                    Toggle(lang.t("emails.attachments_only"), isOn: $attachmentsOnly)
+                }
+            }
+
+            Button {
+                onAnalyze(selectedHours)
+            } label: {
                 HStack {
-                    Image(systemName: "envelope.fill")
-                        .foregroundStyle(Color.ctrlPurple)
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text(lang.t("emails.connected_account"))
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                        Text(connectedEmail ?? "")
-                            .font(.subheadline.bold())
-                    }
+                    Image(systemName: "sparkles")
+                    Text(lang.t("emails.analyze_btn"))
                 }
+                .fontWeight(.semibold)
+                .frame(maxWidth: .infinity)
+                .padding()
+                .background(Color.ctrlPurple)
+                .foregroundColor(.white)
+                .cornerRadius(12)
             }
-
-            Section(lang.t("emails.period")) {
-                Picker(lang.t("emails.period"), selection: $selectedHours) {
-                    ForEach(periodOptions, id: \.0) { option in
-                        Text(option.1).tag(option.0)
-                    }
-                }
-                .pickerStyle(.segmented)
-            }
-
-            Section(lang.t("emails.filters")) {
-                Toggle(lang.t("emails.unread_only"), isOn: $unreadOnly)
-                Toggle(lang.t("emails.exclude_newsletters"), isOn: $excludeNewsletters)
-                Toggle(lang.t("emails.attachments_only"), isOn: $attachmentsOnly)
-            }
-
-            Section {
-                Button {
-                    onAnalyze(selectedHours)
-                } label: {
-                    Label(lang.t("emails.analyze_btn"), systemImage: "sparkles")
-                        .fontWeight(.semibold)
-                        .frame(maxWidth: .infinity)
-                }
-                .listRowBackground(Color.ctrlPurple)
-                .foregroundStyle(.white)
-            }
+            .padding(.horizontal)
+            .padding(.bottom)
         }
     }
 
