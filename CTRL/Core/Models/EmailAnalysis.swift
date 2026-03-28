@@ -74,6 +74,13 @@ struct GmailImportStatus: Codable {
     var error: String?
 }
 
+struct GmailAnalyzeStatus: Codable {
+    var status: String // idle, processing, done, error
+    var analyzed: Int?
+    var total: Int?
+    var error: String?
+}
+
 struct GmailImportBody: Encodable {
     var hours: Int
     var maxResults: Int?

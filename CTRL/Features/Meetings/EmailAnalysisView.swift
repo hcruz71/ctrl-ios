@@ -14,6 +14,8 @@ struct EmailAnalysisView: View {
     @State private var showingImportedList = false
     @State private var importedCount = 0
     @State private var showDeleteGmailConfirm = false
+    @State private var analyzeStatus: GmailAnalyzeStatus?
+    @State private var isAnalyzing = false
 
     private let periods = [(24, "24h"), (48, "48h"), (72, "72h")]
 
@@ -30,7 +32,7 @@ struct EmailAnalysisView: View {
                 .padding(.horizontal)
 
                 // Analyze button
-                if !hasLoaded && !isLoading {
+                if !isAnalyzing && importedCount > 0 {
                     Button { showAIConfirm = true } label: {
                         Label(lang.t("emails.analyze_btn"), systemImage: "sparkles")
                             .fontWeight(.semibold)
@@ -61,12 +63,21 @@ struct EmailAnalysisView: View {
                     .padding(.horizontal)
                 }
 
-                if isLoading {
+                // Analyze progress
+                if isAnalyzing {
                     VStack(spacing: 12) {
                         ProgressView()
-                        Text("Leyendo y analizando correos...")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
+                        if let s = analyzeStatus, s.status == "processing" {
+                            Text(lang.t("emails.analyzing_progress")
+                                .replacingOccurrences(of: "{analyzed}", with: "\(s.analyzed ?? 0)")
+                                .replacingOccurrences(of: "{total}", with: "\(s.total ?? 0)"))
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        } else {
+                            Text(lang.t("emails.analyzing"))
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
                     }
                     .padding(.vertical, 40)
                 } else if let r = result {
@@ -290,14 +301,28 @@ struct EmailAnalysisView: View {
     // MARK: - Actions
 
     private func analyzeGmail() async {
-        isLoading = true
-        do {
-            result = try await APIClient.shared.request(.gmailAnalyze(hours: selectedPeriod))
-        } catch {
-            result = EmailAnalysisResult(totalEmails: 0, analysis: error.localizedDescription)
+        isAnalyzing = true
+        analyzeStatus = nil
+
+        // Start background analysis
+        let _: GmailImportStartResponse? = try? await APIClient.shared.request(
+            .gmailAnalyze, method: "POST"
+        )
+
+        // Poll for progress
+        while true {
+            try? await Task.sleep(nanoseconds: 3_000_000_000)
+            if let status: GmailAnalyzeStatus = try? await APIClient.shared.request(.gmailAnalyzeStatus) {
+                analyzeStatus = status
+                if status.status == "done" || status.status == "error" {
+                    break
+                }
+            }
         }
+
+        isAnalyzing = false
         hasLoaded = true
-        isLoading = false
+        await loadImportedCount()
     }
 
     private func analyzeMbox(_ content: String) async {
