@@ -56,6 +56,7 @@
 		6869DEDBDF5DA881B586B3CA /* MeetingAnalysisView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFB1C9C38F1FD20B1AE1E7AE /* MeetingAnalysisView.swift */; };
 		6AE6759224BEACEDF0238E7A /* ProgressRingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F73627F64906A12A6F0383B2 /* ProgressRingView.swift */; };
 		6DCA646E48A1B9155B28E114 /* ObjectivesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8AF4F6CAFCC1575F17737F0 /* ObjectivesView.swift */; };
+		70B3CD7CA89110237EAFFCB2 /* ImportedEmailsListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C25AA266B27A09E2456DC27 /* ImportedEmailsListView.swift */; };
 		72986BA3F8B50BAB16A86E37 /* SMARTObjectiveFormView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54C1D5858E694B4488BB269C /* SMARTObjectiveFormView.swift */; };
 		74FCF73D7D3A960E3BDD5190 /* CTRLTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7920049ADD15D7CF391353FC /* CTRLTabView.swift */; };
 		7BB1C488E3AD9171D86B24BE /* DayPlanView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11CA8E9114FCAE6191BF807B /* DayPlanView.swift */; };
@@ -156,6 +157,7 @@
 		139B5D4EA83727E9A9D09EC7 /* EditTaskSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditTaskSheet.swift; sourceTree = "<group>"; };
 		1610748183A87DD484DC145B /* HelpModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelpModels.swift; sourceTree = "<group>"; };
 		188D10DF623892FE64EC2E1B /* AIUsageAlert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIUsageAlert.swift; sourceTree = "<group>"; };
+		1C25AA266B27A09E2456DC27 /* ImportedEmailsListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportedEmailsListView.swift; sourceTree = "<group>"; };
 		1D1DEBF2E1339735151F9F96 /* PeopleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PeopleView.swift; sourceTree = "<group>"; };
 		1D8B659839744F71E726D771 /* SubscriptionPlan.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionPlan.swift; sourceTree = "<group>"; };
 		1E893A92F4812A42E4DE54FB /* MinutasView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MinutasView.swift; sourceTree = "<group>"; };
@@ -550,6 +552,7 @@
 				E0E8ED4037AE434199B456AA /* GmailImportView.swift */,
 				2BDE28EC8D4BE52841802BBD /* ICSImportView.swift */,
 				F95DC4AB30B52BC0EB622CDA /* ICSParser.swift */,
+				1C25AA266B27A09E2456DC27 /* ImportedEmailsListView.swift */,
 				CFB1C9C38F1FD20B1AE1E7AE /* MeetingAnalysisView.swift */,
 				EE393C862CA2537E7DEBEA84 /* MeetingDetailView.swift */,
 				7576480B783D9D902039666D /* MeetingRowView.swift */,
@@ -725,6 +728,7 @@
 				BC396AA05ECF01BF9B82246B /* HelpViewModel.swift in Sources */,
 				901F43A3C05C793E253F9EE1 /* ICSImportView.swift in Sources */,
 				E66672160A7D169A7CC45F4D /* ICSParser.swift in Sources */,
+				70B3CD7CA89110237EAFFCB2 /* ImportedEmailsListView.swift in Sources */,
 				A10B7C1924CE34E1CF9CDAB8 /* KPIMeasurementSheet.swift in Sources */,
 				D83E452881C7A11FA3E02D80 /* KeychainHelper.swift in Sources */,
 				5A72FB4691E93D080F0107D7 /* LanguageManager.swift in Sources */,

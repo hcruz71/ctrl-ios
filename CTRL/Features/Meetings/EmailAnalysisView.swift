@@ -11,6 +11,8 @@ struct EmailAnalysisView: View {
     @State private var showAIConfirm = false
     @State private var showStats = false
     @State private var showingGmailImport = false
+    @State private var showingImportedList = false
+    @State private var importedCount = 0
 
     private let periods = [(24, "24h"), (48, "48h"), (72, "72h")]
 
@@ -37,6 +39,24 @@ struct EmailAnalysisView: View {
                             .foregroundStyle(.white)
                             .clipShape(RoundedRectangle(cornerRadius: 12))
                     }
+                    .padding(.horizontal)
+                }
+
+                // View imported emails
+                if importedCount > 0 {
+                    Button { showingImportedList = true } label: {
+                        HStack {
+                            Image(systemName: "tray.full")
+                            Text(lang.t("emails.view_imported")
+                                .replacingOccurrences(of: "{count}", with: "\(importedCount)"))
+                        }
+                        .font(.subheadline)
+                        .frame(maxWidth: .infinity)
+                        .padding(10)
+                        .background(Color(.secondarySystemGroupedBackground))
+                        .clipShape(RoundedRectangle(cornerRadius: 10))
+                    }
+                    .buttonStyle(.plain)
                     .padding(.horizontal)
                 }
 
@@ -129,8 +149,14 @@ struct EmailAnalysisView: View {
             GmailImportView(onAnalyze: { hours in
                 selectedPeriod = hours
                 showingGmailImport = false
-                Task { await analyzeGmail() }
+                Task {
+                    await analyzeGmail()
+                    await loadImportedCount()
+                }
             })
+        }
+        .sheet(isPresented: $showingImportedList) {
+            ImportedEmailsListView()
         }
         .sheet(isPresented: $showStats) {
             if let r = result {
@@ -139,6 +165,9 @@ struct EmailAnalysisView: View {
                     hasLoaded = false
                 }
             }
+        }
+        .task {
+            await loadImportedCount()
         }
     }
 
@@ -264,6 +293,12 @@ struct EmailAnalysisView: View {
         }
         hasLoaded = true
         isLoading = false
+    }
+
+    private func loadImportedCount() async {
+        if let countResult: ImportedEmailsCount = try? await APIClient.shared.request(.gmailEmailsCount) {
+            importedCount = countResult.count
+        }
     }
 
     private func priorityColor(_ p: String) -> Color {

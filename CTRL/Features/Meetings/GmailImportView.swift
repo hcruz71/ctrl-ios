@@ -11,6 +11,7 @@ struct GmailImportView: View {
     @State private var selectedMaxResults = 50
     @State private var unreadOnly = false
     @State private var excludeNewsletters = false
+    @State private var forceReimport = false
 
     // Import state
     @State private var isImporting = false
@@ -124,6 +125,7 @@ struct GmailImportView: View {
                 Section(lang.t("emails.filters")) {
                     Toggle(lang.t("emails.unread_only"), isOn: $unreadOnly)
                     Toggle(lang.t("emails.exclude_newsletters"), isOn: $excludeNewsletters)
+                    Toggle(lang.t("emails.force_reimport"), isOn: $forceReimport)
                 }
 
                 // Import result
@@ -259,7 +261,8 @@ struct GmailImportView: View {
             hours: selectedHours,
             maxResults: selectedMaxResults,
             unreadOnly: unreadOnly ? true : nil,
-            excludeNewsletters: excludeNewsletters ? true : nil
+            excludeNewsletters: excludeNewsletters ? true : nil,
+            forceReimport: forceReimport ? true : nil
         )
         do {
             importResult = try await APIClient.shared.request(.gmailImport, method: "POST", body: body)

@@ -324,6 +324,12 @@ final class LanguageManager: ObservableObject {
         "emails.import_result":        ["es": "Resultado",                "en": "Result",                 "pt": "Resultado",                "fr": "Résultat",                 "de": "Ergebnis"],
         "emails.total_found":          ["es": "Total encontrados",        "en": "Total found",            "pt": "Total encontrados",        "fr": "Total trouvés",            "de": "Gesamt gefunden"],
         "emails.skip.duplicate":       ["es": "duplicados",               "en": "duplicates",             "pt": "duplicados",               "fr": "doublons",                 "de": "Duplikate"],
+        "emails.force_reimport":       ["es": "Forzar reimportación (sobreescribir)", "en": "Force reimport (overwrite)", "pt": "Forçar reimportação (sobrescrever)", "fr": "Forcer la réimportation (écraser)", "de": "Reimport erzwingen (überschreiben)"],
+        "emails.view_imported":        ["es": "Ver correos importados ({count})",     "en": "View imported emails ({count})", "pt": "Ver e-mails importados ({count})", "fr": "Voir les e-mails importés ({count})", "de": "Importierte E-Mails anzeigen ({count})"],
+        "emails.imported_title":       ["es": "Correos importados",    "en": "Imported emails",        "pt": "E-mails importados",       "fr": "E-mails importés",         "de": "Importierte E-Mails"],
+        "emails.no_imported":          ["es": "No hay correos importados", "en": "No imported emails",  "pt": "Sem e-mails importados",   "fr": "Pas d'e-mails importés",   "de": "Keine importierten E-Mails"],
+        "emails.search_placeholder":   ["es": "Buscar por asunto",    "en": "Search by subject",      "pt": "Buscar por assunto",       "fr": "Rechercher par sujet",     "de": "Nach Betreff suchen"],
+        "common.done":                 ["es": "Listo",                "en": "Done",                   "pt": "Pronto",                   "fr": "Terminé",                  "de": "Fertig"],
 
         // Gmail errors
         "gmail.error.reconnect_title":     ["es": "Reconexión necesaria",                                                          "en": "Reconnection needed",                                                                    "pt": "Reconexão necessária",                                                                  "fr": "Reconnexion nécessaire",                                                                    "de": "Erneute Verbindung erforderlich"],

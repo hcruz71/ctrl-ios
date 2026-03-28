@@ -63,6 +63,11 @@ struct GmailImportBody: Encodable {
     var maxResults: Int?
     var unreadOnly: Bool?
     var excludeNewsletters: Bool?
+    var forceReimport: Bool?
+}
+
+struct ImportedEmailsCount: Codable {
+    var count: Int
 }
 
 struct ImportedEmailItem: Codable, Identifiable {
