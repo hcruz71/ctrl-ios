@@ -44,14 +44,51 @@ struct SuggestedEmailTask: Codable, Identifiable {
     var dueDate: String?
 }
 
+struct SkippedBreakdown: Codable {
+    var duplicate: Int?
+    var newsletter: Int?
+    var noBody: Int?
+    var read: Int?
+}
+
 struct GmailImportResult: Codable {
     var imported: Int
     var skipped: Int
-    var total: Int
+    var skippedBreakdown: SkippedBreakdown?
+    var totalFound: Int?
 }
 
 struct GmailImportBody: Encodable {
     var hours: Int
+    var maxResults: Int?
     var unreadOnly: Bool?
     var excludeNewsletters: Bool?
+}
+
+struct ImportedEmailItem: Codable, Identifiable {
+    let id: String
+    var gmailId: String?
+    var subject: String?
+    var sender: String?
+    var senderEmail: String?
+    var receivedAt: String?
+    var snippet: String?
+    var aiCategory: String?
+    var isRead: Bool?
+    var hasAttachments: Bool?
+    var threadId: String?
+    var importance: String?
+    // Full detail fields
+    var bodyText: String?
+    var bodyHtml: String?
+    var recipients: [String]?
+    var ccRecipients: [String]?
+    var labels: [String]?
+}
+
+struct ImportedEmailsPage: Codable {
+    var emails: [ImportedEmailItem]
+    var total: Int
+    var limit: Int
+    var offset: Int
 }

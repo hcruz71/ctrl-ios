@@ -8,6 +8,7 @@ struct GmailImportView: View {
     @State private var accounts: [GoogleCalendarAccount] = []
     @State private var isLoadingAccounts = true
     @State private var selectedHours = 72
+    @State private var selectedMaxResults = 50
     @State private var unreadOnly = false
     @State private var excludeNewsletters = false
 
@@ -110,6 +111,16 @@ struct GmailImportView: View {
                     .pickerStyle(.segmented)
                 }
 
+                Section(lang.t("emails.max_results")) {
+                    Picker(lang.t("emails.max_results"), selection: $selectedMaxResults) {
+                        Text("50").tag(50)
+                        Text("100").tag(100)
+                        Text("200").tag(200)
+                        Text("500").tag(500)
+                    }
+                    .pickerStyle(.segmented)
+                }
+
                 Section(lang.t("emails.filters")) {
                     Toggle(lang.t("emails.unread_only"), isOn: $unreadOnly)
                     Toggle(lang.t("emails.exclude_newsletters"), isOn: $excludeNewsletters)
@@ -117,7 +128,7 @@ struct GmailImportView: View {
 
                 // Import result
                 if let result = importResult {
-                    Section {
+                    Section(lang.t("emails.import_result")) {
                         HStack {
                             Image(systemName: "checkmark.circle.fill")
                                 .foregroundStyle(.green)
@@ -125,12 +136,23 @@ struct GmailImportView: View {
                                 .replacingOccurrences(of: "{count}", with: "\(result.imported)"))
                                 .font(.subheadline)
                         }
+                        if let totalFound = result.totalFound {
+                            LabeledContent(lang.t("emails.total_found"), value: "\(totalFound)")
+                                .font(.caption)
+                        }
                         if result.skipped > 0 {
                             HStack {
                                 Image(systemName: "arrow.right.circle")
                                     .foregroundStyle(.secondary)
                                 Text(lang.t("emails.import_skipped")
                                     .replacingOccurrences(of: "{count}", with: "\(result.skipped)"))
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
+                        }
+                        if let bd = result.skippedBreakdown {
+                            if (bd.duplicate ?? 0) > 0 {
+                                Label("\(bd.duplicate ?? 0) \(lang.t("emails.skip.duplicate"))", systemImage: "doc.on.doc")
                                     .font(.caption)
                                     .foregroundStyle(.secondary)
                             }
@@ -235,6 +257,7 @@ struct GmailImportView: View {
         importResult = nil
         let body = GmailImportBody(
             hours: selectedHours,
+            maxResults: selectedMaxResults,
             unreadOnly: unreadOnly ? true : nil,
             excludeNewsletters: excludeNewsletters ? true : nil
         )
