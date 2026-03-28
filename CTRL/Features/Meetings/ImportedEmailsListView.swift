@@ -94,7 +94,7 @@ struct ImportedEmailsListView: View {
                         Button {
                             showMarkAllReadConfirm = true
                         } label: {
-                            Label(lang.t("emails.mark_all_read"), systemImage: "envelope.open")
+                            Label(markReadButtonLabel, systemImage: "envelope.open")
                         }
                         Divider()
                         Button(role: .destructive) {
@@ -125,13 +125,21 @@ struct ImportedEmailsListView: View {
             } message: {
                 Text(lang.t("emails.delete_gmail_confirm"))
             }
-            .alert(lang.t("emails.mark_all_read"), isPresented: $showMarkAllReadConfirm) {
-                Button(lang.t("emails.mark_all_read")) {
-                    Task { await markAllRead() }
+            .alert(markReadButtonLabel, isPresented: $showMarkAllReadConfirm) {
+                Button(markReadButtonLabel) {
+                    Task { await markReadForCurrentFilter() }
                 }
                 Button(lang.t("common.cancel"), role: .cancel) {}
             }
         }
+    }
+
+    private var markReadButtonLabel: String {
+        if let cat = selectedCategory {
+            let catName = lang.t("emails.\(cat == "requiere_accion" ? "action" : cat)")
+            return lang.t("emails.mark_category_read").replacingOccurrences(of: "{category}", with: catName)
+        }
+        return lang.t("emails.mark_all_read")
     }
 
     // MARK: - Row
@@ -234,10 +242,12 @@ struct ImportedEmailsListView: View {
         try? await APIClient.shared.requestVoid(.gmailEmail(id: id), method: "DELETE")
         emails.removeAll { $0.id == id }
         total = max(0, total - 1)
+        NotificationCenter.default.post(name: .emailsChanged, object: nil)
     }
 
     private func deleteAllGmail() async {
         try? await APIClient.shared.requestVoid(.gmailEmailsDeleteAll, method: "DELETE")
+        NotificationCenter.default.post(name: .emailsChanged, object: nil)
         await loadEmails()
     }
 
@@ -249,9 +259,14 @@ struct ImportedEmailsListView: View {
         }
     }
 
-    private func markAllRead() async {
-        struct Body: Encodable { let all: Bool }
-        try? await APIClient.shared.requestVoid(.gmailEmailsMarkRead, method: "PATCH", body: Body(all: true))
+    private func markReadForCurrentFilter() async {
+        if let cat = selectedCategory {
+            struct Body: Encodable { let category: String }
+            try? await APIClient.shared.requestVoid(.gmailEmailsMarkRead, method: "PATCH", body: Body(category: cat))
+        } else {
+            struct Body: Encodable { let all: Bool }
+            try? await APIClient.shared.requestVoid(.gmailEmailsMarkRead, method: "PATCH", body: Body(all: true))
+        }
         for i in emails.indices {
             emails[i].isRead = true
         }

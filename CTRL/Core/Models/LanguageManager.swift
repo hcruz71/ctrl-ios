@@ -334,7 +334,8 @@ final class LanguageManager: ObservableObject {
         "emails.delete_gmail_only":    ["es": "Eliminar correos de Gmail",  "en": "Delete Gmail emails",  "pt": "Excluir e-mails do Gmail",  "fr": "Supprimer e-mails Gmail",  "de": "Gmail-E-Mails löschen"],
         "emails.delete_gmail_confirm": ["es": "¿Eliminar todos los correos importados desde Gmail? Los correos de archivo no se verán afectados.", "en": "Delete all emails imported from Gmail? File-imported emails will not be affected.", "pt": "Excluir todos os e-mails importados do Gmail? E-mails de arquivo não serão afetados.", "fr": "Supprimer tous les e-mails importés de Gmail? Les e-mails de fichier ne seront pas affectés.", "de": "Alle von Gmail importierten E-Mails löschen? Datei-importierte E-Mails werden nicht betroffen."],
         "emails.mark_read":            ["es": "Marcar como leído",    "en": "Mark as read",           "pt": "Marcar como lido",         "fr": "Marquer comme lu",         "de": "Als gelesen markieren"],
-        "emails.mark_all_read":        ["es": "Marcar todos como leídos", "en": "Mark all as read",   "pt": "Marcar todos como lidos",  "fr": "Tout marquer comme lu",    "de": "Alle als gelesen markieren"],
+        "emails.mark_all_read":        ["es": "Marcar todos como leídos",             "en": "Mark all as read",                  "pt": "Marcar todos como lidos",           "fr": "Tout marquer comme lu",             "de": "Alle als gelesen markieren"],
+        "emails.mark_category_read":   ["es": "Marcar {category} como leídos",        "en": "Mark {category} as read",           "pt": "Marcar {category} como lidos",      "fr": "Marquer {category} comme lu",       "de": "{category} als gelesen markieren"],
         "emails.source_file":          ["es": "Archivo",              "en": "File",                   "pt": "Arquivo",                  "fr": "Fichier",                  "de": "Datei"],
 
         // Gmail errors

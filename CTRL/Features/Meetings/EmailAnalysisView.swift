@@ -161,8 +161,13 @@ struct EmailAnalysisView: View {
                 }
             })
         }
-        .sheet(isPresented: $showingImportedList) {
+        .sheet(isPresented: $showingImportedList, onDismiss: {
+            Task { await loadImportedCount() }
+        }) {
             ImportedEmailsListView()
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .emailsChanged)) { _ in
+            Task { await loadImportedCount() }
         }
         .sheet(isPresented: $showStats) {
             if let r = result {

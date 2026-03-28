@@ -1,5 +1,9 @@
 import Foundation
 
+extension Notification.Name {
+    static let emailsChanged = Notification.Name("emailsChanged")
+}
+
 struct EmailSummary: Codable, Identifiable {
     let id: String
     var threadId: String?
