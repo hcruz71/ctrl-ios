@@ -16,6 +16,11 @@ struct GmailImportView: View {
     @State private var importResult: GmailImportResult?
     @State private var importError: String?
 
+    // Error alert state
+    @State private var showScopeError = false
+    @State private var showGenericError = false
+    @State private var genericErrorMessage = ""
+
     // Analyze state
     @State private var showAIConfirm = false
 
@@ -56,6 +61,23 @@ struct GmailImportView: View {
             }
             .aiUsageAlert(isPresented: $showAIConfirm, title: lang.t("emails.analyze_btn"), estimatedUsage: "3-5") {
                 onAnalyze(selectedHours)
+            }
+            .alert(lang.t("gmail.error.reconnect_title"), isPresented: $showScopeError) {
+                Button(lang.t("gmail.error.go_settings")) {
+                    dismiss()
+                    NotificationCenter.default.post(name: .init("navigateToSettings"), object: nil)
+                }
+                Button(lang.t("common.cancel"), role: .cancel) {}
+            } message: {
+                Text(lang.t("gmail.error.reconnect_msg"))
+            }
+            .alert(lang.t("gmail.error.import_error_title"), isPresented: $showGenericError) {
+                Button(lang.t("gmail.error.retry")) {
+                    Task { await importEmails() }
+                }
+                Button(lang.t("common.cancel"), role: .cancel) {}
+            } message: {
+                Text(genericErrorMessage)
             }
         }
     }
@@ -218,8 +240,20 @@ struct GmailImportView: View {
         )
         do {
             importResult = try await APIClient.shared.request(.gmailImport, method: "POST", body: body)
+        } catch let apiError as APIError {
+            let msg = apiError.localizedDescription
+            if msg.contains("GMAIL_SCOPE_ERROR") {
+                showScopeError = true
+            } else if msg.contains("GMAIL_API_DISABLED") {
+                genericErrorMessage = lang.t("gmail.error.unavailable_msg")
+                showGenericError = true
+            } else {
+                genericErrorMessage = lang.t("gmail.error.generic_msg")
+                showGenericError = true
+            }
         } catch {
-            importError = error.localizedDescription
+            genericErrorMessage = lang.t("gmail.error.generic_msg")
+            showGenericError = true
         }
         isImporting = false
     }
