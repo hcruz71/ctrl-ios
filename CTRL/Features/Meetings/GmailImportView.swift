@@ -10,7 +10,14 @@ struct GmailImportView: View {
     @State private var selectedHours = 72
     @State private var unreadOnly = false
     @State private var excludeNewsletters = false
-    @State private var attachmentsOnly = false
+
+    // Import state
+    @State private var isImporting = false
+    @State private var importResult: GmailImportResult?
+    @State private var importError: String?
+
+    // Analyze state
+    @State private var showAIConfirm = false
 
     private let periodOptions: [(Int, String)] = [
         (24, "24h"), (48, "48h"), (72, "72h"), (168, "1 sem")
@@ -47,6 +54,9 @@ struct GmailImportView: View {
                 }
                 isLoadingAccounts = false
             }
+            .aiUsageAlert(isPresented: $showAIConfirm, title: lang.t("emails.analyze_btn"), estimatedUsage: "3-5") {
+                onAnalyze(selectedHours)
+            }
         }
     }
 
@@ -81,23 +91,80 @@ struct GmailImportView: View {
                 Section(lang.t("emails.filters")) {
                     Toggle(lang.t("emails.unread_only"), isOn: $unreadOnly)
                     Toggle(lang.t("emails.exclude_newsletters"), isOn: $excludeNewsletters)
-                    Toggle(lang.t("emails.attachments_only"), isOn: $attachmentsOnly)
+                }
+
+                // Import result
+                if let result = importResult {
+                    Section {
+                        HStack {
+                            Image(systemName: "checkmark.circle.fill")
+                                .foregroundStyle(.green)
+                            Text(lang.t("emails.import_success")
+                                .replacingOccurrences(of: "{count}", with: "\(result.imported)"))
+                                .font(.subheadline)
+                        }
+                        if result.skipped > 0 {
+                            HStack {
+                                Image(systemName: "arrow.right.circle")
+                                    .foregroundStyle(.secondary)
+                                Text(lang.t("emails.import_skipped")
+                                    .replacingOccurrences(of: "{count}", with: "\(result.skipped)"))
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
+                        }
+                    }
+                }
+
+                if let error = importError {
+                    Section {
+                        Label(error, systemImage: "exclamationmark.triangle")
+                            .font(.caption)
+                            .foregroundStyle(.red)
+                    }
                 }
             }
 
-            Button {
-                onAnalyze(selectedHours)
-            } label: {
-                HStack {
-                    Image(systemName: "sparkles")
-                    Text(lang.t("emails.analyze_btn"))
+            // Action buttons
+            VStack(spacing: 10) {
+                // Step 1: Import
+                Button {
+                    Task { await importEmails() }
+                } label: {
+                    HStack {
+                        if isImporting {
+                            ProgressView()
+                                .tint(.white)
+                        } else {
+                            Image(systemName: "envelope.arrow.triangle.branch")
+                        }
+                        Text(isImporting ? lang.t("emails.importing") : lang.t("emails.import_btn"))
+                    }
+                    .fontWeight(.semibold)
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .background(isImporting ? Color.gray : Color.ctrlPurple)
+                    .foregroundColor(.white)
+                    .cornerRadius(12)
                 }
-                .fontWeight(.semibold)
-                .frame(maxWidth: .infinity)
-                .padding()
-                .background(Color.ctrlPurple)
-                .foregroundColor(.white)
-                .cornerRadius(12)
+                .disabled(isImporting)
+
+                // Step 2: Analyze with AI
+                Button {
+                    showAIConfirm = true
+                } label: {
+                    HStack {
+                        Image(systemName: "sparkles")
+                        Text(lang.t("emails.analyze_btn"))
+                    }
+                    .fontWeight(.semibold)
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .background(importResult != nil ? Color.ctrlPurple : Color.gray.opacity(0.3))
+                    .foregroundColor(importResult != nil ? .white : .secondary)
+                    .cornerRadius(12)
+                }
+                .disabled(importResult == nil)
             }
             .padding(.horizontal)
             .padding(.bottom)
@@ -136,5 +203,24 @@ struct GmailImportView: View {
 
             Spacer()
         }
+    }
+
+    // MARK: - Actions
+
+    private func importEmails() async {
+        isImporting = true
+        importError = nil
+        importResult = nil
+        let body = GmailImportBody(
+            hours: selectedHours,
+            unreadOnly: unreadOnly ? true : nil,
+            excludeNewsletters: excludeNewsletters ? true : nil
+        )
+        do {
+            importResult = try await APIClient.shared.request(.gmailImport, method: "POST", body: body)
+        } catch {
+            importError = error.localizedDescription
+        }
+        isImporting = false
     }
 }

@@ -91,6 +91,7 @@ enum APIEndpoint {
     case googleCalendarStatus
     case googleCalendarAccounts
     case googleCalendarAccount(id: UUID)
+    case gmailImport
     case gmailAnalyze(hours: Int)
     case gmailAnalyzeMbox
 
@@ -190,6 +191,7 @@ enum APIEndpoint {
         case .googleCalendarStatus:             return "/google-calendar/status"
         case .googleCalendarAccounts:           return "/google-calendar/accounts"
         case .googleCalendarAccount(let id):    return "/google-calendar/accounts/\(id)"
+        case .gmailImport:                         return "/google-calendar/gmail/import"
         case .gmailAnalyze(let hours):           return "/google-calendar/gmail/analyze?hours=\(hours)"
         case .gmailAnalyzeMbox:                  return "/google-calendar/gmail/analyze-mbox"
         case .helpArticles(let l, let c):
@@ -225,7 +227,7 @@ enum APIEndpoint {
     /// Whether this endpoint targets a collection (no id) vs a single resource.
     var isCollection: Bool {
         switch self {
-        case .objectives, .meetings, .tasks, .delegations, .contacts, .login, .register, .loginApple, .loginGoogle, .registerToken, .revokeMcpToken, .assistantChat, .tasksToday, .tasksInbox, .tasksReorder, .tasksTrash, .taskRestore, .taskHardDelete, .updateMe, .onboarding, .processMinutes, .confirmTasks, .importICS, .meetingsToday, .meetingsUpcoming, .meetingsProductivity, .meetingsPast, .meetingsAll, .meetingsImported, .meetingAttendance, .meetingScore, .meetingDelegate, .meetingsByDate, .meetingsAnalysis, .sendDelegationEmail, .prepareDelegationEmail, .taskPrepareEmail, .googleCalendarAuth, .googleCalendarSync, .googleCalendarSyncAccount, .googleCalendarStatus, .googleCalendarAccounts, .gmailAnalyze, .gmailAnalyzeMbox, .schedule, .scheduleMode, .absences, .generateHandover, .objectiveKpi, .objectiveMeasurements, .objectivesTrash, .objectiveRestore, .objectiveHardDelete, .projects, .projectSummary, .projectTasks, .projectsTrash, .projectRestore, .projectHardDelete, .trashEmpty, .usageSummary, .subscriptionVerify, .subscriptionMe, .subscriptionPlans, .subscriptionRestore, .helpArticles, .helpArticle, .helpFaqs, .helpSearch, .helpCategories:
+        case .objectives, .meetings, .tasks, .delegations, .contacts, .login, .register, .loginApple, .loginGoogle, .registerToken, .revokeMcpToken, .assistantChat, .tasksToday, .tasksInbox, .tasksReorder, .tasksTrash, .taskRestore, .taskHardDelete, .updateMe, .onboarding, .processMinutes, .confirmTasks, .importICS, .meetingsToday, .meetingsUpcoming, .meetingsProductivity, .meetingsPast, .meetingsAll, .meetingsImported, .meetingAttendance, .meetingScore, .meetingDelegate, .meetingsByDate, .meetingsAnalysis, .sendDelegationEmail, .prepareDelegationEmail, .taskPrepareEmail, .googleCalendarAuth, .googleCalendarSync, .googleCalendarSyncAccount, .googleCalendarStatus, .googleCalendarAccounts, .gmailImport, .gmailAnalyze, .gmailAnalyzeMbox, .schedule, .scheduleMode, .absences, .generateHandover, .objectiveKpi, .objectiveMeasurements, .objectivesTrash, .objectiveRestore, .objectiveHardDelete, .projects, .projectSummary, .projectTasks, .projectsTrash, .projectRestore, .projectHardDelete, .trashEmpty, .usageSummary, .subscriptionVerify, .subscriptionMe, .subscriptionPlans, .subscriptionRestore, .helpArticles, .helpArticle, .helpFaqs, .helpSearch, .helpCategories:
             return true
         default:
             return false

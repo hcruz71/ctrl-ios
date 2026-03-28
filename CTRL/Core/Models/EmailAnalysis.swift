@@ -43,3 +43,15 @@ struct SuggestedEmailTask: Codable, Identifiable {
     var priority: String?
     var dueDate: String?
 }
+
+struct GmailImportResult: Codable {
+    var imported: Int
+    var skipped: Int
+    var total: Int
+}
+
+struct GmailImportBody: Encodable {
+    var hours: Int
+    var unreadOnly: Bool?
+    var excludeNewsletters: Bool?
+}
