@@ -15,8 +15,11 @@ struct GmailImportView: View {
 
     // Import state
     @State private var isImporting = false
+    @State private var importStatus: GmailImportStatus?
+    @State private var importDone = false
     @State private var importResult: GmailImportResult?
     @State private var importError: String?
+    @State private var pollingTask: Task<Void, Never>?
 
     // Error alert state
     @State private var showScopeError = false
@@ -141,37 +144,52 @@ struct GmailImportView: View {
                         .foregroundStyle(.secondary)
                 }
 
-                // Import result
-                if let result = importResult {
+                // Live import progress
+                if let status = importStatus, status.status == "processing" {
+                    Section(lang.t("emails.import_result")) {
+                        HStack(spacing: 8) {
+                            ProgressView()
+                            Text(lang.t("emails.importing_progress")
+                                .replacingOccurrences(of: "{imported}", with: "\(status.imported ?? 0)")
+                                .replacingOccurrences(of: "{total}", with: "\(status.total ?? 0)"))
+                                .font(.subheadline)
+                        }
+                    }
+                }
+
+                // Import done
+                if importDone, let status = importStatus, status.status == "done" {
                     Section(lang.t("emails.import_result")) {
                         HStack {
                             Image(systemName: "checkmark.circle.fill")
                                 .foregroundStyle(.green)
                             Text(lang.t("emails.import_success")
-                                .replacingOccurrences(of: "{count}", with: "\(result.imported)"))
+                                .replacingOccurrences(of: "{count}", with: "\(status.imported ?? 0)"))
                                 .font(.subheadline)
                         }
-                        if let totalFound = result.totalFound {
-                            LabeledContent(lang.t("emails.total_found"), value: "\(totalFound)")
+                        if let total = status.total, total > 0 {
+                            LabeledContent(lang.t("emails.total_found"), value: "\(total)")
                                 .font(.caption)
                         }
-                        if result.skipped > 0 {
+                        if let skipped = status.skipped, skipped > 0 {
                             HStack {
                                 Image(systemName: "arrow.right.circle")
                                     .foregroundStyle(.secondary)
                                 Text(lang.t("emails.import_skipped")
-                                    .replacingOccurrences(of: "{count}", with: "\(result.skipped)"))
+                                    .replacingOccurrences(of: "{count}", with: "\(skipped)"))
                                     .font(.caption)
                                     .foregroundStyle(.secondary)
                             }
                         }
-                        if let bd = result.skippedBreakdown {
-                            if (bd.duplicate ?? 0) > 0 {
-                                Label("\(bd.duplicate ?? 0) \(lang.t("emails.skip.duplicate"))", systemImage: "doc.on.doc")
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
-                            }
-                        }
+                    }
+                }
+
+                // Error from status
+                if let status = importStatus, status.status == "error" {
+                    Section {
+                        Label(status.error ?? lang.t("gmail.error.generic_msg"), systemImage: "exclamationmark.triangle")
+                            .font(.caption)
+                            .foregroundStyle(.red)
                     }
                 }
 
@@ -219,11 +237,11 @@ struct GmailImportView: View {
                     .fontWeight(.semibold)
                     .frame(maxWidth: .infinity)
                     .padding()
-                    .background(importResult != nil ? Color.ctrlPurple : Color.gray.opacity(0.3))
-                    .foregroundColor(importResult != nil ? .white : .secondary)
+                    .background(importDone ? Color.ctrlPurple : Color.gray.opacity(0.3))
+                    .foregroundColor(importDone ? .white : .secondary)
                     .cornerRadius(12)
                 }
-                .disabled(importResult == nil)
+                .disabled(!importDone)
             }
             .padding(.horizontal)
             .padding(.bottom)
@@ -268,8 +286,10 @@ struct GmailImportView: View {
 
     private func importEmails() async {
         isImporting = true
+        importDone = false
         importError = nil
-        importResult = nil
+        importStatus = nil
+
         let body = GmailImportBody(
             hours: selectedHours,
             maxResults: selectedMaxResults,
@@ -278,8 +298,12 @@ struct GmailImportView: View {
             forceReimport: forceReimport ? true : nil,
             ignoreDate: selectedHours == 0 ? true : nil
         )
+
+        // Start the background import
         do {
-            importResult = try await APIClient.shared.request(.gmailImport, method: "POST", body: body)
+            let _: GmailImportStartResponse = try await APIClient.shared.request(
+                .gmailImport, method: "POST", body: body
+            )
         } catch let apiError as APIError {
             let msg = apiError.localizedDescription
             if msg.contains("GMAIL_SCOPE_ERROR") {
@@ -291,10 +315,33 @@ struct GmailImportView: View {
                 genericErrorMessage = lang.t("gmail.error.generic_msg")
                 showGenericError = true
             }
+            isImporting = false
+            return
         } catch {
             genericErrorMessage = lang.t("gmail.error.generic_msg")
             showGenericError = true
+            isImporting = false
+            return
         }
-        isImporting = false
+
+        // Poll for progress
+        pollingTask = Task {
+            while !Task.isCancelled {
+                try? await Task.sleep(nanoseconds: 3_000_000_000)
+                guard !Task.isCancelled else { break }
+
+                if let status: GmailImportStatus = try? await APIClient.shared.request(.gmailImportStatus) {
+                    await MainActor.run { importStatus = status }
+
+                    if status.status == "done" || status.status == "error" {
+                        await MainActor.run {
+                            importDone = status.status == "done"
+                            isImporting = false
+                        }
+                        break
+                    }
+                }
+            }
+        }
     }
 }
