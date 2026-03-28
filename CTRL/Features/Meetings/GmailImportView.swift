@@ -26,9 +26,17 @@ struct GmailImportView: View {
     // Analyze state
     @State private var showAIConfirm = false
 
-    private let periodOptions: [(Int, String)] = [
-        (24, "24h"), (48, "48h"), (72, "72h"), (168, "1 sem")
-    ]
+    private var periodOptions: [(Int, String)] {
+        [
+            (24, "24h"),
+            (48, "48h"),
+            (72, "72h"),
+            (168, lang.t("emails.period_week")),
+            (720, lang.t("emails.period_month")),
+            (2160, lang.t("emails.period_3months")),
+            (0, lang.t("emails.period_all")),
+        ]
+    }
 
     var connectedEmail: String? {
         accounts.first(where: { $0.isActive })?.email
@@ -105,11 +113,10 @@ struct GmailImportView: View {
 
                 Section(lang.t("emails.period")) {
                     Picker(lang.t("emails.period"), selection: $selectedHours) {
-                        ForEach(periodOptions, id: \.0) { option in
-                            Text(option.1).tag(option.0)
+                        ForEach(periodOptions, id: \.0) { value, label in
+                            Text(label).tag(value)
                         }
                     }
-                    .pickerStyle(.segmented)
                 }
 
                 Section(lang.t("emails.max_results")) {
@@ -268,7 +275,8 @@ struct GmailImportView: View {
             maxResults: selectedMaxResults,
             unreadOnly: unreadOnly ? true : nil,
             excludeNewsletters: excludeNewsletters ? true : nil,
-            forceReimport: forceReimport ? true : nil
+            forceReimport: forceReimport ? true : nil,
+            ignoreDate: selectedHours == 0 ? true : nil
         )
         do {
             importResult = try await APIClient.shared.request(.gmailImport, method: "POST", body: body)
