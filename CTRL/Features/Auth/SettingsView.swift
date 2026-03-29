@@ -130,27 +130,15 @@ struct SettingsView: View {
 
             // MARK: - Sistema
             Section(lang.t("settings.notifications")) {
-                HStack {
-                    Label(lang.t("profile.notifications"), systemImage: "bell.fill")
-                    Spacer()
-                    Text(permissionLabel)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
-
-                if pushManager.permissionStatus == .notDetermined {
-                    Button {
-                        Task { await pushManager.requestPermissionAndRegister() }
-                    } label: {
-                        Label("Activar notificaciones", systemImage: "bell.badge")
-                    }
-                } else if pushManager.permissionStatus == .denied {
-                    Button {
-                        if let url = URL(string: UIApplication.openSettingsURLString) {
-                            UIApplication.shared.open(url)
-                        }
-                    } label: {
-                        Label("Abrir Ajustes para activar", systemImage: "gear")
+                NavigationLink {
+                    NotificationPreferencesView()
+                } label: {
+                    HStack {
+                        Label(lang.t("profile.notifications"), systemImage: "bell.fill")
+                        Spacer()
+                        Text(permissionLabel)
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
                     }
                 }
 
