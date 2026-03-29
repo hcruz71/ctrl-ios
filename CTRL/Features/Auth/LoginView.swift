@@ -10,144 +10,217 @@ private class GoogleOAuthCoordinator: NSObject, ASWebAuthenticationPresentationC
     }
 }
 
+// MARK: - Color palette
+
+private extension Color {
+    static let bgDark = Color(hex: "#0D1B2A")
+    static let surface = Color(hex: "#132235")
+    static let borderField = Color(hex: "#1A3A6E")
+    static let electricBlue = Color(hex: "#1A6EDB")
+    static let textSecondary = Color(hex: "#7A96B8")
+    static let textPlaceholder = Color(hex: "#4A6480")
+}
+
 struct LoginView: View {
     @StateObject private var vm = LoginViewModel()
     @State private var googleOAuthCoordinator = GoogleOAuthCoordinator()
+    @State private var showPassword = false
 
     var body: some View {
-        ScrollView {
-            VStack(spacing: 24) {
-                // HEADER
-                VStack(spacing: 8) {
-                    Image("CTRLLogo")
+        ZStack {
+            Color.bgDark.ignoresSafeArea()
+
+            ScrollView(showsIndicators: false) {
+                VStack(spacing: 0) {
+
+                    // MARK: - Header
+                    Image("VERALogo")
                         .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(width: 80, height: 80)
-                        .clipShape(RoundedRectangle(cornerRadius: 16))
+                        .aspectRatio(contentMode: .fill)
+                        .frame(width: 110, height: 110)
+                        .clipShape(RoundedRectangle(cornerRadius: 22))
+                        .padding(.top, 60)
+                        .padding(.bottom, 32)
 
-                    Text("VERA")
-                        .font(.system(size: 42, weight: .black))
-                        .foregroundStyle(Color.ctrlPurple)
-
-                    Text("Virtual  ·  Executive  ·  Resource  ·  Assistant")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                        .kerning(0.5)
-                }
-                .padding(.top, 48)
-
-                // FIELDS
-                VStack(spacing: 14) {
-                    if vm.isRegistering {
-                        TextField("Nombre", text: $vm.name)
-                            .textFieldStyle(.roundedBorder)
-                            .textContentType(.name)
-                    }
-
-                    TextField("Correo electronico", text: $vm.email)
-                        .textFieldStyle(.roundedBorder)
-                        .textContentType(.emailAddress)
-                        .keyboardType(.emailAddress)
-                        .autocapitalization(.none)
-
-                    SecureField("Contrasena", text: $vm.password)
-                        .textFieldStyle(.roundedBorder)
-                        .textContentType(vm.isRegistering ? .newPassword : .password)
-                }
-
-                // ERROR
-                if let error = vm.errorMessage {
-                    Text(error)
-                        .font(.caption)
-                        .foregroundStyle(.red)
-                        .multilineTextAlignment(.center)
-                }
-
-                // PRIMARY BUTTON
-                Button {
-                    Task {
-                        if vm.isRegistering { await vm.register() }
-                        else { await vm.login() }
-                    }
-                } label: {
-                    Group {
-                        if vm.isLoading {
-                            ProgressView().tint(.white)
-                        } else {
-                            Text(vm.isRegistering ? "Registrarse" : "Iniciar sesion")
-                                .fontWeight(.semibold)
+                    // MARK: - Fields
+                    VStack(spacing: 14) {
+                        if vm.isRegistering {
+                            customField(
+                                icon: "person.fill",
+                                placeholder: "Nombre",
+                                text: $vm.name,
+                                contentType: .name
+                            )
                         }
-                    }
-                    .frame(maxWidth: .infinity, minHeight: 44)
-                }
-                .buttonStyle(.borderedProminent)
-                .tint(Color.ctrlPurple)
-                .disabled(vm.isLoading)
 
-                // SEPARATOR
-                HStack(spacing: 12) {
-                    Rectangle().frame(height: 1).foregroundStyle(.gray.opacity(0.3))
-                    Text("o continua con")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                        .layoutPriority(1)
-                    Rectangle().frame(height: 1).foregroundStyle(.gray.opacity(0.3))
-                }
-
-                // SOCIAL BUTTONS
-                VStack(spacing: 12) {
-                    // Google
-                    Button {
-                        signInWithGoogle()
-                    } label: {
-                        HStack(spacing: 12) {
-                            ZStack {
-                                Circle()
-                                    .fill(Color.white)
-                                    .frame(width: 24, height: 24)
-                                Text("G")
-                                    .font(.system(size: 16, weight: .bold))
-                                    .foregroundStyle(.blue)
-                            }
-                            Text("Continuar con Google")
-                                .font(.system(size: 16, weight: .medium))
-                                .foregroundStyle(.black)
-                        }
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 50)
-                        .background(Color.white)
-                        .clipShape(RoundedRectangle(cornerRadius: 10))
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 10)
-                                .stroke(Color.gray.opacity(0.3), lineWidth: 1)
+                        customField(
+                            icon: "envelope.fill",
+                            placeholder: "Correo electrónico",
+                            text: $vm.email,
+                            contentType: .emailAddress,
+                            keyboard: .emailAddress,
+                            autocap: .never
                         )
+
+                        // Password field
+                        HStack(spacing: 12) {
+                            Image(systemName: "lock.fill")
+                                .font(.system(size: 16))
+                                .foregroundColor(.textSecondary)
+                                .frame(width: 20)
+
+                            Group {
+                                if showPassword {
+                                    TextField("Contraseña", text: $vm.password)
+                                } else {
+                                    SecureField("Contraseña", text: $vm.password)
+                                }
+                            }
+                            .font(.system(size: 15))
+                            .foregroundColor(.white)
+                            .textContentType(vm.isRegistering ? .newPassword : .password)
+                            .tint(.electricBlue)
+
+                            Button {
+                                showPassword.toggle()
+                            } label: {
+                                Image(systemName: showPassword ? "eye.slash.fill" : "eye.fill")
+                                    .font(.system(size: 16))
+                                    .foregroundColor(.textSecondary)
+                            }
+                        }
+                        .padding(.horizontal, 16)
+                        .frame(height: 52)
+                        .background(Color.surface)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 14)
+                                .stroke(Color.borderField, lineWidth: 1)
+                        )
+                        .clipShape(RoundedRectangle(cornerRadius: 14))
+                    }
+                    .padding(.horizontal, 24)
+
+                    // Forgot password
+                    if !vm.isRegistering {
+                        HStack {
+                            Spacer()
+                            Button {
+                                // TODO: forgot password
+                            } label: {
+                                Text("¿Olvidaste tu contraseña?")
+                                    .font(.system(size: 12))
+                                    .foregroundColor(.electricBlue)
+                            }
+                        }
+                        .padding(.horizontal, 24)
+                        .padding(.top, 8)
                     }
 
-                    // Apple (native)
-                    SignInWithAppleButton(.signIn) { request in
-                        request.requestedScopes = [.fullName, .email]
-                    } onCompletion: { result in
-                        handleAppleSignIn(result)
+                    // MARK: - Error
+                    if let error = vm.errorMessage {
+                        Text(error)
+                            .font(.caption)
+                            .foregroundColor(.red)
+                            .multilineTextAlignment(.center)
+                            .padding(.horizontal, 24)
+                            .padding(.top, 8)
                     }
-                    .signInWithAppleButtonStyle(.black)
-                    .frame(height: 50)
-                    .clipShape(RoundedRectangle(cornerRadius: 10))
-                }
 
-                // TOGGLE
-                Button {
-                    withAnimation { vm.isRegistering.toggle() }
-                } label: {
-                    Text(vm.isRegistering
-                         ? "Ya tienes cuenta? Inicia sesion"
-                         : "No tienes cuenta? Registrate")
-                        .font(.footnote)
-                        .foregroundStyle(Color.ctrlPurple)
-                }
+                    // MARK: - Primary button
+                    Button {
+                        Task {
+                            if vm.isRegistering { await vm.register() }
+                            else { await vm.login() }
+                        }
+                    } label: {
+                        Group {
+                            if vm.isLoading {
+                                ProgressView().tint(.white)
+                            } else {
+                                Text(vm.isRegistering ? "Registrarse" : "Iniciar sesión")
+                                    .font(.system(size: 16, weight: .medium))
+                            }
+                        }
+                        .foregroundColor(.white)
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 52)
+                        .background(Color.electricBlue)
+                        .clipShape(RoundedRectangle(cornerRadius: 14))
+                    }
+                    .disabled(vm.isLoading)
+                    .padding(.horizontal, 24)
+                    .padding(.top, 20)
 
-                Spacer(minLength: 32)
+                    // MARK: - Divider
+                    HStack(spacing: 12) {
+                        Rectangle().frame(height: 1).foregroundColor(Color.borderField)
+                        Text("o continúa con")
+                            .font(.system(size: 12))
+                            .foregroundColor(.textSecondary)
+                            .layoutPriority(1)
+                        Rectangle().frame(height: 1).foregroundColor(Color.borderField)
+                    }
+                    .padding(.horizontal, 24)
+                    .padding(.vertical, 20)
+
+                    // MARK: - Social buttons
+                    VStack(spacing: 12) {
+                        // Apple
+                        SignInWithAppleButton(.signIn) { request in
+                            request.requestedScopes = [.fullName, .email]
+                        } onCompletion: { result in
+                            handleAppleSignIn(result)
+                        }
+                        .signInWithAppleButtonStyle(.black)
+                        .frame(height: 52)
+                        .clipShape(RoundedRectangle(cornerRadius: 14))
+
+                        // Google
+                        Button {
+                            signInWithGoogle()
+                        } label: {
+                            HStack(spacing: 10) {
+                                ZStack {
+                                    Circle()
+                                        .fill(Color.white)
+                                        .frame(width: 22, height: 22)
+                                    Text("G")
+                                        .font(.system(size: 14, weight: .bold))
+                                        .foregroundColor(.blue)
+                                }
+                                Text("Continuar con Google")
+                                    .font(.system(size: 15, weight: .medium))
+                                    .foregroundColor(Color(hex: "#1C2126"))
+                            }
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 52)
+                            .background(Color.white)
+                            .clipShape(RoundedRectangle(cornerRadius: 14))
+                        }
+                    }
+                    .padding(.horizontal, 24)
+
+                    Spacer(minLength: 40)
+
+                    // MARK: - Toggle register/login
+                    Button {
+                        withAnimation { vm.isRegistering.toggle() }
+                    } label: {
+                        Group {
+                            if vm.isRegistering {
+                                Text("¿Ya tienes cuenta? ") +
+                                Text("Inicia sesión").bold()
+                            } else {
+                                Text("¿No tienes cuenta? ") +
+                                Text("Regístrate").bold()
+                            }
+                        }
+                        .font(.system(size: 14))
+                        .foregroundColor(.textSecondary)
+                    }
+                    .padding(.bottom, 32)
+                }
             }
-            .padding(.horizontal, 24)
         }
         .toolbar {
             ToolbarItemGroup(placement: .keyboard) {
@@ -160,6 +233,40 @@ struct LoginView: View {
             }
         }
         .ignoresSafeArea(.keyboard)
+    }
+
+    // MARK: - Custom text field
+
+    private func customField(
+        icon: String,
+        placeholder: String,
+        text: Binding<String>,
+        contentType: UITextContentType? = nil,
+        keyboard: UIKeyboardType = .default,
+        autocap: TextInputAutocapitalization = .sentences
+    ) -> some View {
+        HStack(spacing: 12) {
+            Image(systemName: icon)
+                .font(.system(size: 16))
+                .foregroundColor(.textSecondary)
+                .frame(width: 20)
+
+            TextField(placeholder, text: text)
+                .font(.system(size: 15))
+                .foregroundColor(.white)
+                .textContentType(contentType)
+                .keyboardType(keyboard)
+                .textInputAutocapitalization(autocap)
+                .tint(.electricBlue)
+        }
+        .padding(.horizontal, 16)
+        .frame(height: 52)
+        .background(Color.surface)
+        .overlay(
+            RoundedRectangle(cornerRadius: 14)
+                .stroke(Color.borderField, lineWidth: 1)
+        )
+        .clipShape(RoundedRectangle(cornerRadius: 14))
     }
 
     // MARK: - Google Sign In via OAuth

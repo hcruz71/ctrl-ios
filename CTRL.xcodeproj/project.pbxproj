@@ -24,6 +24,7 @@
 		1B6D934AD93A159BE0245AAC /* EmailAnalysisView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ECC3F4BBC585AACB5DA4280 /* EmailAnalysisView.swift */; };
 		1E19D9FD3E0C46EFE26B345B /* Color+CTRL.swift in Sources */ = {isa = PBXBuildFile; fileRef = 036BD62DCD2DC50060A4C0C8 /* Color+CTRL.swift */; };
 		1FED13E5D0564349BDE01C3F /* TrashView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0E60387301A69987B849393 /* TrashView.swift */; };
+		205A4CEF264C0AA650ED86E2 /* VERA-Logo1024x1024.png in Resources */ = {isa = PBXBuildFile; fileRef = C2B8774FF546556F7A10B5C4 /* VERA-Logo1024x1024.png */; };
 		249F41BC741203A70092F09C /* TasksViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00E7AE65E31C73949B99BEC /* TasksViewModel.swift */; };
 		26698FE315AE6F5E29DDAD04 /* StoreManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9804B8BF25D1A2DB97F9F01F /* StoreManager.swift */; };
 		27BED8D042B14AA6B7CFD311 /* HelpModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1610748183A87DD484DC145B /* HelpModels.swift */; };
@@ -231,6 +232,7 @@
 		B24F1A613ECD6D4FCA90F290 /* DelegationsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DelegationsView.swift; sourceTree = "<group>"; };
 		BCB7B72F8005F0E28D01D868 /* CTRL.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CTRL.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BE4184016F281392F3FBB5DA /* NotificationPreferencesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationPreferencesView.swift; sourceTree = "<group>"; };
+		C2B8774FF546556F7A10B5C4 /* VERA-Logo1024x1024.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "VERA-Logo1024x1024.png"; sourceTree = "<group>"; };
 		C3AEEFB479CFA8230643A843 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		C635AE199357CAAC50E92DB1 /* KeychainHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainHelper.swift; sourceTree = "<group>"; };
 		C664F04BDFE1DC00F09F61F0 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -347,6 +349,7 @@
 				96D3BF6E73B972941299F959 /* CTRL.entitlements */,
 				0BE52C713FC3E56E3C6A9936 /* CTRLApp.swift */,
 				D204C87FA053788E023A105D /* Info.plist */,
+				C2B8774FF546556F7A10B5C4 /* VERA-Logo1024x1024.png */,
 				9752F7D9A412A0B2668B5F98 /* Core */,
 				3066AA5A129B4A88F00E0DD0 /* Features */,
 				A0F211362617211D5BD4D955 /* Resources */,
@@ -673,6 +676,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				839E17C32A1602BB7C5E04EF /* Assets.xcassets in Resources */,
+				205A4CEF264C0AA650ED86E2 /* VERA-Logo1024x1024.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
