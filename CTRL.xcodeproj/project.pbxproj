@@ -90,6 +90,7 @@
 		AA9B670F7CB1B488B12FDA8D /* AbsenceDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDFBF773AC465660D16E454B /* AbsenceDetailView.swift */; };
 		AE22735CC2CA4FF86AFB55CB /* EmailAnalysis.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB9457A113088E3F698F2AC2 /* EmailAnalysis.swift */; };
 		B2EB2320118BF13EC2B97295 /* TaskFormView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23E54F172D8AB9679C2BB144 /* TaskFormView.swift */; };
+		B3154FEF02C80AD3D510EA75 /* WatchAPIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71C67C9C9288707E4002C261 /* WatchAPIService.swift */; };
 		B38BCA4BD9C8F3BC93833B47 /* EventEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83074E6D5B33114F0B04766B /* EventEditView.swift */; };
 		B429929FD1B4F04707F6590E /* BadgeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADFCA71CA86F7F5B4ADB27B6 /* BadgeView.swift */; };
 		B60589455F8842F4E0B5673C /* DelegationsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1063F17C6BC9D67D616FF26 /* DelegationsViewModel.swift */; };
@@ -192,6 +193,7 @@
 		6A6B6FBC59EF9ED3269E8751 /* MessageBubbleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBubbleView.swift; sourceTree = "<group>"; };
 		6E35A5A425EDD5E673AC495B /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		70D8DBCD3BE31DD2352D1222 /* APIError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIError.swift; sourceTree = "<group>"; };
+		71C67C9C9288707E4002C261 /* WatchAPIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchAPIService.swift; sourceTree = "<group>"; };
 		735074BD6DA7F220F484CC8B /* TaskEmailSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskEmailSheet.swift; sourceTree = "<group>"; };
 		747152AAA74268420C1757F3 /* Delegation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Delegation.swift; sourceTree = "<group>"; };
 		7576480B783D9D902039666D /* MeetingRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeetingRowView.swift; sourceTree = "<group>"; };
@@ -230,7 +232,7 @@
 		ADFDB41BC7D103108536BCB4 /* PushManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushManager.swift; sourceTree = "<group>"; };
 		AFC8CD8F102E1D7A8108D211 /* MeetingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeetingsView.swift; sourceTree = "<group>"; };
 		B24F1A613ECD6D4FCA90F290 /* DelegationsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DelegationsView.swift; sourceTree = "<group>"; };
-		BCB7B72F8005F0E28D01D868 /* CTRL.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CTRL.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		BCB7B72F8005F0E28D01D868 /* CTRL.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = CTRL.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BE4184016F281392F3FBB5DA /* NotificationPreferencesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationPreferencesView.swift; sourceTree = "<group>"; };
 		C2B8774FF546556F7A10B5C4 /* VERA-Logo1024x1024.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "VERA-Logo1024x1024.png"; sourceTree = "<group>"; };
 		C3AEEFB479CFA8230643A843 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
@@ -540,6 +542,7 @@
 				55320EF82D3336C30CC30424 /* CTRLWatch.entitlements */,
 				FCE3E8AEA128453664C6AEC6 /* CTRLWatchApp.swift */,
 				C3AEEFB479CFA8230643A843 /* Info.plist */,
+				71C67C9C9288707E4002C261 /* WatchAPIService.swift */,
 				4E665C178FE871FC8885FF3D /* WatchConnectivityManager.swift */,
 				AC3E5D28A1672242FE7E0723 /* WatchMainView.swift */,
 				85797C8FBAD7198BD0121DCF /* WatchMeetingsView.swift */,
@@ -635,9 +638,11 @@
 				LastUpgradeCheck = 1600;
 				TargetAttributes = {
 					09159ADE5BA5373811DC53BE = {
+						DevelopmentTeam = "";
 						ProvisioningStyle = Automatic;
 					};
 					449051C4D4F3A5384442DD25 = {
+						DevelopmentTeam = "";
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -797,6 +802,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				5AA6CE487D249D530218CDA8 /* CTRLWatchApp.swift in Sources */,
+				B3154FEF02C80AD3D510EA75 /* WatchAPIService.swift in Sources */,
 				C3757FFAF2B3C94904FBBB34 /* WatchConnectivityManager.swift in Sources */,
 				DC38472C2EF3903029E57AFE /* WatchMainView.swift in Sources */,
 				9C33ADEA4FCB44BE75203E7E /* WatchMeetingsView.swift in Sources */,
@@ -822,11 +828,9 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ALLOW_ENTITLEMENTS_MODIFICATION = YES;
-				CODE_SIGN_ENTITLEMENTS = CTRL/CTRL.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 679TR4ZAZB;
 				INFOPLIST_FILE = CTRL/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -844,11 +848,9 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ALLOW_ENTITLEMENTS_MODIFICATION = YES;
-				CODE_SIGN_ENTITLEMENTS = CTRL/CTRL.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 679TR4ZAZB;
 				INFOPLIST_FILE = CTRL/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -868,7 +870,6 @@
 				CODE_SIGN_ENTITLEMENTS = CTRLWatch/CTRLWatch.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 679TR4ZAZB;
 				INFOPLIST_FILE = CTRLWatch/Info.plist;
 				MARKETING_VERSION = 1.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.hector.ctrl.watchkitapp;
@@ -949,7 +950,6 @@
 				CODE_SIGN_ENTITLEMENTS = CTRLWatch/CTRLWatch.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 679TR4ZAZB;
 				INFOPLIST_FILE = CTRLWatch/Info.plist;
 				MARKETING_VERSION = 1.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.hector.ctrl.watchkitapp;

@@ -56,6 +56,15 @@ struct WatchMainView: View {
                     .lineLimit(4)
                     .multilineTextAlignment(.center)
             }
+            // Connection indicator
+            HStack(spacing: 4) {
+                Circle()
+                    .fill(WatchAPIService.shared.isAuthenticated ? Color.green : Color.yellow)
+                    .frame(width: 6, height: 6)
+                Text(WatchAPIService.shared.isAuthenticated ? "Directo" : "Via iPhone")
+                    .font(.system(size: 8))
+                    .foregroundStyle(.secondary)
+            }
         }
         .padding(.horizontal, 4)
         .navigationTitle("VERA")

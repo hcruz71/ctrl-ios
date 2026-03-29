@@ -68,6 +68,8 @@ targets:
         NSSpeechRecognitionUsageDescription: "VERA necesita reconocimiento de voz para el asistente en tu Apple Watch"
     entitlements:
       path: CTRLWatch/CTRLWatch.entitlements
+      properties:
+        com.apple.security.network.client: true
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.hector.ctrl.watchkitapp

@@ -56,8 +56,19 @@ struct WatchMeetingsView: View {
             }
         }
         .navigationTitle("Reuniones")
-        .onAppear {
-            connectivity.requestMeetings()
+        .task {
+            await loadMeetings()
         }
+    }
+
+    private func loadMeetings() async {
+        if WatchAPIService.shared.isAuthenticated {
+            do {
+                let meetings: [WatchMeeting] = try await WatchAPIService.shared.request("/meetings/today")
+                connectivity.meetings = meetings
+                return
+            } catch {}
+        }
+        connectivity.requestMeetings()
     }
 }

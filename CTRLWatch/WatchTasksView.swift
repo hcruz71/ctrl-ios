@@ -44,9 +44,23 @@ struct WatchTasksView: View {
             }
         }
         .navigationTitle("Tareas A")
-        .onAppear {
-            connectivity.requestTasks()
+        .task {
+            await loadTasks()
         }
+    }
+
+    private func loadTasks() async {
+        // Try direct API first (Watch independent)
+        if WatchAPIService.shared.isAuthenticated {
+            do {
+                let tasks: [WatchTask] = try await WatchAPIService.shared.request("/tasks/today")
+                let filtered = tasks.filter { $0.priorityLevel == "A" && !$0.done }
+                connectivity.tasks = Array(filtered.prefix(10))
+                return
+            } catch {}
+        }
+        // Fallback: request via iPhone
+        connectivity.requestTasks()
     }
 
     private func completeTask(_ task: WatchTask) {

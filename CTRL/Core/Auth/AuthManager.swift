@@ -28,6 +28,7 @@ final class AuthManager: ObservableObject {
         isLoading = false
         if isAuthenticated {
             await PushManager.shared.requestPermissionAndRegister()
+            WatchBridge.shared.syncTokenToWatch()
         }
     }
 
@@ -44,6 +45,7 @@ final class AuthManager: ObservableObject {
         currentUser = response.user
         isAuthenticated = true
         await PushManager.shared.requestPermissionAndRegister()
+        WatchBridge.shared.syncTokenToWatch()
     }
 
     func register(name: String, email: String, password: String) async throws {
@@ -57,6 +59,7 @@ final class AuthManager: ObservableObject {
         currentUser = response.user
         isAuthenticated = true
         await PushManager.shared.requestPermissionAndRegister()
+        WatchBridge.shared.syncTokenToWatch()
     }
 
     /// Handles a token received from social auth (Apple / Google).
@@ -67,6 +70,7 @@ final class AuthManager: ObservableObject {
         isAuthenticated = true
         await fetchProfile()
         await PushManager.shared.requestPermissionAndRegister()
+        WatchBridge.shared.syncTokenToWatch()
     }
 
     func fetchProfile() async {
