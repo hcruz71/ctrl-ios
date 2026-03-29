@@ -133,12 +133,19 @@ struct ScheduleSettingsView: View {
     private func loadSchedule() async {
         do {
             let s: UserSchedule = try await APIClient.shared.request(.schedule)
+            #if DEBUG
+            print("[Schedule] Loaded: days=\(s.workDays) start=\(s.workStart) end=\(s.workEnd) pEnd=\(s.personalEnd)")
+            #endif
             workDays = Set(s.workDays)
             workStart = Self.dateFromTime(s.workStart)
             workEnd = Self.dateFromTime(s.workEnd)
             personalEnd = Self.dateFromTime(s.personalEnd)
             restMessage = s.restMessage
-        } catch { }
+        } catch {
+            #if DEBUG
+            print("[Schedule] Load error: \(error)")
+            #endif
+        }
     }
 
     private func loadMode() async {
@@ -198,7 +205,14 @@ struct ScheduleSettingsView: View {
 
     private static func dateFromTime(_ time: String) -> Date {
         let df = DateFormatter()
+        // Backend may return "08:00" or "08:00:00" — try both
+        df.dateFormat = "HH:mm:ss"
+        if let d = df.date(from: time) { return d }
         df.dateFormat = "HH:mm"
-        return df.date(from: time) ?? Date()
+        if let d = df.date(from: time) { return d }
+        #if DEBUG
+        print("[Schedule] Failed to parse time: '\(time)'")
+        #endif
+        return Date()
     }
 }
