@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct ScheduleSettingsView: View {
+    @ObservedObject private var lang = LanguageManager.shared
     @State private var workDays: Set<Int> = [1, 2, 3, 4, 5]
     @State private var workStart = Self.dateFromTime("08:00")
     @State private var workEnd = Self.dateFromTime("18:00")
@@ -12,15 +13,15 @@ struct ScheduleSettingsView: View {
     @State private var showSaved = false
     @State private var saveError: String?
 
-    private let dayNames = [
-        (1, "Lu"), (2, "Ma"), (3, "Mi"), (4, "Ju"), (5, "Vi"), (6, "Sa"), (7, "Do"),
+    private let dayLabels: [(Int, String)] = [
+        (1, "L"), (2, "M"), (3, "X"), (4, "J"), (5, "V"), (6, "S"), (7, "D"),
     ]
 
     var body: some View {
         Form {
             Section {
                 HStack {
-                    Label("Modo actual", systemImage: currentMode.icon)
+                    Label(lang.t("schedule.current_mode"), systemImage: currentMode.icon)
                     Spacer()
                     Text(currentMode.label)
                         .fontWeight(.medium)
@@ -28,48 +29,49 @@ struct ScheduleSettingsView: View {
                 }
             }
 
-            Section("Dias laborables") {
+            Section(lang.t("schedule.work_days")) {
                 HStack(spacing: 8) {
-                    ForEach(dayNames, id: \.0) { day in
+                    ForEach(dayLabels, id: \.0) { num, label in
                         Button {
-                            if workDays.contains(day.0) {
-                                workDays.remove(day.0)
+                            if workDays.contains(num) {
+                                workDays.remove(num)
                             } else {
-                                workDays.insert(day.0)
+                                workDays.insert(num)
                             }
                         } label: {
-                            Text(day.1)
-                                .font(.caption)
-                                .fontWeight(.semibold)
+                            Text(label)
+                                .font(.subheadline)
+                                .fontWeight(.medium)
                                 .frame(width: 36, height: 36)
-                                .background(workDays.contains(day.0) ? Color.ctrlPurple : Color(.systemGray5))
-                                .foregroundStyle(workDays.contains(day.0) ? .white : .primary)
+                                .background(workDays.contains(num) ? Color.ctrlPurple : Color(.systemGray5))
+                                .foregroundStyle(workDays.contains(num) ? .white : .primary)
                                 .clipShape(Circle())
                         }
+                        .buttonStyle(.plain)
                     }
                 }
                 .frame(maxWidth: .infinity)
             }
 
-            Section("Horario laboral") {
-                DatePicker("Inicio", selection: $workStart, displayedComponents: .hourAndMinute)
-                DatePicker("Fin", selection: $workEnd, displayedComponents: .hourAndMinute)
+            Section(lang.t("schedule.work_hours")) {
+                DatePicker(lang.t("schedule.start"), selection: $workStart, displayedComponents: .hourAndMinute)
+                DatePicker(lang.t("schedule.end"), selection: $workEnd, displayedComponents: .hourAndMinute)
             }
 
             Section {
-                DatePicker("Termina a las", selection: $personalEnd, displayedComponents: .hourAndMinute)
+                DatePicker(lang.t("schedule.ends_at"), selection: $personalEnd, displayedComponents: .hourAndMinute)
             } header: {
-                Text("Tiempo personal")
+                Text(lang.t("schedule.personal_time"))
             } footer: {
-                Text("Despues de esta hora se activa el modo descanso")
+                Text(lang.t("schedule.personal_footer"))
             }
 
             Section {
-                TextField("Mensaje cuando es dia libre", text: $restMessage)
+                TextField(lang.t("schedule.rest_placeholder"), text: $restMessage)
             } header: {
-                Text("Mensaje de descanso")
+                Text(lang.t("schedule.rest_message"))
             } footer: {
-                Text("Se muestra cuando el asistente detecta dia de descanso")
+                Text(lang.t("schedule.rest_footer"))
             }
 
             Section {
@@ -81,11 +83,11 @@ struct ScheduleSettingsView: View {
                         if isSaving {
                             ProgressView()
                         } else if showSaved {
-                            Label("Horario guardado", systemImage: "checkmark.circle.fill")
+                            Label(lang.t("schedule.saved"), systemImage: "checkmark.circle.fill")
                                 .fontWeight(.semibold)
                                 .foregroundStyle(.green)
                         } else {
-                            Text("Guardar horario")
+                            Text(lang.t("schedule.save"))
                                 .fontWeight(.semibold)
                         }
                         Spacer()
@@ -103,14 +105,14 @@ struct ScheduleSettingsView: View {
         .toolbar {
             ToolbarItemGroup(placement: .keyboard) {
                 Spacer()
-                Button("Listo") {
+                Button(lang.t("common.done")) {
                     UIApplication.shared.sendAction(
                         #selector(UIResponder.resignFirstResponder),
                         to: nil, from: nil, for: nil)
                 }
             }
         }
-        .navigationTitle("Horario")
+        .navigationTitle(lang.t("schedule.title"))
         .navigationBarTitleDisplayMode(.inline)
         .task {
             await loadSchedule()
