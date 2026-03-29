@@ -110,8 +110,7 @@ final class AssistantViewModel: ObservableObject {
         let savedMode = UserDefaults.standard.string(forKey: "assistantMode") ?? ""
         micMode = MicMode(rawValue: savedMode) ?? .pushToTalk
 
-        let name = UserDefaults.standard.string(forKey: "assistantName") ?? "VERA"
-        let greeting = Self.buildGreeting(name: name)
+        let greeting = Self.buildGreeting(name: "VERA")
         messages.append(ChatMessage(
             role: .assistant,
             content: greeting

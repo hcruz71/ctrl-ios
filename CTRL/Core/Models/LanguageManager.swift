@@ -221,6 +221,7 @@ final class LanguageManager: ObservableObject {
         // Onboarding
         // App identity
         "app.name":                ["es": "VERA",  "en": "VERA",  "pt": "VERA",  "fr": "VERA",  "de": "VERA"],
+        "assistant.name_label":    ["es": "Asistente",     "en": "Assistant",      "pt": "Assistente",     "fr": "Assistante",     "de": "Assistentin"],
         "app.fullname":            ["es": "VERA - Virtual Executive Resource Assistant", "en": "VERA - Virtual Executive Resource Assistant", "pt": "VERA - Assistente Executivo Virtual", "fr": "VERA - Assistant Exécutif Virtuel", "de": "VERA - Virtueller Führungsassistent"],
         "app.tagline":             ["es": "Tu asistente ejecutivo virtual con IA", "en": "Your virtual AI executive assistant", "pt": "Seu assistente executivo virtual com IA", "fr": "Votre assistant exécutif virtuel avec IA", "de": "Ihr virtueller KI-Führungsassistent"],
 

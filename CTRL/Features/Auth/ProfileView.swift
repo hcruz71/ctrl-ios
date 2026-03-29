@@ -98,11 +98,10 @@ struct ProfileView: View {
                 // 2. Mi Asistente — collapsible, default expanded
                 collapsibleSection(title: lang.t("profile.assistant"), icon: "sparkles", expanded: $expandedAssistant) {
                     HStack {
-                        Label("Nombre", systemImage: "sparkles")
+                        Label(lang.t("assistant.name_label"), systemImage: "sparkles")
                         Spacer()
-                        TextField("VERA", text: $assistantName)
-                            .multilineTextAlignment(.trailing)
-                            .frame(maxWidth: 160)
+                        Text("VERA")
+                            .foregroundStyle(.secondary)
                     }
 
                     ForEach(personalities, id: \.id) { p in
@@ -370,9 +369,7 @@ struct ProfileView: View {
     // MARK: - Helpers
 
     private func loadAssistantSettings() {
-        assistantName = UserDefaults.standard.string(forKey: "assistantName")
-            ?? authManager.currentUser?.assistantName
-            ?? "VERA"
+        assistantName = "VERA"
         assistantPersonality = UserDefaults.standard.string(forKey: "assistantPersonality")
             ?? authManager.currentUser?.assistantPersonality
             ?? "ejecutivo"
@@ -383,8 +380,7 @@ struct ProfileView: View {
 
     private func saveAssistantSettings() async {
         isSaving = true
-        let name = assistantName.trimmingCharacters(in: .whitespacesAndNewlines)
-        let finalName = name.isEmpty ? "VERA" : name
+        let finalName = "VERA"
 
         UserDefaults.standard.set(finalName, forKey: "assistantName")
         UserDefaults.standard.set(assistantPersonality, forKey: "assistantPersonality")
