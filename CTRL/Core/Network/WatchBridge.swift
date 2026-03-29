@@ -19,14 +19,15 @@ final class WatchBridge: NSObject, ObservableObject, WCSessionDelegate {
 
     /// Sync the JWT token to the Watch so it can make direct API calls.
     func syncTokenToWatch() {
-        guard WCSession.default.activationState == .activated,
-              WCSession.default.isPaired,
-              WCSession.default.isWatchAppInstalled else { return }
+        Task { @MainActor in
+            guard WCSession.default.activationState == .activated,
+                  WCSession.default.isPaired,
+                  WCSession.default.isWatchAppInstalled else { return }
 
-        guard let token = AuthManager.shared.token else { return }
+            guard let token = AuthManager.shared.token else { return }
 
-        // Use updateApplicationContext for reliable delivery (even if Watch is not reachable now)
-        try? WCSession.default.updateApplicationContext(["authToken": token])
+            try? WCSession.default.updateApplicationContext(["authToken": token])
+        }
     }
 
     // MARK: - WCSessionDelegate
