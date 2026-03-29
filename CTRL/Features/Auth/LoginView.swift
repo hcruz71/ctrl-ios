@@ -42,6 +42,16 @@ struct LoginView: View {
                         .padding(.top, 60)
                         .padding(.bottom, 32)
 
+                    Text("VIRTUAL  ·  EXECUTIVE  ·  RESOURCE  ·  ASSISTANT")
+                        .font(.system(size: 11, weight: .medium))
+                        .foregroundColor(Color(hex: "#7A96B8"))
+                        .kerning(2.5)
+                        .multilineTextAlignment(.center)
+                        .lineSpacing(4)
+                        .padding(.horizontal, 32)
+                        .padding(.top, -16)
+                        .padding(.bottom, 24)
+
                     // MARK: - Fields
                     VStack(spacing: 14) {
                         if vm.isRegistering {
