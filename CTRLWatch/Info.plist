@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>CTRL</string>
+	<string>VERA</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -21,9 +21,9 @@
 	<key>CFBundleVersion</key>
 	<string>1</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>CTRL necesita el microfono para comandos de voz</string>
+	<string>VERA necesita el microfono para comandos de voz</string>
 	<key>NSSpeechRecognitionUsageDescription</key>
-	<string>CTRL necesita reconocimiento de voz para el asistente en tu Apple Watch</string>
+	<string>VERA necesita reconocimiento de voz para el asistente en tu Apple Watch</string>
 	<key>WKApplication</key>
 	<true/>
 	<key>WKCompanionAppBundleIdentifier</key>

@@ -58,7 +58,7 @@ struct WatchMainView: View {
             }
         }
         .padding(.horizontal, 4)
-        .navigationTitle("CTRL")
+        .navigationTitle("VERA")
     }
 
     private var statusLabel: String {

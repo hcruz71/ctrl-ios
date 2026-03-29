@@ -100,7 +100,7 @@ struct ProfileView: View {
                     HStack {
                         Label("Nombre", systemImage: "sparkles")
                         Spacer()
-                        TextField("CTRL", text: $assistantName)
+                        TextField("VERA", text: $assistantName)
                             .multilineTextAlignment(.trailing)
                             .frame(maxWidth: 160)
                     }
@@ -372,7 +372,7 @@ struct ProfileView: View {
     private func loadAssistantSettings() {
         assistantName = UserDefaults.standard.string(forKey: "assistantName")
             ?? authManager.currentUser?.assistantName
-            ?? "CTRL"
+            ?? "VERA"
         assistantPersonality = UserDefaults.standard.string(forKey: "assistantPersonality")
             ?? authManager.currentUser?.assistantPersonality
             ?? "ejecutivo"
@@ -384,7 +384,7 @@ struct ProfileView: View {
     private func saveAssistantSettings() async {
         isSaving = true
         let name = assistantName.trimmingCharacters(in: .whitespacesAndNewlines)
-        let finalName = name.isEmpty ? "CTRL" : name
+        let finalName = name.isEmpty ? "VERA" : name
 
         UserDefaults.standard.set(finalName, forKey: "assistantName")
         UserDefaults.standard.set(assistantPersonality, forKey: "assistantPersonality")

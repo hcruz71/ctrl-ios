@@ -219,12 +219,17 @@ final class LanguageManager: ObservableObject {
         "profile.restart_onboarding_msg": ["es": "Se mostrara la guia de inicio nuevamente. Tu informacion no se perdera.", "en": "The getting started guide will be shown again. Your information will not be lost.", "pt": "O guia de inicio sera exibido novamente. Suas informacoes nao serao perdidas.",     "fr": "Le guide de demarrage sera affiche a nouveau. Vos informations ne seront pas perdues.", "de": "Die Erste-Schritte-Anleitung wird erneut angezeigt. Ihre Informationen gehen nicht verloren."],
 
         // Onboarding
-        "onboarding.welcome":      ["es": "Bienvenido a CTRL",                      "en": "Welcome to CTRL",                     "pt": "Bem-vindo ao CTRL",                "fr": "Bienvenue dans CTRL",              "de": "Willkommen bei CTRL"],
+        // App identity
+        "app.name":                ["es": "VERA",  "en": "VERA",  "pt": "VERA",  "fr": "VERA",  "de": "VERA"],
+        "app.fullname":            ["es": "VERA - Virtual Executive Resource Assistant", "en": "VERA - Virtual Executive Resource Assistant", "pt": "VERA - Assistente Executivo Virtual", "fr": "VERA - Assistant Exécutif Virtuel", "de": "VERA - Virtueller Führungsassistent"],
+        "app.tagline":             ["es": "Tu asistente ejecutivo virtual con IA", "en": "Your virtual AI executive assistant", "pt": "Seu assistente executivo virtual com IA", "fr": "Votre assistant exécutif virtuel avec IA", "de": "Ihr virtueller KI-Führungsassistent"],
+
+        "onboarding.welcome":      ["es": "Bienvenido a VERA",                      "en": "Welcome to VERA",                     "pt": "Bem-vindo ao VERA",                "fr": "Bienvenue dans VERA",              "de": "Willkommen bei VERA"],
         "onboarding.subtitle":     ["es": "Tu asistente ejecutivo personal con IA",  "en": "Your personal AI executive assistant","pt": "Seu assistente executivo com IA",   "fr": "Votre assistant executif avec IA",  "de": "Ihr personlicher KI-Assistent"],
         "onboarding.start":        ["es": "Comenzar",        "en": "Get Started",    "pt": "Comecar",        "fr": "Commencer",       "de": "Loslegen"],
         "onboarding.skip":         ["es": "Saltar",          "en": "Skip",           "pt": "Pular",          "fr": "Passer",          "de": "Uberspringen"],
         "onboarding.later":        ["es": "Lo hare despues", "en": "I'll do it later","pt": "Farei depois",   "fr": "Plus tard",       "de": "Spater"],
-        "onboarding.finish":       ["es": "Comenzar a usar CTRL","en": "Start using CTRL","pt": "Comecar a usar CTRL","fr": "Commencer CTRL","de": "CTRL verwenden"],
+        "onboarding.finish":       ["es": "Comenzar a usar VERA","en": "Start using VERA","pt": "Comecar a usar VERA","fr": "Commencer VERA","de": "VERA verwenden"],
         "onboarding.step1.title":  ["es": "Comienza con un objetivo",        "en": "Start with an objective",       "pt": "Comece com um objetivo",        "fr": "Commencez avec un objectif",      "de": "Beginnen Sie mit einem Ziel"],
         "onboarding.step2.title":  ["es": "Tus reuniones en un solo lugar",  "en": "Your meetings in one place",    "pt": "Suas reunioes em um so lugar",  "fr": "Vos reunions en un seul endroit", "de": "Ihre Besprechungen an einem Ort"],
         "onboarding.step3.title":  ["es": "Tu red ejecutiva",                "en": "Your executive network",        "pt": "Sua rede executiva",            "fr": "Votre reseau executif",           "de": "Ihr Fuehrungsnetzwerk"],

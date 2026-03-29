@@ -213,7 +213,7 @@ struct AssistantView: View {
                     HStack(spacing: 6) {
                         Image(systemName: "sparkles")
                             .foregroundStyle(Color.ctrlPurple)
-                        Text("Asistente CTRL")
+                        Text("Asistente VERA")
                             .font(.headline)
                     }
                 }

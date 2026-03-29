@@ -23,17 +23,17 @@ targets:
     info:
       path: CTRL/Info.plist
       properties:
-        CFBundleDisplayName: CTRL
+        CFBundleDisplayName: VERA
         UIApplicationSceneManifest:
           UIApplicationSupportsMultipleScenes: false
         UIApplicationSupportsIndirectInputEvents: true
         UILaunchScreen: {}
         UISupportedInterfaceOrientations:
           - UIInterfaceOrientationPortrait
-        NSMicrophoneUsageDescription: "CTRL usa el micrófono para que puedas organizar tus pendientes por voz"
-        NSSpeechRecognitionUsageDescription: "CTRL transcribe tu voz para crear tareas, reuniones y delegaciones"
-        NSCalendarsUsageDescription: "CTRL necesita acceso a tu calendario para crear y sincronizar reuniones"
-        NSCalendarsWriteOnlyAccessUsageDescription: "CTRL necesita acceso para agregar reuniones a tu calendario"
+        NSMicrophoneUsageDescription: "VERA usa el micrófono para que puedas organizar tus pendientes por voz"
+        NSSpeechRecognitionUsageDescription: "VERA transcribe tu voz para crear tareas, reuniones y delegaciones"
+        NSCalendarsUsageDescription: "VERA necesita acceso a tu calendario para crear y sincronizar reuniones"
+        NSCalendarsWriteOnlyAccessUsageDescription: "VERA necesita acceso para agregar reuniones a tu calendario"
         CFBundleURLTypes:
           - CFBundleURLSchemes:
               - ctrl
@@ -61,11 +61,11 @@ targets:
     info:
       path: CTRLWatch/Info.plist
       properties:
-        CFBundleDisplayName: CTRL
+        CFBundleDisplayName: VERA
         WKApplication: true
         WKCompanionAppBundleIdentifier: com.hector.ctrl
-        NSMicrophoneUsageDescription: "CTRL necesita el microfono para comandos de voz"
-        NSSpeechRecognitionUsageDescription: "CTRL necesita reconocimiento de voz para el asistente en tu Apple Watch"
+        NSMicrophoneUsageDescription: "VERA necesita el microfono para comandos de voz"
+        NSSpeechRecognitionUsageDescription: "VERA necesita reconocimiento de voz para el asistente en tu Apple Watch"
     entitlements:
       path: CTRLWatch/CTRLWatch.entitlements
     settings:

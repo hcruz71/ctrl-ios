@@ -110,7 +110,7 @@ final class AssistantViewModel: ObservableObject {
         let savedMode = UserDefaults.standard.string(forKey: "assistantMode") ?? ""
         micMode = MicMode(rawValue: savedMode) ?? .pushToTalk
 
-        let name = UserDefaults.standard.string(forKey: "assistantName") ?? "CTRL"
+        let name = UserDefaults.standard.string(forKey: "assistantName") ?? "VERA"
         let greeting = Self.buildGreeting(name: name)
         messages.append(ChatMessage(
             role: .assistant,
@@ -577,10 +577,10 @@ final class AssistantViewModel: ObservableObject {
     static func voicePreviewText(for langGroup: String) -> String {
         switch langGroup {
         case "en": return "Hello, I am your CTRL assistant"
-        case "pt": return "Ola, sou seu assistente CTRL"
-        case "fr": return "Bonjour, je suis votre assistant CTRL"
-        case "de": return "Hallo, ich bin Ihr CTRL-Assistent"
-        default:   return "Hola, soy tu asistente CTRL"
+        case "pt": return "Ola, sou seu assistente VERA"
+        case "fr": return "Bonjour, je suis votre assistante VERA"
+        case "de": return "Hallo, ich bin Ihre VERA-Assistentin"
+        default:   return "Hola, soy VERA, tu asistente ejecutivo"
         }
     }
 

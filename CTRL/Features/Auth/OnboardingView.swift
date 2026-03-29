@@ -77,7 +77,7 @@ struct OnboardingView: View {
                 .aspectRatio(contentMode: .fit)
                 .frame(width: 100, height: 100)
                 .clipShape(RoundedRectangle(cornerRadius: 20))
-            Text("CTRL")
+            Text("VERA")
                 .font(.system(size: 48, weight: .black))
                 .foregroundStyle(Color.ctrlPurple)
         }
@@ -140,7 +140,7 @@ struct OnboardingView: View {
             icon: "sparkles",
             title: "Tu Chief of Staff con IA",
             subtitle: nil,
-            description: "El asistente CTRL conoce tus objetivos, reuniones y tareas. Puedes hablarle:\n\n'Dame mi resumen del dia'\n'Crea una tarea urgente'\n'Como voy con mis objetivos?'",
+            description: "El asistente VERA conoce tus objetivos, reuniones y tareas. Puedes hablarle:\n\n'Dame mi resumen del dia'\n'Crea una tarea urgente'\n'Como voy con mis objetivos?'",
             primaryLabel: "Configurar mi asistente",
             primaryAction: { sheetType = .assistant },
             secondaryLabel: "Usar configuracion default",
@@ -151,7 +151,7 @@ struct OnboardingView: View {
     private var scheduleStep: some View {
         stepView(
             icon: "clock.fill",
-            title: "CTRL respeta tu tiempo",
+            title: "VERA respeta tu tiempo",
             subtitle: nil,
             description: "Configura tus dias laborables y horarios. En modo descanso, el asistente NO te molestara con pendientes. En vacaciones, genera documentos de entrega automaticamente.",
             primaryLabel: "Configurar horario",
@@ -172,7 +172,7 @@ struct OnboardingView: View {
                 .font(.title.bold())
                 .multilineTextAlignment(.center)
 
-            Text("CTRL esta configurado para ayudarte a alcanzar tus objetivos y liderar con claridad.")
+            Text("VERA esta configurado para ayudarte a alcanzar tus objetivos y liderar con claridad.")
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)

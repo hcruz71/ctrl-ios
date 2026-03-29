@@ -25,11 +25,11 @@ struct LoginView: View {
                         .frame(width: 80, height: 80)
                         .clipShape(RoundedRectangle(cornerRadius: 16))
 
-                    Text("CTRL")
+                    Text("VERA")
                         .font(.system(size: 42, weight: .black))
                         .foregroundStyle(Color.ctrlPurple)
 
-                    Text("Control  ·  Tareas  ·  Reuniones  ·  Liderazgo")
+                    Text("Virtual  ·  Executive  ·  Resource  ·  Assistant")
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                         .kerning(0.5)
