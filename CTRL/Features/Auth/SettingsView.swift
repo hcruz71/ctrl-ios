@@ -98,7 +98,7 @@ struct SettingsView: View {
                     }
                 }
             } message: {
-                Text("Se desconectara \(accountToDelete?.email ?? "") de CTRL.")
+                Text("Se desconectara \(accountToDelete?.email ?? "") de VERA.")
             }
 
             // MARK: - Tiempo y Disponibilidad

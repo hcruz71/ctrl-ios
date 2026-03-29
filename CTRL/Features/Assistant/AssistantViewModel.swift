@@ -575,7 +575,7 @@ final class AssistantViewModel: ObservableObject {
 
     static func voicePreviewText(for langGroup: String) -> String {
         switch langGroup {
-        case "en": return "Hello, I am your CTRL assistant"
+        case "en": return "Hello, I am VERA, your executive assistant"
         case "pt": return "Ola, sou seu assistente VERA"
         case "fr": return "Bonjour, je suis votre assistante VERA"
         case "de": return "Hallo, ich bin Ihre VERA-Assistentin"

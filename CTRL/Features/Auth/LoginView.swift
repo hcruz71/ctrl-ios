@@ -42,13 +42,14 @@ struct LoginView: View {
                         .padding(.top, 60)
                         .padding(.bottom, 32)
 
-                    Text("VIRTUAL  ·  EXECUTIVE  ·  RESOURCE  ·  ASSISTANT")
+                    Text("VIRTUAL · EXECUTIVE · RESOURCE · ASSISTANT")
                         .font(.system(size: 11, weight: .medium))
                         .foregroundColor(Color(hex: "#7A96B8"))
                         .kerning(2.5)
                         .multilineTextAlignment(.center)
-                        .lineSpacing(4)
-                        .padding(.horizontal, 32)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.5)
+                        .padding(.horizontal, 24)
                         .padding(.top, -16)
                         .padding(.bottom, 24)
 
