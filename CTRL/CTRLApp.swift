@@ -7,21 +7,36 @@ struct CTRLApp: App {
     @StateObject private var navigationState = NavigationState.shared
     @StateObject private var lang = LanguageManager.shared
     @StateObject private var store = StoreManager.shared
+    @State private var isShowingLaunch = true
 
     init() {
-        // Initialize Watch bridge for WatchConnectivity
         WatchBridge.shared.setup()
     }
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
-                .environmentObject(authManager)
-                .environmentObject(navigationState)
-                .environmentObject(lang)
-                .environmentObject(store)
-                .task { await store.listenForTransactions() }
-                .task { await store.checkCurrentEntitlements() }
+            ZStack {
+                ContentView()
+                    .environmentObject(authManager)
+                    .environmentObject(navigationState)
+                    .environmentObject(lang)
+                    .environmentObject(store)
+                    .task { await store.listenForTransactions() }
+                    .task { await store.checkCurrentEntitlements() }
+
+                if isShowingLaunch {
+                    LaunchScreenView()
+                        .transition(.opacity)
+                        .zIndex(1)
+                        .onAppear {
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                                withAnimation(.easeOut(duration: 0.4)) {
+                                    isShowingLaunch = false
+                                }
+                            }
+                        }
+                }
+            }
         }
     }
 }
